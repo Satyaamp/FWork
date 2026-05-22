@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Login - FieldForce</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .login-container {
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: var(--bg-primary);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .login-logo svg {
+      width: 60px;
+      height: 60px;
+      stroke: var(--primary);
+      stroke-width: 2.2;
+      fill: rgba(16, 185, 129, 0.06);
+      margin-bottom: 12px;
+    }
+
+    .login-logo h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.75px;
+      color: var(--text-main);
+    }
+
+    .login-logo p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .alert-danger {
+      background-color: #FEE2E2;
+      color: var(--error);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: none;
+      line-height: 1.4;
+      border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <div class="login-container">
+      <div class="login-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.015a2.993 2.993 0 002.25 1.015c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.5a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75h-3.5A.75.75 0 006 14v3.25c0 .414.336.75.75.75z" />
+        </svg>
+        <h1>FieldForce</h1>
+        <p>Operational Restaurant Tracker</p>
+      </div>
+
+      <div class="alert-danger" id="error-banner"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" class="form-control" placeholder="Enter username" required
+            autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div style="position: relative;">
+            <input type="password" id="password" class="form-control" placeholder="Enter password" required
+              autocomplete="current-password">
+            <button type="button" class="toggle-pass-btn" id="toggle-password">SHO</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 12px;">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="loader-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (api.getToken() && api.getUser()) {
+        const u = api.getUser();
+        window.location.href = u.role === 'admin' ? '/admin' : '/';
+      }
+
+      const form = document.getElementById('login-form');
+      const errBanner = document.getElementById('error-banner');
+      const togglePass = document.getElementById('toggle-password');
+      const passInput = document.getElementById('password');
+      const loading = document.getElementById('loading-overlay');
+
+      togglePass.addEventListener('click', () => {
+        if (passInput.type === 'password') {
+          passInput.type = 'text';
+          togglePass.textContent = 'HIDE';
+        } else {
+          passInput.type = 'password';
+          togglePass.textContent = 'SHOW';
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errBanner.style.display = 'none';
+        loading.style.display = 'flex';
+
+        const username = document.getElementById('username').value.trim();
+        const password = passInput.value;
+
+        try {
+          const res = await api.post('/auth/login', { username, password });
+          if (res && res.token) {
+            api.setToken(res.token);
+            localStorage.setItem('user', JSON.stringify(res.user));
+            window.location.href = res.user.role === 'admin' ? '/admin' : '/';
+          }
+        } catch (error) {
+          errBanner.textContent = error.message || 'Invalid username or password.';
+          errBanner.style.display = 'block';
+        } finally {
+          loading.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

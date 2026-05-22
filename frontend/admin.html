@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Admin Dashboard - FieldForce</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* CSS-only Bar Chart */
+    .chart-box {
+      background-color: white;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 160px;
+      padding-top: 20px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 8px;
+    }
+
+    .chart-bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .chart-bar {
+      width: 28px;
+      background-color: var(--primary);
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .chart-bar:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .chart-bar-tooltip {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--text-main);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .chart-bar:hover .chart-bar-tooltip {
+      opacity: 1;
+    }
+
+    .chart-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    /* Interactive map popup custom style */
+    .map-popup-img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .map-popup-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .map-popup-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sync Banner -->
+  <div class="sync-banner" id="sync-banner"></div>
+
+  <div class="admin-dashboard-container">
+    <!-- Desktop Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.015a2.993 2.993 0 002.25 1.015c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.5a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75h-3.5A.75.75 0 006 14v3.25c0 .414.336.75.75.75z" />
+        </svg>
+        <span>FieldForce Admin</span>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="avatar-initial">A</div>
+        <div class="sidebar-user-details">
+          <span class="user-name worker-name-placeholder">Admin</span>
+          <span class="user-role badge badge-admin"
+            style="font-size: 9px; padding: 2px 4px; margin-top: 2px;">Administrator</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <button class="sidebar-link active" data-tab="analytics">
+          <svg viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3.75 3v16.5M21 19.5H3.75M6.75 15h3m3.75-3h3m3.75-3h3" />
+          </svg>
+          <span>Analytics</span>
+        </button>
+        <button class="sidebar-link" data-tab="outlets">
+          <svg viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+          </svg>
+          <span>Outlets Directory</span>
+        </button>
+        <button class="sidebar-link" data-tab="workers">
+          <svg viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+          </svg>
+          <span>Field Workers</span>
+        </button>
+        <button class="sidebar-link" data-tab="map-view">
+          <svg viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 6.75V15m6-6.75V15m-10.5-3h15m-16.5-6.75a2.25 2.25 0 012.25-2.25h13.5a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25H6.25a2.25 2.25 0 01-2.25-2.25V5.25z" />
+          </svg>
+          <span>Interactive Map</span>
+        </button>
+      </nav>
+
+      <button class="sidebar-logout-btn logout-action">
+        <svg viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+        </svg>
+        <span>Sign Out</span>
+      </button>
+    </aside>
+
+    <!-- Main Container -->
+    <main class="admin-main">
+      <!-- Desktop Header -->
+      <header class="admin-top-bar">
+        <div class="top-bar-title">
+          <h1 id="active-panel-title">Analytics Dashboard</h1>
+          <p id="top-bar-subtitle">Operational metrics overview</p>
+        </div>
+        <div class="top-bar-actions">
+          <span class="system-status">
+            <span class="status-dot"></span>
+            System Live
+          </span>
+        </div>
+      </header>
+
+      <!-- Mobile Header -->
+      <header class="app-header admin-mobile-header">
+        <h1>FieldForce Admin</h1>
+        <button class="badge badge-admin logout-action" style="border: none; cursor: pointer;">Logout</button>
+      </header>
+
+      <!-- Content Area -->
+      <div class="admin-content">
+
+        <!-- Tab 1: Analytics -->
+        <div class="tab-pane active" id="pane-analytics">
+          <!-- Global KPIs -->
+          <section class="stats-section" style="margin-top: 0; margin-bottom: 24px;">
+            <div class="stats-grid"
+              style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 0;">
+              <div class="stat-card" style="padding: 20px;">
+                <div class="stat-value" id="admin-total">-</div>
+                <div class="stat-label">Total Outlets</div>
+              </div>
+              <div class="stat-card" style="padding: 20px;">
+                <div class="stat-value" id="admin-workers">-</div>
+                <div class="stat-label">Active Force</div>
+              </div>
+              <div class="stat-card" style="padding: 20px; border-color: rgba(16, 185, 129, 0.3);">
+                <div class="stat-value" id="admin-today" style="color: var(--primary);">-</div>
+                <div class="stat-label">Logged Today</div>
+              </div>
+              <div class="stat-card" style="padding: 20px;">
+                <div class="stat-value" id="admin-week">-</div>
+                <div class="stat-label">Logged This Week</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- CSS Bar Chart Section -->
+          <div class="menu-group">
+            <h3 class="detail-section-title" style="margin-left: 4px; margin-bottom: 12px;">6-Month Registration Trend
+            </h3>
+            <div class="chart-box">
+              <div class="chart-row" id="analytics-chart-row">
+                <div
+                  style="width:100%; text-align:center; color: var(--text-light); font-size:12px; padding-bottom: 40px;">
+                  Loading trend data...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Recent Feed -->
+          <section class="section-header" style="margin-top: 32px;">
+            <h3>Recent Submissions</h3>
+          </section>
+          <div class="restaurant-list" id="admin-recent-feed">
+            <div class="card" style="text-align: center; padding: 24px; color: var(--text-light);">Loading recent
+              feed...</div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Outlets Directory -->
+        <div class="tab-pane" id="pane-outlets">
+          <div class="data-table-container">
+            <div class="table-header-bar">
+              <h3 style="font-weight: 700; color: var(--text-main); font-size: 16px;">Outlets Database</h3>
+
+              <!-- Search bar inside table bar -->
+              <input type="text" id="table-search" class="form-control table-search-input"
+                placeholder="Search by name, city, pin..." style="padding: 8px 16px; font-size: 14px;">
+            </div>
+
+            <div class="table-responsive-wrapper" style="overflow-x: auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Worker</th>
+                    <th>Pincode</th>
+                    <th>City / Address</th>
+                    <th>Date Added</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="outlets-table-body">
+                  <tr>
+                    <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-light);">Loading outlets
+                      database...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Pagination -->
+            <div class="table-pagination-bar" id="outlets-pagination" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Field Workers -->
+        <div class="tab-pane" id="pane-workers">
+          <!-- Full-Width Workers Table -->
+          <div class="data-table-container">
+            <div class="table-header-bar">
+              <h3 style="font-weight: 700; color: var(--text-main); font-size: 16px;">Field Force Management</h3>
+              <button class="btn btn-primary" id="open-worker-modal-btn"
+                style="padding: 8px 16px; font-size: 13px; font-weight: 600; width: auto; display: flex; align-items: center; gap: 6px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  style="width: 16px; height: 16px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add Field Worker
+              </button>
+            </div>
+
+            <div class="table-responsive-wrapper" style="overflow-x: auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                  </tr>
+                </thead>
+                <tbody id="workers-table-body">
+                  <tr>
+                    <td colspan="2" style="text-align: center; padding: 30px; color: var(--text-light);">Loading
+                      workers...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Interactive Map -->
+        <div class="tab-pane" id="pane-map-view">
+          <div class="menu-group">
+            <h3 class="detail-section-title" style="margin-left: 4px; margin-bottom: 12px;">Live Geo-Location Pins</h3>
+            <div class="admin-map-container" id="admin-leaflet-map"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Tab Navigation -->
+  <nav class="admin-mobile-nav">
+    <button class="mobile-nav-btn active" data-tab="analytics">
+      <svg viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M3.75 3v16.5M21 19.5H3.75M6.75 15h3m3.75-3h3m3.75-3h3" />
+      </svg>
+      <span>Stats</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="outlets">
+      <svg viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+      </svg>
+      <span>Outlets</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="workers">
+      <svg viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+      </svg>
+      <span>Workers</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="map-view">
+      <svg viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M9 6.75V15m6-6.75V15m-10.5-3h15m-16.5-6.75a2.25 2.25 0 012.25-2.25h13.5a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25H6.25a2.25 2.25 0 01-2.25-2.25V5.25z" />
+      </svg>
+      <span>Map</span>
+    </button>
+  </nav>
+
+  <!-- Loading Overlay -->
+  <div class="loader-overlay" id="loading-overlay" style="display: flex;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Leaflet Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/db-offline.js"></script>
+
+  <script>
+    let map = null;
+    let markersLayer = null;
+    let allRestaurants = [];
+    let allWorkers = [];
+    let globalStats = null;
+    let currentTab = 'analytics';
+
+    // Pagination State
+    let outletsCurrentPage = 1;
+    const outletsItemsPerPage = 5;
+    let outletsSearchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Ensure admin authentication validation
+      const u = api.getUser();
+      if (u && u.role !== 'admin') {
+        window.location.href = '/';
+        return;
+      }
+
+      if (u) {
+        document.getElementById('avatar-initial').textContent = u.name.charAt(0).toUpperCase();
+      }
+
+      // Initialize tabs switching
+      initTabs();
+
+      // Load initial dashboard statistics and items
+      loadAdminDashboard();
+
+      // Bind Search event in directory tab
+      const searchBox = document.getElementById('table-search');
+      if (searchBox) {
+        searchBox.addEventListener('input', (e) => {
+          renderOutletsTable(e.target.value.trim());
+        });
+      }
+
+      // Bind Worker Creation Form Submission
+      const workerForm = document.getElementById('create-worker-form');
+      const modalOverlay = document.getElementById('worker-modal-overlay');
+
+      if (workerForm) {
+        workerForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const nameInput = document.getElementById('worker-name');
+          const usernameInput = document.getElementById('worker-username');
+          const phoneInput = document.getElementById('worker-phone');
+          const roleSelect = document.getElementById('worker-role');
+          const passwordInput = document.getElementById('worker-password');
+
+          const name = nameInput.value.trim();
+          const username = usernameInput.value.trim().toLowerCase();
+          const phoneNumber = phoneInput.value.trim();
+          const role = roleSelect.value;
+          const password = passwordInput.value;
+
+          if (!name || !username || !password || !phoneNumber || !role) {
+            alert('All fields are required.');
+            return;
+          }
+
+          if (password.length < 6) {
+            alert('Password must be at least 6 characters long.');
+            return;
+          }
+
+          const loader = document.getElementById('loading-overlay');
+          if (loader) loader.style.display = 'flex';
+
+          try {
+            const result = await api.post('/auth/create-worker', { name, username, password, phoneNumber, role });
+            if (result) {
+              alert('User registered successfully!');
+              workerForm.reset();
+              if (modalOverlay) {
+                modalOverlay.classList.remove('active');
+              }
+              await loadAdminDashboard();
+            }
+          } catch (err) {
+            console.error('Create User Error:', err);
+            alert(err.message || 'Failed to create user account.');
+          } finally {
+            if (loader) loader.style.display = 'none';
+          }
+        });
+      }
+
+      // Bind Worker Registration Modal Overlay Controls
+      const openModalBtn = document.getElementById('open-worker-modal-btn');
+      const closeModalBtn = document.getElementById('close-worker-modal-btn');
+
+      if (openModalBtn && modalOverlay) {
+        openModalBtn.addEventListener('click', () => {
+          modalOverlay.classList.add('active');
+        });
+      }
+
+      if (closeModalBtn && modalOverlay) {
+        closeModalBtn.addEventListener('click', () => {
+          modalOverlay.classList.remove('active');
+          if (workerForm) workerForm.reset();
+        });
+      }
+
+      if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+          if (e.target === modalOverlay) {
+            modalOverlay.classList.remove('active');
+            if (workerForm) workerForm.reset();
+          }
+        });
+      }
+
+      // Bind Worker Detail Modal Close Controls
+      const detailOverlay = document.getElementById('worker-detail-overlay');
+      const closeDetailBtn = document.getElementById('close-worker-detail-btn');
+
+      if (closeDetailBtn && detailOverlay) {
+        closeDetailBtn.addEventListener('click', () => {
+          detailOverlay.classList.remove('active');
+        });
+      }
+
+      if (detailOverlay) {
+        detailOverlay.addEventListener('click', (e) => {
+          if (e.target === detailOverlay) {
+            detailOverlay.classList.remove('active');
+          }
+        });
+      }
+    });
+
+    function initTabs() {
+      const tabLinks = document.querySelectorAll('.sidebar-link, .mobile-nav-btn');
+      tabLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetTab = link.getAttribute('data-tab');
+          switchTab(targetTab);
+        });
+      });
+    }
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+
+      // Update UI active buttons
+      const tabLinks = document.querySelectorAll('.sidebar-link, .mobile-nav-btn');
+      tabLinks.forEach(link => {
+        if (link.getAttribute('data-tab') === tabId) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+
+      // Update active content panels
+      const panels = document.querySelectorAll('.tab-pane');
+      panels.forEach(panel => {
+        if (panel.id === `pane-${tabId}`) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+
+      // Update titles
+      const panelTitleEl = document.getElementById('active-panel-title');
+      const panelSubtitleEl = document.getElementById('active-panel-subtitle');
+      if (panelTitleEl) {
+        if (tabId === 'analytics') {
+          panelTitleEl.textContent = 'Analytics Dashboard';
+          if (panelSubtitleEl) panelSubtitleEl.textContent = 'Operational metrics overview';
+        } else if (tabId === 'outlets') {
+          panelTitleEl.textContent = 'Outlets Directory';
+          if (panelSubtitleEl) panelSubtitleEl.textContent = 'Complete outlets registry';
+        } else if (tabId === 'workers') {
+          panelTitleEl.textContent = 'Field Force Management';
+          if (panelSubtitleEl) panelSubtitleEl.textContent = 'Workers activity and statistics';
+        } else if (tabId === 'map-view') {
+          panelTitleEl.textContent = 'Interactive Maps';
+          if (panelSubtitleEl) panelSubtitleEl.textContent = 'Geographical mapping view';
+        }
+      }
+
+      // If switching to map view tab, render/invalidate Leaflet map
+      if (tabId === 'map-view') {
+        setTimeout(setupLeafletMap, 150);
+      }
+    }
+
+    async function loadAdminDashboard() {
+      const loader = document.getElementById('loading-overlay');
+      loader.style.display = 'flex';
+
+      try {
+        // Fetch Admin Statistics
+        const stats = await api.get('/restaurants/stats/admin');
+        if (!stats) return;
+
+        globalStats = stats;
+
+        // Populate KPIs
+        document.getElementById('admin-total').textContent = stats.totalRestaurants;
+        document.getElementById('admin-workers').textContent = stats.activeWorkers;
+        document.getElementById('admin-today').textContent = stats.addedToday;
+        document.getElementById('admin-week').textContent = stats.addedThisWeek;
+
+        // Render Registration chart
+        renderChart(stats.monthlyAnalytics);
+
+        // Render Recent feed on dashboard
+        renderRecentFeed(stats.recentEntries);
+
+        // Fetch ALL restaurants to populate Directory table and Map pins
+        allRestaurants = await api.get('/restaurants');
+
+        // Render Tables
+        allWorkers = stats.workersStats || [];
+        renderOutletsTable();
+        renderWorkersTable(stats.workersStats);
+
+      } catch (err) {
+        console.error('Admin Stats Load Error:', err);
+        alert('Failed to retrieve analytical reports. Verify server connection.');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    function renderChart(monthlyData) {
+      const row = document.getElementById('analytics-chart-row');
+      if (!monthlyData || monthlyData.length === 0) {
+        row.innerHTML = `<div style="width:100%; text-align:center; color: var(--text-light); font-size:12px; padding-bottom: 40px;">No Trend Data available.</div>`;
+        return;
+      }
+
+      const maxCount = Math.max(...monthlyData.map(d => d.count)) || 1;
+
+      row.innerHTML = monthlyData.map(item => {
+        const heightPercentage = Math.max((item.count / maxCount) * 85, 4); // Scale to max 85% height
+        const monthShort = item.month.split(' ')[0];
+
+        return `
+          <div class="chart-bar-wrapper">
+            <div class="chart-bar" style="height: ${heightPercentage}%;">
+              <div class="chart-bar-tooltip">${item.count} Registered</div>
+            </div>
+            <div class="chart-label">${monthShort}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRecentFeed(entries) {
+      const container = document.getElementById('admin-recent-feed');
+      if (!entries || entries.length === 0) {
+        container.innerHTML = `
+          <div class="card" style="text-align: center; padding: 24px; color: var(--text-muted);">
+            No outlets registered yet.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = entries.slice(0, 3).map(item => {
+        const date = new Date(item.createdAtUTC || item.createdAtIST);
+        const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <a href="/restaurant-detail?id=${item._id}" class="restaurant-item">
+            <img src="${item.image || '/assets/images/default-restaurant.svg'}" alt="${item.restaurantName}" class="restaurant-item-img" onerror="this.src='/assets/images/default-restaurant.svg'">
+            <div class="restaurant-item-details">
+              <div class="restaurant-item-name">${item.restaurantName}</div>
+              <div class="restaurant-item-address">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25z" />
+                </svg>
+                <span>${item.fullAddress}</span>
+              </div>
+              <div class="restaurant-item-meta" style="margin-top: 8px;">
+                <span class="restaurant-item-worker" style="background-color: var(--primary-light); padding: 2px 6px; border-radius: 6px;">by ${item.addedBy ? item.addedBy.name : 'Unknown'}</span>
+                <span>${dateStr}, ${timeStr}</span>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    function renderOutletsTable(filterQuery = null) {
+      if (filterQuery !== null) {
+        outletsSearchQuery = filterQuery;
+        outletsCurrentPage = 1; // Reset to page 1 on new search
+      }
+
+      const tbody = document.getElementById('outlets-table-body');
+      const paginationContainer = document.getElementById('outlets-pagination');
+
+      let filtered = allRestaurants;
+      if (outletsSearchQuery) {
+        const query = outletsSearchQuery.toLowerCase();
+        filtered = allRestaurants.filter(item =>
+          item.restaurantName.toLowerCase().includes(query) ||
+          item.city.toLowerCase().includes(query) ||
+          (item.pincode && item.pincode.includes(query)) ||
+          (item.addedBy && item.addedBy.name.toLowerCase().includes(query))
+        );
+      }
+
+      const totalItems = filtered.length;
+      const totalPages = Math.ceil(totalItems / outletsItemsPerPage) || 1;
+
+      // Ensure active page is within bounds
+      if (outletsCurrentPage > totalPages) {
+        outletsCurrentPage = totalPages;
+      }
+      if (outletsCurrentPage < 1) {
+        outletsCurrentPage = 1;
+      }
+
+      const startIndex = (outletsCurrentPage - 1) * outletsItemsPerPage;
+      const endIndex = Math.min(startIndex + outletsItemsPerPage, totalItems);
+      const pageItems = filtered.slice(startIndex, endIndex);
+
+      if (totalItems === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-light);">No matching outlets found.</td>
+          </tr>
+        `;
+        if (paginationContainer) {
+          paginationContainer.innerHTML = '';
+          paginationContainer.style.display = 'none';
+        }
+        return;
+      }
+
+      tbody.innerHTML = pageItems.map(item => {
+        const date = new Date(item.createdAtUTC || item.createdAtIST);
+        const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+
+        return `
+          <tr>
+            <td>
+              <img src="${item.image || '/assets/images/default-restaurant.svg'}" alt="Outlet" class="table-img" onerror="this.src='/assets/images/default-restaurant.svg'">
+            </td>
+            <td>
+              <strong style="color: var(--text-main); font-weight:600;">${item.restaurantName}</strong>
+              <div style="font-size: 11px; color: var(--text-light); margin-top:2px;">Pin: ${item.pincode || 'N/A'}</div>
+            </td>
+            <td>
+              <span class="badge badge-worker" style="text-transform:none;">${item.addedBy ? item.addedBy.name : 'Unknown'}</span>
+            </td>
+            <td><strong style="color: var(--text-muted);">${item.pincode || 'N/A'}</strong></td>
+            <td>
+              <div style="font-weight: 500;">${item.city}</div>
+              <div style="font-size: 11px; color: var(--text-light); width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.fullAddress}</div>
+            </td>
+            <td>${dateStr}</td>
+            <td>
+              <div style="display: flex; gap: 8px;">
+                <a href="/restaurant-detail?id=${item._id}" class="btn btn-secondary" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px;">View</a>
+                <button onclick="deleteOutlet('${item._id}')" class="btn btn-danger" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px; background-color: #FEE2E2; color: #EF4444;">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Render Pagination controls
+      if (paginationContainer) {
+        paginationContainer.style.display = 'flex';
+        renderPaginationControls(paginationContainer, totalItems, totalPages, startIndex, endIndex);
+      }
+    }
+
+    function renderPaginationControls(container, totalItems, totalPages, startIndex, endIndex) {
+      let pageButtonsHTML = '';
+
+      // Previous button
+      const prevDisabled = outletsCurrentPage === 1 ? 'disabled' : '';
+      pageButtonsHTML += `<button class="pagination-btn ${prevDisabled}" onclick="changeOutletsPage(${outletsCurrentPage - 1})" ${prevDisabled ? 'disabled' : ''}>&larr; Prev</button>`;
+
+      // Page numbers logic using a standard sliding window
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) {
+          const activeClass = i === outletsCurrentPage ? 'active' : '';
+          pageButtonsHTML += `<button class="pagination-btn ${activeClass}" onclick="changeOutletsPage(${i})">${i}</button>`;
+        }
+      } else {
+        if (outletsCurrentPage <= 4) {
+          // Near the beginning: show first 5 pages, ellipsis, and last page
+          for (let i = 1; i <= 5; i++) {
+            const activeClass = i === outletsCurrentPage ? 'active' : '';
+            pageButtonsHTML += `<button class="pagination-btn ${activeClass}" onclick="changeOutletsPage(${i})">${i}</button>`;
+          }
+          pageButtonsHTML += `<span style="padding: 0 4px; color: var(--text-light);">...</span>`;
+          pageButtonsHTML += `<button class="pagination-btn" onclick="changeOutletsPage(${totalPages})">${totalPages}</button>`;
+        } else if (outletsCurrentPage >= totalPages - 3) {
+          // Near the end: show page 1, ellipsis, and last 5 pages
+          pageButtonsHTML += `<button class="pagination-btn" onclick="changeOutletsPage(1)">1</button>`;
+          pageButtonsHTML += `<span style="padding: 0 4px; color: var(--text-light);">...</span>`;
+          for (let i = totalPages - 4; i <= totalPages; i++) {
+            const activeClass = i === outletsCurrentPage ? 'active' : '';
+            pageButtonsHTML += `<button class="pagination-btn ${activeClass}" onclick="changeOutletsPage(${i})">${i}</button>`;
+          }
+        } else {
+          // Somewhere in the middle: show page 1, ellipsis, current page neighbors, ellipsis, and last page
+          pageButtonsHTML += `<button class="pagination-btn" onclick="changeOutletsPage(1)">1</button>`;
+          pageButtonsHTML += `<span style="padding: 0 4px; color: var(--text-light);">...</span>`;
+          for (let i = outletsCurrentPage - 1; i <= outletsCurrentPage + 1; i++) {
+            const activeClass = i === outletsCurrentPage ? 'active' : '';
+            pageButtonsHTML += `<button class="pagination-btn ${activeClass}" onclick="changeOutletsPage(${i})">${i}</button>`;
+          }
+          pageButtonsHTML += `<span style="padding: 0 4px; color: var(--text-light);">...</span>`;
+          pageButtonsHTML += `<button class="pagination-btn" onclick="changeOutletsPage(${totalPages})">${totalPages}</button>`;
+        }
+      }
+
+      // Next button
+      const nextDisabled = outletsCurrentPage === totalPages ? 'disabled' : '';
+      pageButtonsHTML += `<button class="pagination-btn ${nextDisabled}" onclick="changeOutletsPage(${outletsCurrentPage + 1})" ${nextDisabled ? 'disabled' : ''}>Next &rarr;</button>`;
+
+      container.innerHTML = `
+        <div class="pagination-info">
+          Showing <strong>${startIndex + 1}</strong> to <strong>${endIndex}</strong> of <strong>${totalItems}</strong> outlets
+        </div>
+        <div class="pagination-controls">
+          ${pageButtonsHTML}
+        </div>
+      `;
+    }
+
+    function changeOutletsPage(page) {
+      outletsCurrentPage = page;
+      renderOutletsTable();
+    }
+
+    function renderWorkersTable(workersStats) {
+      const tbody = document.getElementById('workers-table-body');
+
+      if (!workersStats || workersStats.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="2" style="text-align: center; padding: 30px; color: var(--text-light);">No field workers registered.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = workersStats.map(w => {
+        return `
+          <tr class="clickable-worker-row" onclick="openWorkerDetailsModal('${w.username}')">
+            <td>
+              <strong>${w.name}</strong>
+            </td>
+            <td><code style="background-color: #F1F5F9; padding: 2px 6px; border-radius: 6px; font-size:12px;">${w.username}</code></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openWorkerDetailsModal(username) {
+      const worker = allWorkers.find(w => w.username === username);
+      if (!worker) return;
+
+      document.getElementById('detail-avatar').textContent = worker.name.charAt(0).toUpperCase();
+      document.getElementById('detail-name').textContent = worker.name;
+      document.getElementById('detail-username-sub').textContent = `@${worker.username}`;
+      document.getElementById('detail-username').innerHTML = `<code style="background-color: #F1F5F9; padding: 2px 6px; border-radius: 6px; font-size:13px;">${worker.username}</code>`;
+      document.getElementById('detail-phone').textContent = worker.phoneNumber || 'N/A';
+
+      const roleBadge = worker.role === 'admin'
+        ? `<span class="badge badge-admin">ADMIN</span>`
+        : `<span class="badge badge-worker">WORKER</span>`;
+      document.getElementById('detail-role').innerHTML = roleBadge;
+
+      const date = new Date(worker.createdAt);
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('detail-joined').textContent = dateStr;
+
+      document.getElementById('detail-logged').textContent = worker.count || 0;
+
+      const isActive = worker.count > 0;
+      const statusBadge = isActive
+        ? `<span class="badge badge-worker" style="background-color: #D1FAE5; color: #065F46;">ACTIVE</span>`
+        : `<span class="badge" style="background-color: #F3F4F6; color: var(--text-light);">INACTIVE</span>`;
+      document.getElementById('detail-status').innerHTML = statusBadge;
+
+      document.getElementById('worker-detail-overlay').classList.add('active');
+    }
+
+    async function deleteOutlet(id) {
+      if (!confirm('Are you absolutely sure you want to delete this restaurant record? This action is permanent.')) {
+        return;
+      }
+
+      const loader = document.getElementById('loading-overlay');
+      loader.style.display = 'flex';
+
+      try {
+        const result = await api.delete(`/restaurants/${id}`);
+        if (result) {
+          alert('Outlet deleted successfully.');
+          // Reload the entire dashboard stats
+          await loadAdminDashboard();
+        }
+      } catch (err) {
+        console.error('Delete Outlet Error:', err);
+        alert(err.message || 'Failed to delete outlet.');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    function setupLeafletMap() {
+      // Reinitialize Map container to prevent Leaflet loading bugs
+      const mapContainer = document.getElementById('admin-leaflet-map');
+      if (!mapContainer) return;
+
+      if (!map) {
+        // Initialize Map focusing on Mumbai coordinates as center
+        map = L.map('admin-leaflet-map', {
+          zoomControl: true
+        }).setView([19.0760, 72.8777], 11);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+      }
+
+      // Clear existing markers
+      markersLayer.clearLayers();
+
+      if (allRestaurants.length === 0) return;
+
+      const greenIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
+      const bounds = [];
+
+      allRestaurants.forEach(item => {
+        if (!item.latitude || !item.longitude) return;
+
+        const pos = [Number(item.latitude), Number(item.longitude)];
+        bounds.push(pos);
+
+        // Bind custom interactive popup details
+        const popupContent = `
+          <div style="width: 180px;">
+            <img src="${item.image || '/assets/images/default-restaurant.svg'}" class="map-popup-img" onerror="this.src='/assets/images/default-restaurant.svg'">
+            <div class="map-popup-title">${item.restaurantName}</div>
+            <div class="map-popup-desc">${item.fullAddress}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 6px; margin-top: 4px;">
+              <span style="font-size: 9px; color: var(--primary-dark); font-weight:700;">by ${item.addedBy ? item.addedBy.name : 'Unknown'}</span>
+              <a href="/restaurant-detail?id=${item._id}" style="font-size:10px; font-weight:700; color: var(--primary); text-decoration:none; display: inline-flex; align-items:center; gap:2px;">
+                Details 
+                <span style="font-size:12px;">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        `;
+
+        L.marker(pos, { icon: greenIcon })
+          .addTo(markersLayer)
+          .bindPopup(popupContent);
+      });
+
+      // Fit map view bounds around plotted markers automatically
+      if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [40, 40] });
+      }
+
+      // Recalculate leaflet container sizing issues
+      map.invalidateSize();
+    }
+  </script>
+
+  <!-- Worker Registration Modal Overlay -->
+  <div class="modal-overlay" id="worker-modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="close-worker-modal-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <h3 class="form-title">Register User</h3>
+      <p class="form-subtitle">Create a new field agent or administrator credential.</p>
+
+      <form id="create-worker-form" style="margin-top: 16px;">
+        <div class="form-group">
+          <label for="worker-name">Full Name</label>
+          <input type="text" id="worker-name" class="form-control" placeholder="e.g. John Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="worker-username">Username</label>
+          <input type="text" id="worker-username" class="form-control" placeholder="e.g. johndoe" required>
+        </div>
+        <div class="form-group">
+          <label for="worker-phone">Phone Number</label>
+          <input type="tel" id="worker-phone" class="form-control" placeholder="e.g. +91 98765 43210" required>
+        </div>
+        <div class="form-group">
+          <label for="worker-role">System Role</label>
+          <select id="worker-role" class="form-control" required>
+            <option value="worker" selected>Field Worker</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="worker-password">Password</label>
+          <input type="password" id="worker-password" class="form-control" placeholder="Min. 6 characters" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 12px; width: 100%;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="width: 18px; height: 18px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Register User
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Worker Details Modal Overlay -->
+  <div class="modal-overlay" id="worker-detail-overlay">
+    <div class="modal-card worker-detail-card">
+      <button class="modal-close-btn" id="close-worker-detail-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="worker-detail-header">
+        <div class="worker-detail-avatar" id="detail-avatar">W</div>
+        <div class="worker-detail-title-area">
+          <h3 class="form-title" id="detail-name">Worker Details</h3>
+          <p class="form-subtitle" id="detail-username-sub">@username</p>
+        </div>
+      </div>
+
+      <div class="worker-detail-grid">
+        <div class="detail-item">
+          <span class="detail-label">Username</span>
+          <span class="detail-val" id="detail-username">johndoe</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Phone Number</span>
+          <span class="detail-val" id="detail-phone">+91 98765 43210</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">System Role</span>
+          <span class="detail-val" id="detail-role"><span class="badge badge-worker">Worker</span></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Joined Date</span>
+          <span class="detail-val" id="detail-joined">May 22, 2026</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Outlets Logged</span>
+          <span class="detail-val" id="detail-logged"
+            style="color: var(--primary-dark); font-weight: 700; font-size: 16px;">15</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Status</span>
+          <span class="detail-val" id="detail-status"><span class="badge">Active</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

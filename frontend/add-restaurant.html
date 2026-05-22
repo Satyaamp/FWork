@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Add Restaurant - FieldForce</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/add-restaurant.css">
+  <!-- Leaflet Maps CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+  <div class="app-container" style="padding-bottom: 0;">
+    <!-- Offline status banner -->
+    <div class="sync-banner" id="sync-banner"></div>
+
+    <!-- Wizard Header -->
+    <header class="app-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="/" style="color: var(--text-main); display: flex; align-items: center;" id="back-to-home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="width: 22px; height: 22px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </a>
+        <h1 style="font-size: 18px;">Add Restaurant</h1>
+      </div>
+      <span class="text-xs font-semibold" style="color: var(--primary);" id="step-indicator">Step 1 of 4</span>
+    </header>
+
+    <!-- Stepper Bubble Navigation Bar -->
+    <div class="stepper-header">
+      <div class="stepper-progress-line"></div>
+      <div class="stepper-progress-fill" id="progress-fill" style="width: 0%;"></div>
+      <div class="step-bubble active" data-step="1">1</div>
+      <div class="step-bubble" data-step="2">2</div>
+      <div class="step-bubble" data-step="3">3</div>
+      <div class="step-bubble" data-step="4">4</div>
+    </div>
+
+    <!-- STEP 1: CAMERA CAPTURE -->
+    <div class="step-container active" id="step-1-panel">
+      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 1: Capture Restaurant Photo</h3>
+
+      <!-- Camera Feed Box -->
+      <div class="camera-box" id="camera-viewport">
+        <video class="camera-feed" id="video-stream" autoplay playsinline muted></video>
+        <img class="camera-photo-preview" id="photo-preview" alt="Preview Image">
+
+        <!-- Controls overlay -->
+        <div class="camera-overlay-controls" id="camera-overlay-buttons">
+          <button type="button" class="camera-btn capture-shutter" id="shutter-btn" title="Capture Image">
+            <svg viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live-feed Control Toggles -->
+      <div id="camera-toggle-options" style="display: flex; gap: 10px; margin-bottom: 16px;">
+        <button type="button" class="btn btn-secondary text-sm" id="retake-btn" style="display: none;">Retake
+          Photo</button>
+        <button type="button" class="btn btn-secondary text-sm" id="toggle-camera-source" style="display: none;">Switch
+          Camera</button>
+      </div>
+
+      <!-- Native Fallback Capture (for HTTP or unsupported systems) -->
+      <div class="card camera-fallback-card" id="native-camera-fallback">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+        </svg>
+        <p class="text-sm font-semibold">Using Native Camera</p>
+        <p class="text-xs text-light" style="margin-top: 4px; margin-bottom: 12px;">Your browser camera feed is locked
+          or blocked. Use your device's native camera below.</p>
+        <label for="native-file-picker" class="file-input-label">
+          Take Photo
+          <input type="file" id="native-file-picker" accept="image/*" capture="environment" style="display: none;">
+        </label>
+      </div>
+    </div>
+
+    <!-- STEP 2: LOCATION TAGGING -->
+    <div class="step-container" id="step-2-panel">
+      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 2: Location Tagging</h3>
+
+      <div class="location-btn-wrapper">
+        <button type="button" class="btn btn-primary" id="locate-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25g3 3 0 0119.5 10.5z" />
+          </svg>
+          Tag Live GPS Location
+        </button>
+      </div>
+
+      <div class="location-map-wrapper" id="leaflet-map-element"></div>
+
+      <!-- Readonly Geolocation Fields -->
+      <div class="form-group">
+        <label>Full Address</label>
+        <textarea id="loc-address" class="form-control" rows="2" placeholder="Click 'Tag Location' to autofill"
+          readonly></textarea>
+      </div>
+
+      <div class="location-fields-grid">
+        <div class="form-group">
+          <label>Latitude</label>
+          <input type="text" id="loc-lat" class="form-control" placeholder="Autofilled" readonly>
+        </div>
+        <div class="form-group">
+          <label>Longitude</label>
+          <input type="text" id="loc-lon" class="form-control" placeholder="Autofilled" readonly>
+        </div>
+        <div class="form-group">
+          <label>Area</label>
+          <input type="text" id="loc-area" class="form-control" placeholder="Autofilled" readonly>
+        </div>
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" id="loc-city" class="form-control" placeholder="Autofilled" readonly>
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" id="loc-state" class="form-control" placeholder="Autofilled" readonly>
+        </div>
+        <div class="form-group">
+          <label>Pincode</label>
+          <input type="text" id="loc-pin" class="form-control" placeholder="Autofilled" readonly>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: OPTIONAL FIELDS -->
+    <div class="step-container" id="step-3-panel">
+      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 3: Optional Details</h3>
+
+      <div class="form-group">
+        <label for="resto-name">Restaurant Name (Optional)</label>
+        <input type="text" id="resto-name" class="form-control" placeholder="e.g. Hotel Green Palace">
+      </div>
+
+      <div class="form-group">
+        <label for="resto-owner">Owner Name (Optional)</label>
+        <input type="text" id="resto-owner" class="form-control" placeholder="e.g. Rajesh Kumar">
+      </div>
+
+      <div class="form-group">
+        <label for="resto-phone">Phone Number (Optional)</label>
+        <input type="tel" id="resto-phone" class="form-control" placeholder="e.g. +91 9876543210">
+      </div>
+
+      <div class="form-group">
+        <label for="resto-notes">Field Notes (Optional)</label>
+        <textarea id="resto-notes" class="form-control" rows="3"
+          placeholder="Add observations, working hours, special items..."></textarea>
+      </div>
+    </div>
+
+    <!-- STEP 4: REVIEW & SAVE -->
+    <div class="step-container" id="step-4-panel">
+      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 4: Review & Save</h3>
+
+      <div class="review-summary-card">
+        <img class="review-img-header" id="review-image" alt="Captured Restaurant">
+
+        <div class="review-details">
+          <div class="review-row">
+            <span class="review-label">Name</span>
+            <span class="review-value" id="rev-name">Hotel Palace (Draft)</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Owner</span>
+            <span class="review-value" id="rev-owner">Rajesh Kumar</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Phone</span>
+            <span class="review-value" id="rev-phone">+91 9876543210</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Address</span>
+            <span class="review-value" id="rev-address">123, MG Road, Mumbai</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">GPS Coords</span>
+            <span class="review-value" id="rev-coords">19.0760, 72.8777</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Notes</span>
+            <span class="review-value" id="rev-notes">No special notes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Controls -->
+    <footer class="wizard-footer">
+      <button type="button" class="btn btn-secondary" id="prev-btn" style="visibility: hidden;">Back</button>
+      <button type="button" class="btn btn-primary" id="next-btn">Next</button>
+    </footer>
+  </div>
+
+  <!-- Loading spinners -->
+  <div class="loader-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Leaflet Maps Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/location.js"></script>
+  <script src="/js/db-offline.js"></script>
+
+  <script>
+    // State management
+    let currentStep = 1;
+    const totalSteps = 4;
+    let cameraStream = null;
+    let selectedCamera = 'environment'; // prioritize back camera
+    let capturedBlob = null;
+    let capturedBlobType = 'image/png';
+    let leafletMap = null;
+    let mapMarker = null;
+
+    // Field Variables
+    let locationData = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initStep(1);
+      initCamera();
+
+      // Next / Save button triggers
+      document.getElementById('next-btn').addEventListener('click', handleNext);
+      document.getElementById('prev-btn').addEventListener('click', handlePrev);
+      document.getElementById('locate-btn').addEventListener('click', handleLocate);
+      document.getElementById('shutter-btn').addEventListener('click', capturePhoto);
+      document.getElementById('retake-btn').addEventListener('click', retakePhoto);
+      document.getElementById('toggle-camera-source').addEventListener('click', switchCamera);
+
+      // Native File input change
+      document.getElementById('native-file-picker').addEventListener('change', handleFilePicker);
+    });
+
+    // Step routing
+    function initStep(step) {
+      currentStep = step;
+
+      // Hide all panels, display active
+      document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+      document.getElementById(`step-${step}-panel`).classList.add('active');
+
+      // Update progress bubbles
+      document.querySelectorAll('.step-bubble').forEach(bubble => {
+        const bStep = parseInt(bubble.getAttribute('data-step'));
+        bubble.classList.remove('active', 'completed');
+        if (bStep === step) bubble.classList.add('active');
+        else if (bStep < step) bubble.classList.add('completed');
+      });
+
+      // Update fill bar
+      const fillPercentage = ((step - 1) / (totalSteps - 1)) * 100;
+      document.getElementById('progress-fill').style.width = `${fillPercentage}%`;
+
+      // Update indicator text
+      document.getElementById('step-indicator').textContent = `Step ${step} of ${totalSteps}`;
+
+      // Footer Navigation buttons
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      if (step === 1) {
+        prevBtn.style.visibility = 'hidden';
+      } else {
+        prevBtn.style.visibility = 'visible';
+      }
+
+      if (step === totalSteps) {
+        nextBtn.textContent = 'Save Restaurant';
+      } else {
+        nextBtn.textContent = 'Next';
+      }
+
+      // Cleanup camera streams if moving past step 1
+      if (step !== 1) {
+        stopCamera();
+      } else {
+        // restart camera if returning to step 1 and no image is captured
+        if (!capturedBlob) {
+          initCamera();
+        }
+      }
+
+      // Step-specific trigger loaders
+      if (step === 4) {
+        populateReviewData();
+      }
+    }
+
+    // Step button routers
+    function handleNext() {
+      if (currentStep === 1) {
+        if (!capturedBlob) {
+          alert('Please capture or upload a restaurant photo first.');
+          return;
+        }
+        initStep(2);
+      } else if (currentStep === 2) {
+        if (!locationData) {
+          alert('Please tag your current GPS location first.');
+          return;
+        }
+        initStep(3);
+      } else if (currentStep === 3) {
+        initStep(4);
+      } else if (currentStep === 4) {
+        saveRestaurantEntry();
+      }
+    }
+
+    function handlePrev() {
+      if (currentStep > 1) {
+        initStep(currentStep - 1);
+      }
+    }
+
+    // Capture & Camera methods
+    async function initCamera() {
+      const video = document.getElementById('video-stream');
+      const preview = document.getElementById('photo-preview');
+      const nativeBox = document.getElementById('native-camera-fallback');
+      const sourceToggle = document.getElementById('toggle-camera-source');
+
+      video.style.display = 'block';
+      preview.style.display = 'none';
+
+      // Attempt to access webcamera stream
+      try {
+        if (cameraStream) stopCamera();
+
+        const constraints = {
+          video: { facingMode: selectedCamera },
+          audio: false
+        };
+
+        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = cameraStream;
+        nativeBox.style.display = 'none';
+
+        // Show switch camera option if devices list has > 1 camera
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        if (videoDevices.length > 1) {
+          sourceToggle.style.display = 'inline-flex';
+        }
+      } catch (err) {
+        console.warn('Webcamera inline access blocked or unavailable:', err.message);
+        // Display native picker fallback
+        video.style.display = 'none';
+        document.getElementById('camera-overlay-buttons').style.display = 'none';
+        nativeBox.style.display = 'block';
+        sourceToggle.style.display = 'none';
+      }
+    }
+
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+    }
+
+    function switchCamera() {
+      selectedCamera = selectedCamera === 'user' ? 'environment' : 'user';
+      initCamera();
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById('video-stream');
+      const preview = document.getElementById('photo-preview');
+      const canvas = document.createElement('canvas');
+
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        capturedBlob = blob;
+        capturedBlobType = blob.type;
+
+        preview.src = URL.createObjectURL(blob);
+        video.style.display = 'none';
+        preview.style.display = 'block';
+
+        // Show control options
+        document.getElementById('camera-overlay-buttons').style.display = 'none';
+        document.getElementById('retake-btn').style.display = 'inline-flex';
+        document.getElementById('toggle-camera-source').style.display = 'none';
+      }, 'image/jpeg', 0.85);
+
+      stopCamera();
+    }
+
+    function retakePhoto() {
+      capturedBlob = null;
+      document.getElementById('retake-btn').style.display = 'none';
+      document.getElementById('camera-overlay-buttons').style.display = 'flex';
+      initCamera();
+    }
+
+    function handleFilePicker(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      capturedBlob = file;
+      capturedBlobType = file.type;
+
+      const preview = document.getElementById('photo-preview');
+      const video = document.getElementById('video-stream');
+
+      preview.src = URL.createObjectURL(file);
+      video.style.display = 'none';
+      preview.style.display = 'block';
+
+      document.getElementById('retake-btn').style.display = 'inline-flex';
+      document.getElementById('retake-btn').onclick = () => {
+        capturedBlob = null;
+        e.target.value = '';
+        preview.style.display = 'none';
+        document.getElementById('retake-btn').style.display = 'none';
+      };
+    }
+
+    // Geolocation handlers
+    async function handleLocate() {
+      const loader = document.getElementById('loading-overlay');
+      loader.style.display = 'flex';
+
+      try {
+        const coords = await locationService.getCurrentCoords();
+        const addressDetails = await locationService.reverseGeocode(coords.latitude, coords.longitude);
+
+        locationData = addressDetails;
+
+        // Auto fill fields
+        document.getElementById('loc-lat').value = addressDetails.latitude;
+        document.getElementById('loc-lon').value = addressDetails.longitude;
+        document.getElementById('loc-address').value = addressDetails.fullAddress;
+        document.getElementById('loc-area').value = addressDetails.area;
+        document.getElementById('loc-city').value = addressDetails.city;
+        document.getElementById('loc-state').value = addressDetails.state;
+        document.getElementById('loc-pin').value = addressDetails.pincode;
+
+        // Setup Leaflet map
+        const mapDiv = document.getElementById('leaflet-map-element');
+        mapDiv.style.display = 'block';
+
+        if (leafletMap) {
+          leafletMap.remove();
+        }
+
+        leafletMap = L.map('leaflet-map-element', {
+          zoomControl: false,
+          dragging: !L.Browser.mobile
+        }).setView([addressDetails.latitude, addressDetails.longitude], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19
+        }).addTo(leafletMap);
+
+        // Custom green pin icon
+        const greenIcon = L.icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
+        mapMarker = L.marker([addressDetails.latitude, addressDetails.longitude], { icon: greenIcon }).addTo(leafletMap);
+
+        // Force map resize check
+        setTimeout(() => {
+          leafletMap.invalidateSize();
+        }, 100);
+
+      } catch (error) {
+        alert(error.message || 'Failed to tag GPS location. Please make sure GPS is enabled.');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    // Step 4 data reviewer
+    function populateReviewData() {
+      // Photo
+      const reviewImg = document.getElementById('review-image');
+      if (capturedBlob) {
+        reviewImg.src = URL.createObjectURL(capturedBlob);
+      }
+
+      // Metadata
+      const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Restaurant';
+      const ownerVal = document.getElementById('resto-owner').value.trim() || 'N/A';
+      const phoneVal = document.getElementById('resto-phone').value.trim() || 'N/A';
+      const notesVal = document.getElementById('resto-notes').value.trim() || 'N/A';
+
+      document.getElementById('rev-name').textContent = nameVal;
+      document.getElementById('rev-owner').textContent = ownerVal;
+      document.getElementById('rev-phone').textContent = phoneVal;
+      document.getElementById('rev-notes').textContent = notesVal;
+
+      if (locationData) {
+        document.getElementById('rev-address').textContent = locationData.fullAddress;
+        document.getElementById('rev-coords').textContent = `${Number(locationData.latitude).toFixed(6)}, ${Number(locationData.longitude).toFixed(6)}`;
+      }
+    }
+
+    // Form final database writer
+    async function saveRestaurantEntry() {
+      const loader = document.getElementById('loading-overlay');
+      loader.style.display = 'flex';
+
+      const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Restaurant';
+      const ownerVal = document.getElementById('resto-owner').value.trim();
+      const phoneVal = document.getElementById('resto-phone').value.trim();
+      const notesVal = document.getElementById('resto-notes').value.trim();
+
+      // Check online/offline state
+      if (!navigator.onLine) {
+        // Save to IndexedDB offline queue
+        try {
+          const offlineData = {
+            restaurantName: nameVal,
+            ownerName: ownerVal,
+            phoneNumber: phoneVal,
+            notes: notesVal,
+            latitude: locationData.latitude,
+            longitude: locationData.longitude,
+            fullAddress: locationData.fullAddress,
+            area: locationData.area,
+            city: locationData.city,
+            state: locationData.state,
+            country: locationData.country,
+            pincode: locationData.pincode,
+            imageBlob: capturedBlob,
+            imageType: capturedBlobType,
+            createdAtUTC: new Date().toISOString()
+          };
+
+          await offlineDb.saveRestaurant(offlineData);
+          loader.style.display = 'none';
+          alert('📱 App is offline. Restaurant saved locally in device and will auto-sync when online.');
+          window.location.href = '/';
+        } catch (err) {
+          loader.style.display = 'none';
+          console.error('Offline DB Save Error:', err);
+          alert('Failed to save draft locally. IndexedDB error.');
+        }
+        return;
+      }
+
+      // Online saving
+      try {
+        const formData = new FormData();
+        formData.append('restaurantName', nameVal);
+        formData.append('ownerName', ownerVal);
+        formData.append('phoneNumber', phoneVal);
+        formData.append('notes', notesVal);
+        formData.append('latitude', locationData.latitude);
+        formData.append('longitude', locationData.longitude);
+        formData.append('fullAddress', locationData.fullAddress);
+        formData.append('area', locationData.area);
+        formData.append('city', locationData.city);
+        formData.append('state', locationData.state);
+        formData.append('country', locationData.country);
+        formData.append('pincode', locationData.pincode);
+
+        // Convert blob to standard upload file
+        const file = new File([capturedBlob], 'captured_image.png', { type: capturedBlobType });
+        formData.append('image', file);
+
+        const response = await api.post('/restaurants', formData);
+        if (response) {
+          loader.style.display = 'none';
+          alert('✅ Restaurant entry saved successfully!');
+          window.location.href = '/';
+        }
+      } catch (error) {
+        loader.style.display = 'none';
+        console.error('Online Save Error:', error);
+        alert(error.message || 'Failed to save restaurant details on server.');
+      }
+    }
+  </script>
+</body>
+
+</html>

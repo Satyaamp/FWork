@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Restaurant Detail - FieldForce</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+  <div class="app-container detail-page-container" style="padding-bottom: 0;">
+    <!-- Sync Banner for offline status check -->
+    <div class="sync-banner" id="sync-banner"></div>
+
+    <!-- Image Header with back button overlay -->
+    <div class="detail-image-container">
+      <button class="detail-back-btn" onclick="history.back()" title="Go Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
+      <img src="/assets/images/default-restaurant.svg" alt="Restaurant Image" class="detail-image" id="detail-img">
+    </div>
+
+    <!-- Content Panel -->
+    <div class="detail-content">
+      <!-- Title & Address Header Card -->
+      <div class="detail-header">
+        <div class="detail-title-container">
+          <h2 class="detail-title" id="detail-name">-</h2>
+          <a id="detail-google-maps-link" href="#" target="_blank" title="View on Google Maps" class="google-maps-link">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a7.25 7.25 0 00-14.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
+                clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+        <div class="detail-address">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25z" />
+          </svg>
+          <span id="detail-address-text">-</span>
+        </div>
+      </div>
+
+      <!-- Desktop Widescreen Layout Wrapper -->
+      <div class="detail-desktop-grid">
+        <!-- Left Column: Details -->
+        <div class="detail-desktop-left">
+          <!-- Information Attributes Grid -->
+          <h4 class="detail-section-title">Ownership & Operations</h4>
+          <div class="detail-grid">
+            <div class="detail-info-card">
+              <div class="detail-info-label">Owner Name</div>
+              <div class="detail-info-value" id="detail-owner">-</div>
+            </div>
+            <div class="detail-info-card">
+              <div class="detail-info-label">Phone Number</div>
+              <div class="detail-info-value" id="detail-phone">-</div>
+            </div>
+          </div>
+
+          <!-- Address details grid -->
+          <h4 class="detail-section-title">Geographic Details</h4>
+          <div class="detail-grid">
+            <div class="detail-info-card">
+              <div class="detail-info-label">Area</div>
+              <div class="detail-info-value" id="detail-area">-</div>
+            </div>
+            <div class="detail-info-card">
+              <div class="detail-info-label">City</div>
+              <div class="detail-info-value" id="detail-city">-</div>
+            </div>
+            <div class="detail-info-card">
+              <div class="detail-info-label">Pincode</div>
+              <div class="detail-info-value" id="detail-pin">-</div>
+            </div>
+            <div class="detail-info-card">
+              <div class="detail-info-label">Coordinates</div>
+              <div class="detail-info-value" id="detail-coords" style="font-size: 11px;">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Map & Notes -->
+        <div class="detail-desktop-right">
+          <!-- Location Map Preview -->
+          <h4 class="detail-section-title">GPS Location Preview</h4>
+          <div class="detail-map-preview" id="detail-map"></div>
+
+          <!-- Field notes -->
+          <h4 class="detail-section-title">Worker Notes</h4>
+          <div class="notes-card" id="detail-notes">-</div>
+        </div>
+      </div>
+
+      <!-- Metadata footer cards -->
+      <div class="detail-footer-card"
+        style="margin-top: 24px; padding: 12px; background-color: white; border-radius: 12px; border: 1px solid var(--border-color); font-size: 12px; color: var(--text-light); text-align: center;">
+        <strong id="detail-added-by" style="color: var(--text-muted);">-</strong> on <span
+          id="detail-added-date">-</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinners overlay -->
+  <div class="loader-overlay" id="loading-overlay" style="display: flex;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Leaflet Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/db-offline.js"></script>
+
+  <script>
+    let map = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRestaurantDetail();
+    });
+
+    async function loadRestaurantDetail() {
+      const loader = document.getElementById('loading-overlay');
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      if (!id) {
+        alert('Invalid Restaurant ID specified.');
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const item = await api.get(`/restaurants/detail/${id}`);
+        if (!item) return;
+
+        // Photo header update
+        const detailImg = document.getElementById('detail-img');
+        detailImg.onerror = function () {
+          this.src = '/assets/images/default-restaurant.svg';
+        };
+        detailImg.src = item.image || '/assets/images/default-restaurant.svg';
+
+        // Text bindings
+        document.getElementById('detail-name').textContent = item.restaurantName;
+        document.getElementById('detail-google-maps-link').href = `https://www.google.com/maps?q=${item.latitude},${item.longitude}`;
+        document.getElementById('detail-address-text').textContent = item.fullAddress;
+        document.getElementById('detail-owner').textContent = item.ownerName || 'N/A';
+        document.getElementById('detail-phone').textContent = item.phoneNumber || 'N/A';
+        document.getElementById('detail-area').textContent = item.area || 'N/A';
+        document.getElementById('detail-city').textContent = item.city || 'N/A';
+        document.getElementById('detail-pin').textContent = item.pincode || 'N/A';
+        document.getElementById('detail-coords').textContent = `${Number(item.latitude).toFixed(6)}, ${Number(item.longitude).toFixed(6)}`;
+        document.getElementById('detail-notes').textContent = item.notes || 'No notes added for this location.';
+
+        // Metadata footer
+        document.getElementById('detail-added-by').textContent = item.addedBy ? item.addedBy.name : 'Unknown';
+
+        const date = new Date(item.createdAtUTC || item.createdAtIST);
+        document.getElementById('detail-added-date').textContent = date.toLocaleString([], {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        // Initialize Leaflet Map
+        setTimeout(() => {
+          map = L.map('detail-map', {
+            zoomControl: false,
+            dragging: !L.Browser.mobile
+          }).setView([item.latitude, item.longitude], 16);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+          }).addTo(map);
+
+          const greenIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          });
+
+          L.marker([item.latitude, item.longitude], { icon: greenIcon })
+            .addTo(map)
+            .bindPopup(`<strong>${item.restaurantName}</strong>`)
+            .openPopup();
+
+          map.invalidateSize();
+        }, 200);
+
+      } catch (error) {
+        console.error('Restaurant Detail Fetch Error:', error);
+        alert('Failed to load restaurant details from server.');
+        window.location.href = '/';
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>
