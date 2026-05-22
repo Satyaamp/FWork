@@ -1,21 +1,22 @@
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const User = require('./models/User');
 const Restaurant = require('./models/Restaurant');
-const dotenv = require('dotenv');
 
+// Load environment variables from .env file
 dotenv.config();
 
 const users = [
   {
     name: 'Vijay Kumar',
-    username: 'worker',
-    password: 'worker123',
+    username: process.env.WORKER_USERNAME || 'worker',
+    password: process.env.WORKER_PASSWORD || 'worker123',
     role: 'worker'
   },
   {
     name: 'Sonia Sharma',
-    username: 'admin',
-    password: 'admin123',
+    username: process.env.ADMIN_USERNAME || 'admin',
+    password: process.env.ADMIN_PASSWORD || 'admin123',
     role: 'admin'
   }
 ];
@@ -72,12 +73,16 @@ const restaurants = [
 ];
 
 const seed = async () => {
+const seedAdmin = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/restaurant-pwa', {
+    // Connect to your live MongoDB Atlas Database
+    await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
     console.log('Connected to MongoDB database cluster for seeding.');
+    console.log('Connected to MongoDB Atlas...');
 
     await User.deleteMany({});
     await Restaurant.deleteMany({});
@@ -89,9 +94,27 @@ const seed = async () => {
       const saved = await newUser.save();
       seededUsers.push(saved);
       console.log(`User seeded: username="${saved.username}", role="${saved.role}"`);
+    // Check if an admin user already exists
+    const existingAdmin = await User.findOne({ username: process.env.ADMIN_USERNAME || 'admin' });
+    if (existingAdmin) {
+      console.log('Admin user already exists! You can log in.');
+      process.exit(0);
+    }
+
+    if (!process.env.ADMIN_PASSWORD) {
+      console.error('Error: ADMIN_PASSWORD environment variable is missing in .env');
+      process.exit(1);
     }
 
     const workerId = seededUsers.find(u => u.role === 'worker')._id;
+    // Create the new real admin user
+    const newAdmin = new User({
+      name: 'System Admin',
+      username: process.env.ADMIN_USERNAME || 'admin',
+      password: process.env.ADMIN_PASSWORD,
+      role: 'admin',
+      phoneNumber: '1234567890'
+    });
 
     for (const r of restaurants) {
       r.addedBy = workerId;
@@ -101,11 +124,15 @@ const seed = async () => {
     }
 
     console.log('Database seeding successfully finished.');
+    await newAdmin.save(); // This automatically triggers bcrypt to hash the password
+    console.log('Successfully created real admin user!');
     process.exit(0);
   } catch (error) {
     console.error('Seeding process failed:', error);
+    console.error('Error seeding admin user:', error);
     process.exit(1);
   }
 };
 
 seed();
+seedAdmin();
