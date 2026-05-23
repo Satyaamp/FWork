@@ -23,7 +23,8 @@ const users = [
 
 const restaurants = [
   {
-    restaurantName: 'The Taj Mahal Palace (Souk)',
+    mslCode: 'MUMB1001',
+    mslname: 'The Taj Mahal Palace (Souk)',
     ownerName: 'Taj Group',
     phoneNumber: '+91 22 6665 3366',
     image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80',
@@ -39,7 +40,8 @@ const restaurants = [
     createdAtUTC: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000)
   },
   {
-    restaurantName: 'Leopold Cafe',
+    mslCode: 'MUMB1002',
+    mslname: 'Leopold Cafe',
     ownerName: 'Farhang Jehani',
     phoneNumber: '+91 22 2282 8185',
     image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80',
@@ -55,7 +57,8 @@ const restaurants = [
     createdAtUTC: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
   },
   {
-    restaurantName: 'Britannia & Co. Restaurant',
+    mslCode: 'MUMB1003',
+    mslname: 'Britannia & Co. Restaurant',
     ownerName: 'Boman Kohinoor',
     phoneNumber: '+91 22 2261 5264',
     image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80',
@@ -102,7 +105,7 @@ const seed = async () => {
       };
       const newResto = new Restaurant(r);
       await newResto.save();
-      console.log(`Restaurant seeded: "${newResto.restaurantName}"`);
+      console.log(`Restaurant seeded: "${newResto.mslname}"`);
     }
 
     console.log('Database seeding successfully finished.');

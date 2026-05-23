@@ -4,11 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Add Restaurant - FieldForce</title>
+  <title>Add MSL Entry - FieldForce</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/add-restaurant.css">
   <!-- Leaflet Maps CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    @keyframes bounceField {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    .error-bounce {
+      animation: bounceField 0.4s ease;
+    }
+  </style>
 </head>
 
 <body>
@@ -25,7 +37,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </a>
-        <h1 style="font-size: 18px;">Add Restaurant</h1>
+        <h1 style="font-size: 18px;">Add MSL</h1>
       </div>
       <span class="text-xs font-semibold" style="color: var(--primary);" id="step-indicator">Step 1 of 4</span>
     </header>
@@ -42,7 +54,7 @@
 
     <!-- STEP 1: CAMERA CAPTURE -->
     <div class="step-container active" id="step-1-panel">
-      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 1: Capture Restaurant Photo</h3>
+      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 1: Capture Location Photo</h3>
 
       <!-- Camera Feed Box -->
       <div class="camera-box" id="camera-viewport">
@@ -109,8 +121,7 @@
       <!-- Readonly Geolocation Fields -->
       <div class="form-group">
         <label>Full Address</label>
-        <textarea id="loc-address" class="form-control" rows="2" placeholder="Click 'Tag Location' to autofill"
-          readonly></textarea>
+        <textarea id="loc-address" class="form-control" rows="2" placeholder="Click 'Tag Location' to autofill" readonly></textarea>
       </div>
 
       <div class="location-fields-grid">
@@ -128,7 +139,7 @@
         </div>
         <div class="form-group">
           <label>City</label>
-          <input type="text" id="loc-city" class="form-control" placeholder="Autofilled" readonly>
+          <input type="text" id="loc-city" class="form-control"  placeholder="Autofilled" readonly>
         </div>
         <div class="form-group">
           <label>State</label>
@@ -141,23 +152,28 @@
       </div>
     </div>
 
-    <!-- STEP 3: OPTIONAL FIELDS -->
+    <!-- STEP 3: Additional FIELDS -->
     <div class="step-container" id="step-3-panel">
-      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 3: Optional Details</h3>
+      <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 3: Additional Details</h3>
 
       <div class="form-group">
-        <label for="resto-name">Restaurant Name (Optional)</label>
-        <input type="text" id="resto-name" class="form-control" placeholder="e.g. Hotel Green Palace">
+        <label for="msl-code">MSLNO</label>
+        <input type="text" id="msl-code" class="form-control" readonly style="font-family: monospace; font-weight: 700; color: var(--primary-dark); background-color: var(--primary-light); border-color: var(--primary);">
       </div>
 
       <div class="form-group">
-        <label for="resto-owner">Owner Name (Optional)</label>
+        <label for="resto-name">MSLName</label>
+        <input type="text" id="resto-name" class="form-control" placeholder="e.g. City Hospital, Green Cafe">
+      </div>
+
+      <div class="form-group">
+        <label for="resto-owner">Owner Name</label>
         <input type="text" id="resto-owner" class="form-control" placeholder="e.g. Rajesh Kumar">
       </div>
 
       <div class="form-group">
         <label for="resto-phone">Phone Number (Optional)</label>
-        <input type="tel" id="resto-phone" class="form-control" placeholder="e.g. +91 9876543210">
+        <input type="tel" id="resto-phone" class="form-control" placeholder="e.g. 9876543210" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
       </div>
 
       <div class="form-group">
@@ -172,9 +188,13 @@
       <h3 class="font-semibold" style="font-size: 16px; margin-bottom: 12px;">Step 4: Review & Save</h3>
 
       <div class="review-summary-card">
-        <img class="review-img-header" id="review-image" alt="Captured Restaurant">
+        <img class="review-img-header" id="review-image" alt="Captured Location">
 
         <div class="review-details">
+          <div class="review-row">
+            <span class="review-label">MSL Code</span>
+            <span class="review-value" id="rev-mslcode" style="font-family: monospace; color: var(--primary-dark);">MUMB1234</span>
+          </div>
           <div class="review-row">
             <span class="review-label">Name</span>
             <span class="review-value" id="rev-name">Hotel Palace (Draft)</span>
@@ -233,6 +253,14 @@
     let capturedBlobType = 'image/png';
     let leafletMap = null;
     let mapMarker = null;
+
+    // Unique Code Generator Algorithm (4-Char City Prefix + 4 Digits)
+    function generateMSLCode(cityStr) {
+      let prefix = cityStr && cityStr.trim().length > 0 ? cityStr.trim().substring(0, 4).toUpperCase() : 'UUUU';
+      prefix = prefix.padEnd(4, 'U');
+      const random4Digits = Math.floor(1000 + Math.random() * 9000);
+      return `${prefix}${random4Digits}`;
+    }
 
     // Field Variables
     let locationData = null;
@@ -295,7 +323,7 @@
       }
 
       if (step === totalSteps) {
-        nextBtn.textContent = 'Save Restaurant';
+        nextBtn.textContent = 'Save MSL Entry';
       } else {
         nextBtn.textContent = 'Next';
       }
@@ -320,7 +348,7 @@
     function handleNext() {
       if (currentStep === 1) {
         if (!capturedBlob) {
-          alert('Please capture or upload a restaurant photo first.');
+          alert('Please capture or upload a location photo first.');
           return;
         }
         initStep(2);
@@ -329,8 +357,95 @@
           alert('Please tag your current GPS location first.');
           return;
         }
+
+        const locFields = ['loc-address', 'loc-area', 'loc-city', 'loc-state', 'loc-pin'];
+        let hasError = false;
+
+        locFields.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) {
+            hasError = true;
+            el.classList.remove('error-bounce');
+            void el.offsetWidth; // Trigger a browser reflow to restart the animation
+            el.classList.add('error-bounce');
+            
+            el.style.borderColor = 'var(--error)';
+            el.style.borderWidth = '2px';
+          }
+        });
+
+        const phoneEl = document.getElementById('resto-phone');
+        if (phoneEl.value.trim().length > 0 && phoneEl.value.trim().length < 10) {
+          hasError = true;
+          phoneEl.classList.remove('error-bounce');
+          void phoneEl.offsetWidth;
+          phoneEl.classList.add('error-bounce');
+          
+          phoneEl.style.borderColor = 'var(--error)';
+          phoneEl.style.borderWidth = '2px';
+          
+          phoneEl.addEventListener('input', function() {
+            if (this.value.trim().length === 10 || this.value.trim().length === 0) {
+              this.style.borderColor = '';
+              this.style.borderWidth = '';
+            } else {
+              this.style.borderColor = 'var(--error)';
+              this.style.borderWidth = '2px';
+            }
+          });
+        }
+
+        if (hasError) {
+          const firstError = document.querySelector('.error-bounce');
+          if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        // Generate MSL Code based on City Name before advancing to Step 3
+        const cityVal = document.getElementById('loc-city').value.trim();
+        const mslInput = document.getElementById('msl-code');
+        let expectedPrefix = cityVal ? cityVal.trim().substring(0, 4).toUpperCase() : 'UUUU';
+        expectedPrefix = expectedPrefix.padEnd(4, 'U');
+        
+        // Generate only if empty or if the city prefix changed
+        if (!mslInput.value || !mslInput.value.startsWith(expectedPrefix)) {
+          mslInput.value = generateMSLCode(cityVal);
+        }
+
         initStep(3);
       } else if (currentStep === 3) {
+        const step3Fields = ['resto-name', 'resto-owner'];
+        let hasError = false;
+
+        step3Fields.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) {
+            hasError = true;
+            el.classList.remove('error-bounce');
+            void el.offsetWidth; // Trigger a browser reflow to restart the animation
+            el.classList.add('error-bounce');
+            
+            el.style.borderColor = 'var(--error)';
+            el.style.borderWidth = '2px';
+            
+            el.addEventListener('input', function() {
+              if (this.value.trim() !== '') {
+                this.style.borderColor = '';
+                this.style.borderWidth = '';
+              } else {
+                this.style.borderColor = 'var(--error)';
+                this.style.borderWidth = '2px';
+              }
+            });
+          }
+        });
+
+        if (hasError) {
+          const firstError = document.querySelector('.error-bounce');
+          if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
         initStep(4);
       } else if (currentStep === 4) {
         saveRestaurantEntry();
@@ -466,11 +581,37 @@
         // Auto fill fields
         document.getElementById('loc-lat').value = addressDetails.latitude;
         document.getElementById('loc-lon').value = addressDetails.longitude;
-        document.getElementById('loc-address').value = addressDetails.fullAddress;
-        document.getElementById('loc-area').value = addressDetails.area;
-        document.getElementById('loc-city').value = addressDetails.city;
-        document.getElementById('loc-state').value = addressDetails.state;
-        document.getElementById('loc-pin').value = addressDetails.pincode;
+        
+        const smartFill = (id, value) => {
+          const el = document.getElementById(id);
+          el.value = value || '';
+          if (value) {
+            el.setAttribute('readonly', 'readonly');
+            el.style.borderColor = '';
+            el.style.borderWidth = '';
+          } else {
+            el.removeAttribute('readonly');
+            el.placeholder = 'Not found, please enter manually';
+            el.style.borderColor = 'var(--error)';
+            el.style.borderWidth = '2px';
+            
+            el.addEventListener('input', function() {
+              if (this.value.trim() !== '') {
+                this.style.borderColor = '';
+                this.style.borderWidth = '';
+              } else {
+                this.style.borderColor = 'var(--error)';
+                this.style.borderWidth = '2px';
+              }
+            });
+          }
+        };
+
+        smartFill('loc-address', addressDetails.fullAddress);
+        smartFill('loc-area', addressDetails.area);
+        smartFill('loc-city', addressDetails.city);
+        smartFill('loc-state', addressDetails.state);
+        smartFill('loc-pin', addressDetails.pincode);
 
         // Setup Leaflet map
         const mapDiv = document.getElementById('leaflet-map-element');
@@ -522,18 +663,20 @@
       }
 
       // Metadata
-      const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Restaurant';
+      const mslCodeVal = document.getElementById('msl-code').value;
+      const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Entry';
       const ownerVal = document.getElementById('resto-owner').value.trim() || 'N/A';
       const phoneVal = document.getElementById('resto-phone').value.trim() || 'N/A';
       const notesVal = document.getElementById('resto-notes').value.trim() || 'N/A';
 
+      document.getElementById('rev-mslcode').textContent = mslCodeVal;
       document.getElementById('rev-name').textContent = nameVal;
       document.getElementById('rev-owner').textContent = ownerVal;
       document.getElementById('rev-phone').textContent = phoneVal;
       document.getElementById('rev-notes').textContent = notesVal;
 
       if (locationData) {
-        document.getElementById('rev-address').textContent = locationData.fullAddress;
+        document.getElementById('rev-address').textContent = document.getElementById('loc-address').value.trim();
         document.getElementById('rev-coords').textContent = `${Number(locationData.latitude).toFixed(6)}, ${Number(locationData.longitude).toFixed(6)}`;
       }
     }
@@ -543,28 +686,37 @@
       const loader = document.getElementById('loading-overlay');
       loader.style.display = 'flex';
 
-      const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Restaurant';
+      const mslCodeVal = document.getElementById('msl-code').value;
+      const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Entry';
       const ownerVal = document.getElementById('resto-owner').value.trim();
       const phoneVal = document.getElementById('resto-phone').value.trim();
       const notesVal = document.getElementById('resto-notes').value.trim();
+
+      // Capture any manual user edits to the location fields
+      const finalAddress = document.getElementById('loc-address').value.trim();
+      const finalArea = document.getElementById('loc-area').value.trim();
+      const finalCity = document.getElementById('loc-city').value.trim();
+      const finalState = document.getElementById('loc-state').value.trim();
+      const finalPin = document.getElementById('loc-pin').value.trim();
 
       // Check online/offline state
       if (!navigator.onLine) {
         // Save to IndexedDB offline queue
         try {
           const offlineData = {
-            restaurantName: nameVal,
+            mslCode: mslCodeVal,
+            mslname: nameVal,
             ownerName: ownerVal,
             phoneNumber: phoneVal,
             notes: notesVal,
             latitude: locationData.latitude,
             longitude: locationData.longitude,
-            fullAddress: locationData.fullAddress,
-            area: locationData.area,
-            city: locationData.city,
-            state: locationData.state,
+            fullAddress: finalAddress,
+            area: finalArea,
+            city: finalCity,
+            state: finalState,
             country: locationData.country,
-            pincode: locationData.pincode,
+            pincode: finalPin,
             imageBlob: capturedBlob,
             imageType: capturedBlobType,
             createdAtUTC: new Date().toISOString()
@@ -572,7 +724,7 @@
 
           await offlineDb.saveRestaurant(offlineData);
           loader.style.display = 'none';
-          alert('📱 App is offline. Restaurant saved locally in device and will auto-sync when online.');
+          alert('📱 App is offline. MSL entry saved locally in device and will auto-sync when online.');
           const user = api.getUser();
           window.location.href = (user && user.role === 'admin') ? '/admin' : '/';
         } catch (err) {
@@ -586,18 +738,19 @@
       // Online saving
       try {
         const formData = new FormData();
-        formData.append('restaurantName', nameVal);
+        formData.append('mslCode', mslCodeVal);
+        formData.append('mslname', nameVal);
         formData.append('ownerName', ownerVal);
         formData.append('phoneNumber', phoneVal);
         formData.append('notes', notesVal);
         formData.append('latitude', locationData.latitude);
         formData.append('longitude', locationData.longitude);
-        formData.append('fullAddress', locationData.fullAddress);
-        formData.append('area', locationData.area);
-        formData.append('city', locationData.city);
-        formData.append('state', locationData.state);
+        formData.append('fullAddress', finalAddress);
+        formData.append('area', finalArea);
+        formData.append('city', finalCity);
+        formData.append('state', finalState);
         formData.append('country', locationData.country);
-        formData.append('pincode', locationData.pincode);
+        formData.append('pincode', finalPin);
 
         // Convert blob to standard upload file
         const file = new File([capturedBlob], 'captured_image.png', { type: capturedBlobType });
@@ -606,14 +759,14 @@
         const response = await api.post('/restaurants', formData);
         if (response) {
           loader.style.display = 'none';
-          alert('✅ Restaurant entry saved successfully!');
+          alert('✅ MSL entry saved successfully!');
           const user = api.getUser();
           window.location.href = (user && user.role === 'admin') ? '/admin' : '/';
         }
       } catch (error) {
         loader.style.display = 'none';
         console.error('Online Save Error:', error);
-        alert(error.message || 'Failed to save restaurant details on server.');
+        alert(error.message || 'Failed to save MSL details on server.');
       }
     }
   </script>

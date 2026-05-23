@@ -9,7 +9,8 @@ const { upload, isCloudinary } = require('../config/cloudinary');
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
     const {
-      restaurantName,
+      mslCode,
+      mslname,
       ownerName,
       phoneNumber,
       latitude,
@@ -23,8 +24,8 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       notes
     } = req.body;
 
-    if (!restaurantName || !latitude || !longitude || !fullAddress) {
-      return res.status(400).json({ message: 'Restaurant name, latitude, longitude, and full address are required.' });
+    if (!mslCode || !mslname || !latitude || !longitude || !fullAddress) {
+      return res.status(400).json({ message: 'MSL Code, name, latitude, longitude, and full address are required.' });
     }
 
     if (!req.file) {
@@ -35,8 +36,23 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
 
     const userObj = await User.findById(req.user._id);
 
+    // Offline-safe Collision Prevention Logic
+    let finalMslCode = mslCode;
+    let isUnique = false;
+    while (!isUnique) {
+      const existing = await Restaurant.findOne({ mslCode: finalMslCode });
+      if (existing) {
+        const prefix = finalMslCode.substring(0, 4).padEnd(4, 'U');
+        const random4Digits = Math.floor(1000 + Math.random() * 9000);
+        finalMslCode = `${prefix}${random4Digits}`;
+      } else {
+        isUnique = true;
+      }
+    }
+
     const newRestaurant = new Restaurant({
-      restaurantName,
+      mslCode: finalMslCode,
+      mslname,
       ownerName,
       phoneNumber,
       image,
@@ -59,8 +75,8 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
 
     res.status(201).json(savedRestaurant);
   } catch (error) {
-    console.error('Add Restaurant Error:', error);
-    res.status(500).json({ message: 'Failed to add restaurant. Server error.' });
+    console.error('Add MSL Error:', error);
+    res.status(500).json({ message: 'Failed to add MSL. Server error.' });
   }
 });
 
@@ -73,7 +89,8 @@ router.get('/', auth, async (req, res) => {
     if (search) {
       const searchRegex = new RegExp(search, 'i');
       query.$or = [
-        { restaurantName: searchRegex },
+        { mslCode: searchRegex },
+        { mslname: searchRegex },
         { fullAddress: searchRegex },
         { city: searchRegex },
         { pincode: searchRegex },

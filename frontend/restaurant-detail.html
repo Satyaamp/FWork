@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Restaurant Detail - FieldForce</title>
+  <title>MSL Entry Detail - FieldForce</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/dashboard.css">
   <!-- Leaflet Map CSS -->
@@ -23,7 +23,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
       </button>
-      <img src="/assets/images/default-restaurant.svg" alt="Restaurant Image" class="detail-image" id="detail-img">
+      <img src="/assets/images/default-restaurant.svg" alt="MSL Image" class="detail-image" id="detail-img">
     </div>
 
     <!-- Content Panel -->
@@ -39,6 +39,15 @@
                 clip-rule="evenodd" />
             </svg>
           </a>
+          <div style="display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 4px;">
+            <div style="font-family: monospace; font-weight: 700; color: var(--primary-dark); font-size: 14px;" id="detail-mslcode" class="copyable-text" title="Select to copy"></div>
+            <button id="copy-msl-btn" style="background: none; border: none; cursor: pointer; color: var(--primary); display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px;" title="Copy MSL Code">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="detail-address">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -135,7 +144,7 @@
       const id = params.get('id');
 
       if (!id) {
-        alert('Invalid Restaurant ID specified.');
+        alert('Invalid ID specified.');
         window.location.href = '/';
         return;
       }
@@ -152,7 +161,21 @@
         detailImg.src = item.image || '/assets/images/default-restaurant.svg';
 
         // Text bindings
-        document.getElementById('detail-name').textContent = item.restaurantName;
+        document.getElementById('detail-name').textContent = item.mslname;
+        document.getElementById('detail-mslcode').textContent = item.mslCode || 'N/A';
+        
+        const copyBtn = document.getElementById('copy-msl-btn');
+        if (copyBtn && item.mslCode) {
+          copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(item.mslCode).then(() => {
+              const originalHTML = copyBtn.innerHTML;
+              copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>`;
+              setTimeout(() => {
+                copyBtn.innerHTML = originalHTML;
+              }, 2000);
+            });
+          });
+        }
         document.getElementById('detail-google-maps-link').href = `https://www.google.com/maps?q=${item.latitude},${item.longitude}`;
         document.getElementById('detail-address-text').textContent = item.fullAddress;
         document.getElementById('detail-owner').textContent = item.ownerName || 'N/A';
@@ -164,7 +187,7 @@
         document.getElementById('detail-notes').textContent = item.notes || 'No notes added for this location.';
 
         // Metadata footer
-        document.getElementById('detail-added-by').textContent = item.addedBy ? item.addedBy.name : 'Unknown';
+        document.getElementById('detail-added-by').textContent = item.addedBy ? item.addedBy.username : 'Unknown';
 
         const date = new Date(item.createdAtUTC || item.createdAtIST);
         document.getElementById('detail-added-date').textContent = date.toLocaleString([], {
@@ -198,15 +221,15 @@
 
           L.marker([item.latitude, item.longitude], { icon: greenIcon })
             .addTo(map)
-            .bindPopup(`<strong>${item.restaurantName}</strong>`)
+            .bindPopup(`<strong>${item.mslname}</strong><br><small>${item.mslCode}</small>`)
             .openPopup();
 
           map.invalidateSize();
         }, 200);
 
       } catch (error) {
-        console.error('Restaurant Detail Fetch Error:', error);
-        alert('Failed to load restaurant details from server.');
+        console.error('MSL Detail Fetch Error:', error);
+        alert('Failed to load MSL details from server.');
         window.location.href = '/';
       } finally {
         loader.style.display = 'none';

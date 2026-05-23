@@ -344,6 +344,12 @@ body {
   color: #EF4444;
 }
 
+/* Copyable text helper */
+.copyable-text {
+  user-select: all;
+  -webkit-user-select: all;
+}
+
 /* Worker Desktop Blocker */
 .desktop-blocker-overlay {
   position: fixed;
@@ -1389,4 +1395,3 @@ body {
     text-align: center;
   }
 }
-

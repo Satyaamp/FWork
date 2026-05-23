@@ -99,7 +99,8 @@ const offlineDb = {
     for (const item of offlineList) {
       try {
         const formData = new FormData();
-        formData.append('restaurantName', item.restaurantName);
+        formData.append('mslCode', item.mslCode || '');
+        formData.append('mslname', item.mslname);
         formData.append('ownerName', item.ownerName || '');
         formData.append('phoneNumber', item.phoneNumber || '');
         formData.append('latitude', item.latitude);
@@ -123,7 +124,7 @@ const offlineDb = {
           await this.deleteOfflineRestaurant(item.id);
         }
       } catch (err) {
-        console.error('Failed to sync item:', item.restaurantName, err);
+        console.error('Failed to sync item:', item.mslname, err);
         break;
       }
     }
