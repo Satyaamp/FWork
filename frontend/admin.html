@@ -162,6 +162,8 @@
           </svg>
           <span>Interactive Map</span>
         </button>
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 12px 0;"></div>
+      
       </nav>
 
       <button class="sidebar-logout-btn logout-action">
@@ -192,7 +194,10 @@
       <!-- Mobile Header -->
       <header class="app-header admin-mobile-header">
         <h1>FieldForce Admin</h1>
-        <button class="badge badge-admin logout-action" style="border: none; cursor: pointer;">Logout</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="badge" onclick="window.location.href='/add-restaurant'" style="border: none; cursor: pointer; background-color: var(--primary); color: white;">+ Add</button>
+          <button class="badge badge-admin logout-action" style="border: none; cursor: pointer;">Logout</button>
+        </div>
       </header>
 
       <!-- Content Area -->

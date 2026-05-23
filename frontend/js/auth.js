@@ -27,6 +27,12 @@ const auth = {
       return false;
     }
 
+    // Prevent Admin from accidentally seeing the worker dashboard
+    if ((path === '/' || path === '/index.html') && user.role === 'admin') {
+      window.location.href = '/admin';
+      return false;
+    }
+
     return true;
   },
 

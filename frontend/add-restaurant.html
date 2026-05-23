@@ -238,6 +238,14 @@
     let locationData = null;
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Dynamic Admin Routing
+      const user = api.getUser();
+      if (user && user.role === 'admin') {
+        document.getElementById('back-to-home').href = '/admin';
+        const bottomNav = document.querySelector('.bottom-nav');
+        if (bottomNav) bottomNav.style.display = 'none';
+      }
+
       initStep(1);
       initCamera();
 
@@ -565,7 +573,8 @@
           await offlineDb.saveRestaurant(offlineData);
           loader.style.display = 'none';
           alert('📱 App is offline. Restaurant saved locally in device and will auto-sync when online.');
-          window.location.href = '/';
+          const user = api.getUser();
+          window.location.href = (user && user.role === 'admin') ? '/admin' : '/';
         } catch (err) {
           loader.style.display = 'none';
           console.error('Offline DB Save Error:', err);
@@ -598,7 +607,8 @@
         if (response) {
           loader.style.display = 'none';
           alert('✅ Restaurant entry saved successfully!');
-          window.location.href = '/';
+          const user = api.getUser();
+          window.location.href = (user && user.role === 'admin') ? '/admin' : '/';
         }
       } catch (error) {
         loader.style.display = 'none';
