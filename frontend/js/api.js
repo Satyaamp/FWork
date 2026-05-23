@@ -49,9 +49,20 @@ const api = {
         return null;
       }
 
-      const data = await response.json();
+      // Safely parse JSON to prevent "Unexpected end of JSON input" crashes
+      const text = await response.text();
+      let data = {};
+      
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.warn('API returned non-JSON response. This usually indicates a server crash or 502 Bad Gateway.');
+        }
+      }
+
       if (!response.ok) {
-        throw new Error(data.message || 'API request failed');
+        throw new Error(data.message || `Server Error (${response.status})`);
       }
       return data;
     } catch (error) {
