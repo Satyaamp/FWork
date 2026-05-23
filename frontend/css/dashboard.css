@@ -704,4 +704,313 @@
     width: 100%;
     gap: 12px;
   }
+}
+
+/* Admin Stats Grid - Responsive 2x2 on Mobile */
+.admin-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 0 !important;
+}
+
+.admin-stats-grid .stat-card {
+  padding: 20px !important;
+}
+
+@media (max-width: 768px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .admin-stats-grid .stat-card {
+    padding: 14px 10px !important;
+  }
+}
+
+/* Outlets Toolbar Layout */
+.outlets-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background-color: #F9FAFB;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.toolbar-search-wrapper {
+  position: relative;
+  flex-grow: 1;
+  min-width: 280px;
+}
+
+.toolbar-search-wrapper .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  stroke: var(--text-light);
+  fill: none;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.toolbar-select {
+  width: 160px;
+}
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  background-color: white;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.toolbar-btn:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background-color: var(--primary-light) !important;
+}
+
+@media (max-width: 900px) {
+  .outlets-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .toolbar-search-wrapper {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .toolbar-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .toolbar-select {
+    width: 100%;
+  }
+
+  .toolbar-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px !important;
+  }
+}
+
+/* Delete Mode Checkbox & Switch Toggle Styling */
+.switch-toggle-wrapper {
+  transition: opacity var(--transition-fast);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #E5E7EB;
+  transition: .3s ease;
+  border-radius: 24px;
+  border: 1.5px solid var(--border-color);
+}
+
+.switch .slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 2.5px;
+  background-color: white;
+  transition: .3s ease;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.switch input:checked + .slider {
+  background-color: var(--primary);
+  border-color: var(--primary-dark);
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Custom Checkbox Design */
+.row-select-checkbox, #master-select-checkbox {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #D1D5DB;
+  border-radius: 6px;
+  background-color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.row-select-checkbox:checked, #master-select-checkbox:checked {
+  background-color: var(--primary);
+  border-color: var(--primary-dark);
+}
+
+.row-select-checkbox:checked::after, #master-select-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Selected row table background highlight */
+#outlets-table tr.selected-row td {
+  background-color: var(--primary-light) !important;
+}
+
+#outlets-table tr {
+  transition: background-color var(--transition-fast);
+}
+
+/* Checkbox alignment in first cell (desktop) */
+.table-img-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  width: 100%;
+}
+
+.table-img-checkbox-wrapper .row-select-checkbox {
+  display: none; /* Hidden by default */
+  flex-shrink: 0;
+}
+
+/* Toggle row checkboxes & master checkbox in delete mode */
+.delete-mode-active .table-img-checkbox-wrapper .row-select-checkbox {
+  display: inline-block;
+}
+
+.delete-mode-active #master-select-checkbox {
+  display: inline-block !important;
+}
+
+.delete-mode-active #image-header-th .header-text {
+  display: none;
+}
+
+/* Mobile adjustments: floating select overlay on top of cards */
+@media (max-width: 768px) {
+  /* Fix container height collapsing when delete mode is off */
+  #pane-outlets .table-img-checkbox-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Make card background soft green and border primary when selected */
+  .delete-mode-active #pane-outlets .admin-table tr.selected-row {
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.1);
+  }
+
+  .delete-mode-active .table-img-checkbox-wrapper .row-select-checkbox {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    width: 28px;
+    height: 28px;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .delete-mode-active .table-img-checkbox-wrapper .row-select-checkbox:checked::after {
+    left: 8px;
+    top: 3px;
+    width: 6px;
+    height: 12px;
+  }
+
+  /* Layout buttons stretch full width on mobile */
+  .outlets-toolbar > div:last-child {
+    width: 100%;
+  }
+  .outlets-toolbar .btn {
+    flex: 1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Outlets Mobile Directory Layout Refinements */
+  #pane-outlets .admin-table td:nth-child(4),
+  #pane-outlets .admin-table td:nth-child(6) {
+    display: none !important;
+  }
+
+  #pane-outlets .admin-table .desktop-only-badge {
+    display: none !important;
+  }
+
+  #pane-outlets .admin-table .mobile-only-username {
+    display: inline !important;
+  }
+
+  #pane-outlets .admin-table .mobile-only-datetime {
+    display: inline !important;
+  }
+
+  #pane-outlets .admin-table td:nth-child(3) {
+    display: block !important;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* Hide full address text on mobile */
+  #pane-outlets .admin-table td:nth-child(5) div:last-child {
+    display: none !important;
+  }
+}
   

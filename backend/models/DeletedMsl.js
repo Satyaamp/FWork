@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
-const RestaurantSchema = new mongoose.Schema({
+const DeletedMslSchema = new mongoose.Schema({
   mslCode: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   mslname: {
     type: String,
@@ -56,28 +55,29 @@ const RestaurantSchema = new mongoose.Schema({
   },
   activeFlag: {
     type: String,
-    default: 'A',
+    default: 'N',
     enum: ['A', 'N']
   },
   createdAtUTC: {
+    type: Date
+  },
+  createdAtIST: {
+    type: Date
+  },
+  deletedDateTime: {
     type: Date,
     default: Date.now
   },
-  createdAtIST: {
-    type: Date,
-    required: true
+  deletedBy: {
+    name: {
+      type: String,
+      required: true
+    },
+    username: {
+      type: String,
+      required: true
+    }
   }
 });
 
-// Middleware to set IST timestamp automatically
-RestaurantSchema.pre('validate', function(next) {
-  if (!this.createdAtIST) {
-    const utcDate = this.createdAtUTC || new Date();
-    // Add 5 hours 30 mins to get IST representation
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    this.createdAtIST = new Date(utcDate.getTime() + istOffset);
-  }
-  next();
-});
-
-module.exports = mongoose.model('Restaurant', RestaurantSchema);
+module.exports = mongoose.model('DeletedMsl', DeletedMslSchema, 'deletemsl');

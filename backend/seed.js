@@ -18,6 +18,12 @@ const users = [
     username: process.env.ADMIN_USERNAME || 'admin',
     password: process.env.ADMIN_PASSWORD || 'admin123',
     role: 'admin'
+  },
+  {
+    name: 'Super Admin',
+    username: process.env.SUPERADMIN_USERNAME || 'superadmin',
+    password: process.env.SUPERADMIN_PASSWORD || 'superadmin123',
+    role: 'superadmin'
   }
 ];
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Restaurant = require('../models/Restaurant');
+const DeletedMsl = require('../models/DeletedMsl');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const { upload, isCloudinary } = require('../config/cloudinary');
@@ -136,7 +137,7 @@ router.get('/', auth, async (req, res) => {
 router.get('/detail/:id', auth, async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
-    
+
     if (!restaurant) {
       return res.status(404).json({ message: 'Restaurant details not found' });
     }
@@ -145,7 +146,7 @@ router.get('/detail/:id', auth, async (req, res) => {
     if (req.user.role === 'worker' && restaurant.addedBy && restaurant.addedBy.username !== userObj.username) {
       return res.status(403).json({ message: 'Access denied. You can only view your own outlets.' });
     }
-    
+
     res.json(restaurant);
   } catch (error) {
     console.error('Fetch Restaurant Detail Error:', error);
@@ -163,9 +164,9 @@ router.get('/stats/worker', auth, async (req, res) => {
 
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
-    const addedToday = await Restaurant.countDocuments({ 
-      'addedBy.username': username, 
-      createdAtUTC: { $gte: todayStart } 
+    const addedToday = await Restaurant.countDocuments({
+      'addedBy.username': username,
+      createdAtUTC: { $gte: todayStart }
     });
 
     const weekStart = new Date();
@@ -175,9 +176,9 @@ router.get('/stats/worker', auth, async (req, res) => {
     weekStart.setDate(diff);
     weekStart.setHours(0, 0, 0, 0);
 
-    const addedThisWeek = await Restaurant.countDocuments({ 
-      'addedBy.username': username, 
-      createdAtUTC: { $gte: weekStart } 
+    const addedThisWeek = await Restaurant.countDocuments({
+      'addedBy.username': username,
+      createdAtUTC: { $gte: weekStart }
     });
 
     // Recent 5 entries added by this worker
@@ -200,7 +201,7 @@ router.get('/stats/worker', auth, async (req, res) => {
 // Get admin global dashboard statistics
 router.get('/stats/admin', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ message: 'Admin access required.' });
     }
 
@@ -229,15 +230,15 @@ router.get('/stats/admin', auth, async (req, res) => {
     // Monthly Analytics (Past 6 calendar months including current)
     const monthlyAnalytics = [];
     const now = new Date();
-    
+
     for (let i = 5; i >= 0; i--) {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59, 999);
-      
+
       const count = await Restaurant.countDocuments({
         createdAtUTC: { $gte: monthStart, $lte: monthEnd }
       });
-      
+
       const monthName = monthStart.toLocaleString('default', { month: 'short' });
       monthlyAnalytics.push({
         month: `${monthName} ${monthStart.getFullYear()}`,
@@ -275,21 +276,301 @@ router.get('/stats/admin', auth, async (req, res) => {
   }
 });
 
-// Delete a restaurant (admin authentication required)
+// Export outlets to CSV (Admin only)
+router.get('/export', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+      return res.status(403).json({ message: 'Access denied. Administrator privileges required.' });
+    }
+
+    const { search, state, city } = req.query;
+    let query = {};
+
+    // Match Search Query
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { mslCode: searchRegex },
+        { mslname: searchRegex },
+        { fullAddress: searchRegex },
+        { city: searchRegex },
+        { pincode: searchRegex },
+        { ownerName: searchRegex }
+      ];
+    }
+
+    // Match Filters
+    if (state && state !== 'all') {
+      query.state = state;
+    }
+    if (city && city !== 'all') {
+      query.city = city;
+    }
+
+    const outlets = await Restaurant.find(query).sort({ createdAtUTC: -1 });
+
+    // CSV Headers
+    const headers = [
+      'MSL Code',
+      'Name',
+      'Owner Name',
+      'Phone Number',
+      'Image URL',
+      'Map Link',
+      'Address',
+      'Area',
+      'City',
+      'State',
+      'Pincode',
+      'Country',
+      'Notes',
+      'Added By (Name)',
+      'Added By (Username)',
+      'Date',
+      'Time'
+    ];
+
+    const escapeCSVValue = (val) => {
+      if (val === null || val === undefined) return '""';
+      let str = String(val);
+      str = str.replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    let csvContent = headers.join(',') + '\r\n';
+
+    outlets.forEach(item => {
+      let dateStr = '';
+      let timeStr = '';
+      if (item.createdAtIST) {
+        const dateObj = new Date(item.createdAtIST);
+        const year = dateObj.getUTCFullYear();
+        const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getUTCDate()).padStart(2, '0');
+        dateStr = `${year}-${month}-${day}`;
+
+        const hours = String(dateObj.getUTCHours()).padStart(2, '0');
+        const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
+        timeStr = `${hours}:${minutes}:${seconds}`;
+      }
+
+      const mapLink = `https://www.google.com/maps?q=${item.latitude},${item.longitude}`;
+
+      const row = [
+        item.mslCode,
+        item.mslname,
+        item.ownerName,
+        item.phoneNumber,
+        item.image,
+        mapLink,
+        item.fullAddress,
+        item.area,
+        item.city,
+        item.state,
+        item.pincode,
+        item.country,
+        item.notes,
+        item.addedBy ? item.addedBy.name : '',
+        item.addedBy ? item.addedBy.username : '',
+        dateStr,
+        timeStr
+      ];
+      csvContent += row.map(escapeCSVValue).join(',') + '\r\n';
+    });
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=outlets_export_${Date.now()}.csv`);
+    res.status(200).send(csvContent);
+  } catch (error) {
+    console.error('Export CSV Error:', error);
+    res.status(500).json({ message: 'Failed to export CSV. Server error.' });
+  }
+});
+
+// Update specific restaurant fields (superadmin only)
+router.put('/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'superadmin') {
+      return res.status(403).json({ message: 'Superadmin access required to edit entries.' });
+    }
+    const { mslname, ownerName, phoneNumber } = req.body;
+
+    if (!mslname || !mslname.trim()) {
+      return res.status(400).json({ message: 'Shop name is required.' });
+    }
+
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant) {
+      return res.status(404).json({ message: 'Restaurant not found.' });
+    }
+
+    restaurant.mslname = mslname.trim();
+    restaurant.ownerName = ownerName ? ownerName.trim() : '';
+    restaurant.phoneNumber = phoneNumber ? phoneNumber.trim() : '';
+
+    const updatedRestaurant = await restaurant.save();
+    res.json(updatedRestaurant);
+  } catch (error) {
+    console.error('Update Restaurant Error:', error);
+    res.status(500).json({ message: 'Failed to update restaurant.' });
+  }
+});
+
+// Bulk delete restaurants (superadmin authentication required)
+router.post('/bulk-delete', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'superadmin') {
+      return res.status(403).json({ message: 'Superadmin access required to delete entries.' });
+    }
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'No IDs provided for deletion.' });
+    }
+
+    const adminUser = await User.findById(req.user._id);
+    const restaurants = await Restaurant.find({ _id: { $in: ids } });
+
+    if (restaurants.length === 0) {
+      return res.status(404).json({ message: 'No matching records found to delete.' });
+    }
+
+    // Archive to DeletedMsl
+    const deletedDocs = restaurants.map(restaurant => ({
+      mslCode: restaurant.mslCode,
+      mslname: restaurant.mslname,
+      ownerName: restaurant.ownerName,
+      phoneNumber: restaurant.phoneNumber,
+      image: restaurant.image,
+      latitude: restaurant.latitude,
+      longitude: restaurant.longitude,
+      fullAddress: restaurant.fullAddress,
+      area: restaurant.area,
+      city: restaurant.city,
+      state: restaurant.state,
+      country: restaurant.country,
+      pincode: restaurant.pincode,
+      notes: restaurant.notes,
+      addedBy: restaurant.addedBy,
+      createdAtUTC: restaurant.createdAtUTC,
+      createdAtIST: restaurant.createdAtIST,
+      activeFlag: 'N',
+      deletedDateTime: new Date(),
+      deletedBy: {
+        name: adminUser.name,
+        username: adminUser.username
+      }
+    }));
+
+    await DeletedMsl.insertMany(deletedDocs);
+    await Restaurant.deleteMany({ _id: { $in: ids } });
+
+    res.json({ message: `${restaurants.length} outlets successfully deleted and archived.` });
+  } catch (error) {
+    console.error('Bulk Delete Error:', error);
+    res.status(500).json({ message: 'Failed to delete restaurants.' });
+  }
+});
+
+// Delete a restaurant (superadmin authentication required)
 router.delete('/:id', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Admin access required to delete entries.' });
+    if (req.user.role !== 'superadmin') {
+      return res.status(403).json({ message: 'Superadmin access required to delete entries.' });
     }
     const restaurant = await Restaurant.findById(req.params.id);
     if (!restaurant) {
       return res.status(404).json({ message: 'Restaurant not found.' });
     }
+
+    const adminUser = await User.findById(req.user._id);
+
+    // Archive to DeletedMsl
+    const deletedMsl = new DeletedMsl({
+      mslCode: restaurant.mslCode,
+      mslname: restaurant.mslname,
+      ownerName: restaurant.ownerName,
+      phoneNumber: restaurant.phoneNumber,
+      image: restaurant.image,
+      latitude: restaurant.latitude,
+      longitude: restaurant.longitude,
+      fullAddress: restaurant.fullAddress,
+      area: restaurant.area,
+      city: restaurant.city,
+      state: restaurant.state,
+      country: restaurant.country,
+      pincode: restaurant.pincode,
+      notes: restaurant.notes,
+      addedBy: restaurant.addedBy,
+      createdAtUTC: restaurant.createdAtUTC,
+      createdAtIST: restaurant.createdAtIST,
+      activeFlag: 'N',
+      deletedDateTime: new Date(),
+      deletedBy: {
+        name: adminUser.name,
+        username: adminUser.username
+      }
+    });
+
+    await deletedMsl.save();
     await Restaurant.findByIdAndDelete(req.params.id);
     res.json({ message: 'Restaurant successfully deleted.' });
   } catch (error) {
     console.error('Delete Restaurant Error:', error);
     res.status(500).json({ message: 'Failed to delete restaurant.' });
+  }
+});
+
+// Restore a deleted restaurant (superadmin authentication required)
+router.post('/restore/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'superadmin') {
+      return res.status(403).json({ message: 'Superadmin access required to restore entries.' });
+    }
+    
+    // 1. Find archived MSL record
+    const archivedMsl = await DeletedMsl.findById(req.params.id);
+    if (!archivedMsl) {
+      return res.status(404).json({ message: 'Archived record not found.' });
+    }
+
+    // 2. Prevent duplicate MSL Code collision in active list
+    const existingActive = await Restaurant.findOne({ mslCode: archivedMsl.mslCode });
+    if (existingActive) {
+      return res.status(400).json({ message: 'An active restaurant with the same MSL Code already exists.' });
+    }
+
+    // 3. Re-instantiate in Restaurant collection with active flag 'A'
+    const restoredRestaurant = new Restaurant({
+      mslCode: archivedMsl.mslCode,
+      mslname: archivedMsl.mslname,
+      ownerName: archivedMsl.ownerName,
+      phoneNumber: archivedMsl.phoneNumber,
+      image: archivedMsl.image,
+      latitude: archivedMsl.latitude,
+      longitude: archivedMsl.longitude,
+      fullAddress: archivedMsl.fullAddress,
+      area: archivedMsl.area,
+      city: archivedMsl.city,
+      state: archivedMsl.state,
+      country: archivedMsl.country,
+      pincode: archivedMsl.pincode,
+      notes: archivedMsl.notes,
+      addedBy: archivedMsl.addedBy,
+      createdAtUTC: archivedMsl.createdAtUTC,
+      createdAtIST: archivedMsl.createdAtIST,
+      activeFlag: 'A'
+    });
+
+    await restoredRestaurant.save();
+
+    // 4. Delete from archived collection
+    await DeletedMsl.findByIdAndDelete(req.params.id);
+
+    res.json({ message: 'Restaurant successfully restored.', restaurant: restoredRestaurant });
+  } catch (error) {
+    console.error('Restore Restaurant Error:', error);
+    res.status(500).json({ message: 'Failed to restore restaurant.' });
   }
 });
 

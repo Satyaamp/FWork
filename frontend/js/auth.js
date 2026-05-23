@@ -14,7 +14,7 @@ const auth = {
     }
 
     if (isLoginPage) {
-      if (user.role === 'admin') {
+      if (user.role === 'admin' || user.role === 'superadmin') {
         window.location.href = '/admin';
       } else {
         window.location.href = '/';
@@ -22,13 +22,13 @@ const auth = {
       return true;
     }
 
-    if (path.includes('/admin') && user.role !== 'admin') {
+    if (path.includes('/admin') && user.role !== 'admin' && user.role !== 'superadmin') {
       window.location.href = '/';
       return false;
     }
 
-    // Prevent Admin from accidentally seeing the worker dashboard
-    if ((path === '/' || path === '/index.html') && user.role === 'admin') {
+    // Prevent Admin/Superadmin from accidentally seeing the worker dashboard
+    if ((path === '/' || path === '/index.html') && (user.role === 'admin' || user.role === 'superadmin')) {
       window.location.href = '/admin';
       return false;
     }
@@ -65,6 +65,24 @@ const auth = {
         el.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
       });
 
+      // Update role badges style classes and text content
+      const updateRoleBadge = (role) => {
+        const adminRoleBadge = document.querySelector('.user-role.badge');
+        if (adminRoleBadge) {
+          if (role === 'superadmin') {
+            adminRoleBadge.className = 'user-role badge badge-superadmin';
+            adminRoleBadge.textContent = 'Super Admin';
+          } else if (role === 'admin') {
+            adminRoleBadge.className = 'user-role badge badge-admin';
+            adminRoleBadge.textContent = 'Administrator';
+          } else {
+            adminRoleBadge.className = 'user-role badge badge-worker';
+            adminRoleBadge.textContent = 'Field Executive';
+          }
+        }
+      };
+      updateRoleBadge(user.role);
+
       // Background sync of user profile details from the server to keep localStorage fresh
       api.get('/auth/me').then(freshUser => {
         if (freshUser) {
@@ -76,6 +94,7 @@ const auth = {
           workerRoleEls.forEach(el => {
             el.textContent = freshUser.role.charAt(0).toUpperCase() + freshUser.role.slice(1);
           });
+          updateRoleBadge(freshUser.role);
 
           const phoneEl = document.getElementById('info-phone');
           if (phoneEl) {

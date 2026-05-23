@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const PasswordHistory = require('../models/PasswordHistory');
 const auth = require('../middleware/auth');
 
 // Register endpoint
@@ -102,7 +103,7 @@ router.get('/me', auth, async (req, res) => {
 // Register a new worker (Admin only)
 router.post('/create-worker', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ message: 'Access denied. Administrator privileges required.' });
     }
 
@@ -115,9 +116,12 @@ router.post('/create-worker', auth, async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
     }
 
-    const allowedRoles = ['worker', 'admin'];
+    const allowedRoles = req.user.role === 'superadmin' 
+      ? ['worker', 'admin', 'superadmin'] 
+      : ['worker'];
+      
     if (!allowedRoles.includes(role)) {
-      return res.status(400).json({ message: 'Invalid role specified.' });
+      return res.status(400).json({ message: 'Invalid role specified or insufficient privileges.' });
     }
 
     const normalizedUsername = username.trim().toLowerCase();
@@ -149,6 +153,54 @@ router.post('/create-worker', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Create Worker Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// Reset password for any user (Superadmin only)
+router.post('/reset-password', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'superadmin') {
+      return res.status(403).json({ message: 'Access denied. Superadmin privileges required.' });
+    }
+
+    const { username, newPassword } = req.body;
+    if (!username || !newPassword) {
+      return res.status(400).json({ message: 'Username and new password are required.' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+    }
+
+    const targetUser = await User.findOne({ username: username.toLowerCase().trim() });
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Set the new password - mongoose save hook will automatically hash it
+    targetUser.password = newPassword;
+    await targetUser.save();
+
+    // Log the password reset history and calculate auto-increment count
+    const currentCount = await PasswordHistory.countDocuments({ userId: targetUser._id });
+    const newHistory = new PasswordHistory({
+      userId: targetUser._id,
+      username: targetUser.username,
+      password: newPassword, // Store plain password
+      resetBy: {
+        id: req.user._id,
+        name: req.user.name,
+        username: req.user.username
+      },
+      resetCount: currentCount + 1,
+      modifiedOn: new Date()
+    });
+    await newHistory.save();
+
+    res.json({ message: `Password for user @${targetUser.username} has been reset successfully.` });
+  } catch (error) {
+    console.error('Reset Password Error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });

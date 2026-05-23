@@ -116,7 +116,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       if (api.getToken() && api.getUser()) {
         const u = api.getUser();
-        window.location.href = u.role === 'admin' ? '/admin' : '/';
+        window.location.href = (u.role === 'admin' || u.role === 'superadmin') ? '/admin' : '/';
       }
 
       const form = document.getElementById('login-form');
@@ -148,7 +148,7 @@
           if (res && res.token) {
             api.setToken(res.token);
             localStorage.setItem('user', JSON.stringify(res.user));
-            window.location.href = res.user.role === 'admin' ? '/admin' : '/';
+            window.location.href = (res.user.role === 'admin' || res.user.role === 'superadmin') ? '/admin' : '/';
           }
         } catch (error) {
           errBanner.textContent = error.message || 'Invalid username or password.';

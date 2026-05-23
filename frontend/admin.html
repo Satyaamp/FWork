@@ -186,7 +186,7 @@
           <span>Calendar</span>
         </button>
         <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 12px 0;"></div>
-      
+
       </nav>
 
       <button class="sidebar-logout-btn logout-action">
@@ -218,7 +218,8 @@
       <header class="app-header admin-mobile-header">
         <h1>FieldForce Admin</h1>
         <div style="display: flex; gap: 8px;">
-          <button class="badge" onclick="window.location.href='/add-restaurant'" style="border: none; cursor: pointer; background-color: var(--primary); color: white;">+ Add</button>
+          <button class="badge" onclick="window.location.href='/add-restaurant'"
+            style="border: none; cursor: pointer; background-color: var(--primary); color: white;">+ Add</button>
           <button class="badge badge-admin logout-action" style="border: none; cursor: pointer;">Logout</button>
         </div>
       </header>
@@ -230,21 +231,20 @@
         <div class="tab-pane active" id="pane-analytics">
           <!-- Global KPIs -->
           <section class="stats-section" style="margin-top: 0; margin-bottom: 24px;">
-            <div class="stats-grid"
-              style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 0;">
-              <div class="stat-card" style="padding: 20px;">
+            <div class="stats-grid admin-stats-grid">
+              <div class="stat-card">
                 <div class="stat-value" id="admin-total">-</div>
                 <div class="stat-label">Total Outlets</div>
               </div>
-              <div class="stat-card" style="padding: 20px;">
+              <div class="stat-card">
                 <div class="stat-value" id="admin-workers">-</div>
                 <div class="stat-label">Active Force</div>
               </div>
-              <div class="stat-card" style="padding: 20px; border-color: rgba(16, 185, 129, 0.3);">
+              <div class="stat-card" style="border-color: rgba(16, 185, 129, 0.3);">
                 <div class="stat-value" id="admin-today" style="color: var(--primary);">-</div>
                 <div class="stat-label">Logged Today</div>
               </div>
-              <div class="stat-card" style="padding: 20px;">
+              <div class="stat-card">
                 <div class="stat-value" id="admin-week">-</div>
                 <div class="stat-label">Logged This Week</div>
               </div>
@@ -277,27 +277,81 @@
         <!-- Tab 2: Outlets Directory -->
         <div class="tab-pane" id="pane-outlets">
           <div class="data-table-container">
-            <div class="table-header-bar outlets-header-bar">
-              <h3 style="font-weight: 700; color: var(--text-main); font-size: 16px; margin: 0; flex-shrink: 0;">Outlets Database</h3>
-              <div class="outlets-header-controls">
-                <div class="outlets-filters">
-                  <select id="filter-state" class="form-control" style="padding: 8px 12px; font-size: 13px;" title="Filter by State">
-                    <option value="all">All States</option>
-                  </select>
-                  <select id="filter-city" class="form-control" style="padding: 8px 12px; font-size: 13px;" title="Filter by City">
-                    <option value="all">All Cities</option>
-                  </select>
+            <div class="outlets-toolbar">
+              <!-- Delete mode toggle switch -->
+              <label class="switch-toggle-wrapper"
+                style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                <div class="switch">
+                  <input type="checkbox" id="toggle-delete-mode">
+                  <span class="slider"></span>
                 </div>
-                <input type="text" id="table-search" class="form-control table-search-input"
-                  placeholder="Search by MSL code, name, city, pin..." style="padding: 8px 16px; font-size: 14px;">
+                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); white-space: nowrap;">Delete
+                  MSL</span>
+              </label>
+
+              <!-- Search inputs toolbar -->
+              <div class="toolbar-search-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+                <input type="text" id="table-search" class="form-control"
+                  placeholder="Search by MSL code, name, city, pin..."
+                  style="padding-left: 42px; font-size: 14px; height: 42px;">
+              </div>
+
+              <!-- Filters dropdowns toolbar -->
+              <div class="toolbar-filters">
+                <select id="filter-state" class="form-control toolbar-select" style="height: 42px; font-size: 13px;"
+                  title="Filter by State">
+                  <option value="all">All States</option>
+                </select>
+                <select id="filter-city" class="form-control toolbar-select" style="height: 42px; font-size: 13px;"
+                  title="Filter by City">
+                  <option value="all">All Cities</option>
+                </select>
+              </div>
+
+              <!-- Action buttons -->
+              <div style="display: flex; gap: 10px;">
+                <!-- Bulk Delete button -->
+                <button class="btn btn-danger" id="bulk-delete-btn"
+                  style="height: 42px; font-size: 13px; font-weight: 600; width: auto; white-space: nowrap; background-color: var(--error); color: white; border: none; display: none; align-items: center; justify-content: center; gap: 4px;"
+                  title="Delete Selected Outlets">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    style="width: 16px; height: 16px;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  </svg>
+                  <span>Delete (<span id="selected-count">0</span>)</span>
+                </button>
+
+                <!-- Export button toolbar -->
+                <button class="btn btn-secondary toolbar-btn" id="export-csv-btn"
+                  style="height: 42px; font-size: 13px; font-weight: 600; width: auto; white-space: nowrap;"
+                  title="Export Filtered List to CSV">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    style="width: 16px; height: 16px;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                  </svg>
+                  <span>Export CSV</span>
+                </button>
               </div>
             </div>
 
             <div class="table-responsive-wrapper" style="overflow-x: auto;">
-              <table class="admin-table">
+              <table class="admin-table" id="outlets-table">
                 <thead>
                   <tr>
-                    <th>Image</th>
+                    <th id="image-header-th">
+                      <div class="table-header-checkbox-wrapper"
+                        style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <input type="checkbox" id="master-select-checkbox"
+                          style="display: none; width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary);">
+                        <span class="header-text">Image</span>
+                      </div>
+                    </th>
                     <th>Name</th>
                     <th>Worker</th>
                     <th>Pincode</th>
@@ -364,24 +418,27 @@
         </div>
 
         <!-- Tab 5: Calendar -->
-        <div class="tab-pane" id="pane-calendar">
+        <div class="tab-pane" id="pane-calendar"><br><br>
           <div class="data-table-container calendar-container">
-            <h3 class="calendar-title">Activity Calendar</h3>
+            <!-- <h3 class="calendar-title">Activity Calendar</h3> -->
             <div class="form-group" style="margin-bottom: 24px; max-width: 400px;">
               <select id="calendar-user-select" class="form-control">
                 <option value="all">All Members</option>
                 <!-- Populated via JS -->
               </select>
             </div>
-            
+
             <div class="card calendar-card">
               <!-- Calendar Header -->
               <div class="calendar-header">
-                <button id="prev-month-btn" class="btn btn-secondary" style="width: auto; padding: 8px 12px;">&larr; Prev</button>
-                <h4 id="calendar-month-year" style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main);">Month Year</h4>
-                <button id="next-month-btn" class="btn btn-secondary" style="width: auto; padding: 8px 12px;">Next &rarr;</button>
+                <button id="prev-month-btn" class="btn btn-secondary" style="width: auto; padding: 8px 12px;">&larr;
+                  Prev</button>
+                <h4 id="calendar-month-year"
+                  style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main);">Month Year</h4>
+                <button id="next-month-btn" class="btn btn-secondary" style="width: auto; padding: 8px 12px;">Next
+                  &rarr;</button>
               </div>
-              
+
               <!-- Calendar Grid -->
               <div class="calendar-grid-header">
                 <div>Sun</div>
@@ -392,7 +449,7 @@
                 <div>Fri</div>
                 <div>Sat</div>
               </div>
-              
+
               <div id="calendar-days" class="calendar-grid-body">
                 <!-- Days injected via JS -->
               </div>
@@ -471,7 +528,27 @@
     let outletsFilterState = 'all';
     let outletsFilterCity = 'all';
 
-    window.copyMSL = function(event, code, btn) {
+    // Delete and Edit Mode State
+    let deleteModeActive = false;
+    let selectedOutletIds = [];
+    let currentEditingOutletId = null;
+
+    window.openEditOutletModal = function (id) {
+      const item = allRestaurants.find(r => r._id === id);
+      if (!item) return;
+
+      currentEditingOutletId = id;
+
+      document.getElementById('edit-outlet-mslcode').value = item.mslCode || 'N/A';
+      document.getElementById('edit-outlet-name').value = item.mslname || '';
+      document.getElementById('edit-outlet-owner').value = item.ownerName || '';
+      document.getElementById('edit-outlet-phone').value = item.phoneNumber && item.phoneNumber !== 'N/A' ? item.phoneNumber : '';
+      document.getElementById('edit-outlet-location').value = `${item.city || 'N/A'} - ${item.pincode || 'N/A'}`;
+
+      document.getElementById('edit-outlet-overlay').classList.add('active');
+    };
+
+    window.copyMSL = function (event, code, btn) {
       if (event) event.preventDefault();
       navigator.clipboard.writeText(code).then(() => {
         const originalHTML = btn.innerHTML;
@@ -482,16 +559,59 @@
       });
     };
 
+    window.openResetPasswordModal = function (username) {
+      const targetUsernameInput = document.getElementById('reset-password-target-username');
+      const usernameText = document.getElementById('reset-password-username');
+      const resetInput = document.getElementById('reset-password-val');
+      const resetFormSection = document.getElementById('reset-password-form-section');
+      const resetSuccessSection = document.getElementById('reset-password-success-section');
+      
+      if (targetUsernameInput && usernameText && resetInput) {
+        targetUsernameInput.value = username;
+        usernameText.textContent = `@${username}`;
+        resetInput.value = '';
+        
+        // Reset visibility to show form
+        if (resetFormSection) resetFormSection.style.display = 'block';
+        if (resetSuccessSection) resetSuccessSection.style.display = 'none';
+        
+        const modal = document.getElementById('reset-password-modal-overlay');
+        if (modal) modal.classList.add('active');
+      }
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
       // Ensure admin authentication validation
       const u = api.getUser();
-      if (u && u.role !== 'admin') {
+      if (u && u.role !== 'admin' && u.role !== 'superadmin') {
         window.location.href = '/';
         return;
       }
 
       if (u) {
         document.getElementById('avatar-initial').textContent = u.name.charAt(0).toUpperCase();
+        
+        // Hide superadmin-only actions (like Delete Mode toggle) from regular admins
+        if (u.role !== 'superadmin') {
+          const deleteToggle = document.querySelector('.switch-toggle-wrapper');
+          if (deleteToggle) deleteToggle.style.display = 'none';
+        }
+
+        // Dynamically populate System Role options in Register User modal based on role
+        const roleSelect = document.getElementById('worker-role');
+        if (roleSelect) {
+          if (u.role === 'superadmin') {
+            roleSelect.innerHTML = `
+              <option value="worker" selected>Field Worker</option>
+              <option value="admin">Administrator</option>
+              <option value="superadmin">Super Admin</option>
+            `;
+          } else {
+            roleSelect.innerHTML = `
+              <option value="worker" selected>Field Worker</option>
+            `;
+          }
+        }
       }
 
       // Initialize tabs switching
@@ -505,6 +625,49 @@
       if (searchBox) {
         searchBox.addEventListener('input', (e) => {
           renderOutletsTable(e.target.value.trim());
+        });
+      }
+
+      // Bind Export CSV button event
+      const exportBtn = document.getElementById('export-csv-btn');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', async () => {
+          const originalContent = exportBtn.innerHTML;
+          exportBtn.disabled = true;
+          exportBtn.innerHTML = `
+            <span class="spinner" style="width: 14px; height: 14px; border-width: 2px; margin: 0; display: inline-block; vertical-align: middle;"></span>
+            <span>Exporting...</span>
+          `;
+
+          try {
+            const token = api.getToken();
+            const response = await fetch(`/api/restaurants/export?state=${outletsFilterState}&city=${outletsFilterCity}&search=${encodeURIComponent(outletsSearchQuery)}`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+
+            if (!response.ok) {
+              const data = await response.json().catch(() => ({}));
+              throw new Error(data.message || `Server error (${response.status})`);
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `outlets_export_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+          } catch (error) {
+            console.error('Export error:', error);
+            alert(error.message || 'Failed to export CSV. Please try again.');
+          } finally {
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = originalContent;
+          }
         });
       }
 
@@ -659,6 +822,308 @@
           }
         });
       }
+
+      // Bind Reset Password Modal Controls
+      const resetForm = document.getElementById('reset-password-form');
+      const resetFormSection = document.getElementById('reset-password-form-section');
+      const resetSuccessSection = document.getElementById('reset-password-success-section');
+      const displayResetUsername = document.getElementById('display-reset-username');
+      const displayResetPassword = document.getElementById('display-reset-password');
+      const copyResetBtn = document.getElementById('copy-reset-password-btn');
+      const closeResetSuccessBtn = document.getElementById('close-reset-success-btn');
+      const resetModalOverlay = document.getElementById('reset-password-modal-overlay');
+      const closeResetBtn = document.getElementById('close-reset-password-btn');
+      const toggleResetPass = document.getElementById('toggle-reset-password-visibility');
+      const resetPassInput = document.getElementById('reset-password-val');
+
+      if (resetForm) {
+        resetForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const username = document.getElementById('reset-password-target-username').value;
+          const newPassword = resetPassInput.value;
+
+          if (!username || !newPassword) {
+            alert('Username and new password are required.');
+            return;
+          }
+
+          if (newPassword.length < 6) {
+            alert('Password must be at least 6 characters long.');
+            return;
+          }
+
+          const loader = document.getElementById('loading-overlay');
+          if (loader) loader.style.display = 'flex';
+
+          try {
+            const token = api.getToken();
+            const response = await fetch('/api/auth/reset-password', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ username, newPassword })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+              throw new Error(data.message || 'Failed to reset password.');
+            }
+
+            // Show success layout with new password copy support
+            displayResetUsername.textContent = `@${username}`;
+            displayResetPassword.textContent = newPassword;
+            resetFormSection.style.display = 'none';
+            resetSuccessSection.style.display = 'block';
+
+            // Reset copy button styling
+            copyResetBtn.innerHTML = `
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+              </svg>
+              Copy
+            `;
+          } catch (err) {
+            console.error('Password Reset Error:', err);
+            alert(err.message || 'Failed to reset user password.');
+          } finally {
+            if (loader) loader.style.display = 'none';
+          }
+        });
+      }
+
+      if (closeResetBtn && resetModalOverlay) {
+        closeResetBtn.addEventListener('click', () => {
+          resetModalOverlay.classList.remove('active');
+        });
+      }
+
+      if (resetModalOverlay) {
+        resetModalOverlay.addEventListener('click', (e) => {
+          if (e.target === resetModalOverlay) {
+            resetModalOverlay.classList.remove('active');
+          }
+        });
+      }
+
+      if (closeResetSuccessBtn && resetModalOverlay) {
+        closeResetSuccessBtn.addEventListener('click', () => {
+          resetModalOverlay.classList.remove('active');
+        });
+      }
+
+      if (copyResetBtn) {
+        copyResetBtn.addEventListener('click', () => {
+          const pass = displayResetPassword.textContent;
+          navigator.clipboard.writeText(pass).then(() => {
+            copyResetBtn.innerHTML = `
+              <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" style="width: 14px; height: 14px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Copied!
+            `;
+            setTimeout(() => {
+              copyResetBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                </svg>
+                Copy
+              `;
+            }, 2000);
+          });
+        });
+      }
+
+      if (toggleResetPass && resetPassInput) {
+        toggleResetPass.addEventListener('click', () => {
+          if (resetPassInput.type === 'password') {
+            resetPassInput.type = 'text';
+            toggleResetPass.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.5a10.466 10.466 0 01-2.09 3.5M9.404 9.404a3 3 0 004.192 4.192M3 3l18 18" /></svg>`;
+          } else {
+            resetPassInput.type = 'password';
+            toggleResetPass.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`;
+          }
+        });
+      }
+
+      // Bind Delete Mode Toggle
+      const deleteModeToggle = document.getElementById('toggle-delete-mode');
+      if (deleteModeToggle) {
+        deleteModeToggle.addEventListener('change', (e) => {
+          deleteModeActive = e.target.checked;
+          const table = document.getElementById('outlets-table');
+          const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+
+          if (deleteModeActive) {
+            table.classList.add('delete-mode-active');
+            bulkDeleteBtn.style.display = 'inline-flex';
+          } else {
+            table.classList.remove('delete-mode-active');
+            bulkDeleteBtn.style.display = 'none';
+            // Clear selection
+            selectedOutletIds = [];
+            document.getElementById('selected-count').textContent = '0';
+            const masterCheckbox = document.getElementById('master-select-checkbox');
+            if (masterCheckbox) masterCheckbox.checked = false;
+            // Uncheck all row checkboxes and remove selected-row class
+            const rowCheckboxes = document.querySelectorAll('.row-select-checkbox');
+            rowCheckboxes.forEach(cb => cb.checked = false);
+            const rows = document.querySelectorAll('#outlets-table-body tr');
+            rows.forEach(r => r.classList.remove('selected-row'));
+          }
+        });
+      }
+
+      // Bind Master Select Checkbox
+      const masterCheckbox = document.getElementById('master-select-checkbox');
+      if (masterCheckbox) {
+        masterCheckbox.addEventListener('change', (e) => {
+          const isChecked = e.target.checked;
+          const rowCheckboxes = document.querySelectorAll('.row-select-checkbox');
+
+          selectedOutletIds = [];
+          rowCheckboxes.forEach(cb => {
+            cb.checked = isChecked;
+            const tr = cb.closest('tr');
+            if (isChecked) {
+              const id = cb.getAttribute('data-id');
+              if (id) selectedOutletIds.push(id);
+              if (tr) tr.classList.add('selected-row');
+            } else {
+              if (tr) tr.classList.remove('selected-row');
+            }
+          });
+
+          document.getElementById('selected-count').textContent = selectedOutletIds.length;
+        });
+      }
+
+      // Bind Bulk Delete Button Click
+      const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+      if (bulkDeleteBtn) {
+        bulkDeleteBtn.addEventListener('click', async () => {
+          if (selectedOutletIds.length === 0) {
+            alert('Please select at least one outlet to delete.');
+            return;
+          }
+
+          if (!confirm(`Are you absolutely sure you want to delete the ${selectedOutletIds.length} selected outlet(s)? This action is permanent and will archive them.`)) {
+            return;
+          }
+
+          const loader = document.getElementById('loading-overlay');
+          if (loader) loader.style.display = 'flex';
+
+          try {
+            const token = api.getToken();
+            const response = await fetch('/api/restaurants/bulk-delete', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ ids: selectedOutletIds })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+              throw new Error(data.message || 'Failed to bulk delete outlets.');
+            }
+
+            alert(data.message || 'Outlets deleted successfully.');
+
+            // Reset delete mode and selection
+            if (deleteModeToggle) {
+              deleteModeToggle.checked = false;
+              deleteModeToggle.dispatchEvent(new Event('change'));
+            }
+
+            await loadAdminDashboard();
+          } catch (err) {
+            console.error('Bulk Delete Error:', err);
+            alert(err.message || 'Failed to delete selected outlets.');
+          } finally {
+            if (loader) loader.style.display = 'none';
+          }
+        });
+      }
+
+      // Bind Edit Outlet Form Submission
+      const editOutletForm = document.getElementById('edit-outlet-form');
+      if (editOutletForm) {
+        editOutletForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const nameInput = document.getElementById('edit-outlet-name');
+          const ownerInput = document.getElementById('edit-outlet-owner');
+          const phoneInput = document.getElementById('edit-outlet-phone');
+
+          const mslname = nameInput.value.trim();
+          const ownerName = ownerInput.value.trim();
+          const phoneNumber = phoneInput.value.trim();
+
+          if (!mslname) {
+            alert('MSLname is required.');
+            return;
+          }
+
+          if (phoneNumber && phoneNumber.length !== 10) {
+            alert('Phone number must be exactly 10 digits long.');
+            return;
+          }
+
+          const loader = document.getElementById('loading-overlay');
+          if (loader) loader.style.display = 'flex';
+
+          try {
+            const token = api.getToken();
+            const response = await fetch(`/api/restaurants/${currentEditingOutletId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ mslname, ownerName, phoneNumber })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+              throw new Error(data.message || 'Failed to update outlet.');
+            }
+
+            alert('Outlet details updated successfully.');
+
+            const editOverlay = document.getElementById('edit-outlet-overlay');
+            if (editOverlay) editOverlay.classList.remove('active');
+
+            await loadAdminDashboard();
+          } catch (err) {
+            console.error('Edit Outlet Error:', err);
+            alert(err.message || 'Failed to save changes.');
+          } finally {
+            if (loader) loader.style.display = 'none';
+          }
+        });
+      }
+
+      // Bind Close and Overlay click controls for Edit Modal
+      const editOverlay = document.getElementById('edit-outlet-overlay');
+      const closeEditBtn = document.getElementById('close-edit-outlet-btn');
+      if (closeEditBtn && editOverlay) {
+        closeEditBtn.addEventListener('click', () => {
+          editOverlay.classList.remove('active');
+        });
+      }
+      if (editOverlay) {
+        editOverlay.addEventListener('click', (e) => {
+          if (e.target === editOverlay) {
+            editOverlay.classList.remove('active');
+          }
+        });
+      }
     });
 
     function initTabs() {
@@ -784,7 +1249,7 @@
 
         // Fetch ALL restaurants to populate Directory table and Map pins
         allRestaurants = await api.get('/restaurants');
-        
+
         populateFilters();
 
         // Render Tables
@@ -949,45 +1414,85 @@
         return;
       }
 
+      const userObj = api.getUser();
+      const isSuperAdmin = userObj && userObj.role === 'superadmin';
+
       tbody.innerHTML = pageItems.map(item => {
         const date = new Date(item.createdAtUTC || item.createdAtIST);
         const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const isChecked = selectedOutletIds.includes(item._id);
 
         return `
-          <tr>
+          <tr class="${isChecked ? 'selected-row' : ''}">
             <td>
-              <img src="${item.image || '/assets/images/default-restaurant.svg'}" alt="Outlet" class="table-img" onerror="this.src='/assets/images/default-restaurant.svg'">
-            </td>
-            <td>
-              <strong style="color: var(--text-main); font-weight:600;">${item.mslname}</strong>
-              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
-                <div style="font-size: 11px; color: var(--primary-dark); font-family: monospace; font-weight: 700;" class="copyable-text" title="Select to copy">${item.mslCode || 'N/A'}</div>
-                ${item.mslCode ? `<button onclick="window.copyMSL(event, '${item.mslCode}', this)" style="background: none; border: none; cursor: pointer; color: var(--text-light); display: flex; align-items: center; padding: 2px;" title="Copy Code">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
-                  </svg>
-                </button>` : ''}
+              <div class="table-img-checkbox-wrapper">
+                ${isSuperAdmin ? `<input type="checkbox" class="row-select-checkbox" data-id="${item._id}" ${isChecked ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary);">` : ''}
+                <img src="${item.image || '/assets/images/default-restaurant.svg'}" alt="Outlet" class="table-img" onerror="this.src='/assets/images/default-restaurant.svg'">
               </div>
             </td>
             <td>
-              <span class="badge badge-worker" style="text-transform:none;">${item.addedBy ? item.addedBy.username : 'Unknown'}</span>
+              <strong style="color: var(--text-main); font-weight:600;">${item.mslname}</strong>
+              <span style="display: block; margin-top: 4px;">
+                <span class="msl-code-tag" style="display: inline-flex; align-items: center; gap: 6px; background-color: var(--primary-light); color: var(--primary-dark); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 11px; font-family: monospace; line-height: 1;">
+                  <span class="copyable-text">${item.mslCode || 'N/A'}</span>
+                  ${item.mslCode ? `<button onclick="window.copyMSL(event, '${item.mslCode}', this)" style="background: none; border: none; cursor: pointer; color: var(--primary-dark); display: flex; align-items: center; padding: 0;" title="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                    </svg>
+                  </button>` : ''}
+                </span>
+              </span>
+            </td>
+            <td>
+              <span class="desktop-only-badge badge badge-worker" style="text-transform:none;">${item.addedBy ? item.addedBy.username : 'Unknown'}</span>
+              <span class="mobile-only-username" style="display: none; font-weight: 700; color: var(--primary-dark);">${item.addedBy ? item.addedBy.username : 'Unknown'}</span>
+              <span class="mobile-only-datetime" style="display: none; font-size: 11px; color: var(--text-muted); font-weight: 600; margin-left: 2px;">on ${dateStr}, ${timeStr}</span>
             </td>
             <td><strong style="color: var(--text-muted);">${item.pincode || 'N/A'}</strong></td>
             <td>
-              <div style="font-weight: 500;">${item.city}</div>
+              <div style="font-weight: 500;">${item.city}${item.pincode ? ', ' + item.pincode : ''}</div>
               <div style="font-size: 11px; color: var(--text-light); width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.fullAddress}</div>
             </td>
             <td>${dateStr}</td>
             <td>
               <div style="display: flex; gap: 8px;">
-                <a href="/restaurant-detail?id=${item._id}" class="btn btn-secondary" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px;">View</a>
-                <button onclick="deleteOutlet('${item._id}')" class="btn btn-danger" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px; background-color: #FEE2E2; color: #EF4444;">Delete</button>
+                <a href="/restaurant-detail?id=${item._id}" class="btn btn-secondary" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px; text-decoration: none !important;">View</a>
+                ${isSuperAdmin ? `<button onclick="window.openEditOutletModal('${item._id}')" class="btn btn-secondary" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px; background-color: var(--primary-light); color: var(--primary-dark); border: 1px solid rgba(16, 185, 129, 0.2);">Edit</button>` : ''}
               </div>
             </td>
           </tr>
         `;
       }).join('');
+
+      // Re-bind row checkboxes after rendering
+      const rowCheckboxes = tbody.querySelectorAll('.row-select-checkbox');
+      rowCheckboxes.forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const id = cb.getAttribute('data-id');
+          const tr = cb.closest('tr');
+          if (cb.checked) {
+            if (!selectedOutletIds.includes(id)) {
+              selectedOutletIds.push(id);
+            }
+            if (tr) tr.classList.add('selected-row');
+          } else {
+            selectedOutletIds = selectedOutletIds.filter(x => x !== id);
+            if (tr) tr.classList.remove('selected-row');
+          }
+
+          // Update selected count display
+          document.getElementById('selected-count').textContent = selectedOutletIds.length;
+
+          // Update master select checkbox state
+          const masterCheckbox = document.getElementById('master-select-checkbox');
+          if (masterCheckbox) {
+            const allCheckedOnPage = Array.from(rowCheckboxes).every(c => c.checked);
+            masterCheckbox.checked = allCheckedOnPage;
+          }
+        });
+      });
 
       // Render Pagination controls
       if (paginationContainer) {
@@ -1060,11 +1565,23 @@
 
     function renderWorkersTable(workersStats) {
       const tbody = document.getElementById('workers-table-body');
+      const userObj = api.getUser();
+      const isSuperAdmin = userObj && userObj.role === 'superadmin';
+
+      // Dynamically update table header
+      const workersHeader = document.querySelector('#pane-workers table thead tr');
+      if (workersHeader) {
+        workersHeader.innerHTML = `
+          <th>Name</th>
+          <th>Username</th>
+          ${isSuperAdmin ? '<th>Actions</th>' : ''}
+        `;
+      }
 
       if (!workersStats || workersStats.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="2" style="text-align: center; padding: 30px; color: var(--text-light);">No field workers registered.</td>
+            <td colspan="${isSuperAdmin ? 3 : 2}" style="text-align: center; padding: 30px; color: var(--text-light);">No field workers registered.</td>
           </tr>
         `;
         return;
@@ -1077,6 +1594,11 @@
               <strong>${w.name}</strong>
             </td>
             <td><code style="background-color: #F1F5F9; padding: 2px 6px; border-radius: 6px; font-size:12px;">${w.username}</code></td>
+            ${isSuperAdmin ? `
+              <td>
+                <button onclick="event.stopPropagation(); window.openResetPasswordModal('${w.username}')" class="btn btn-secondary" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px; background-color: #FEF2F2; color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2);">Reset Password</button>
+              </td>
+            ` : ''}
           </tr>
         `;
       }).join('');
@@ -1208,63 +1730,63 @@
 
     // --- Calendar Logic ---
     let currentCalendarDate = new Date();
-    
+
     function populateCalendarUserSelect() {
       const select = document.getElementById('calendar-user-select');
       if (!select) return;
-      
+
       let html = '<option value="all">All Members</option>';
       allWorkers.forEach(w => {
         const roleName = w.role === 'admin' ? 'Admin' : 'Field Executive';
         html += `<option value="${w.username}">${w.name} [${w.username}] - ${roleName}</option>`;
       });
       select.innerHTML = html;
-      
+
       select.addEventListener('change', renderCalendar);
     }
-    
+
     function initCalendar() {
       const prevBtn = document.getElementById('prev-month-btn');
       const nextBtn = document.getElementById('next-month-btn');
       if (!prevBtn || !nextBtn) return;
-      
+
       prevBtn.addEventListener('click', () => {
         currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
         renderCalendar();
       });
-      
+
       nextBtn.addEventListener('click', () => {
         currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
         renderCalendar();
       });
-      
+
       renderCalendar();
     }
-    
+
     function renderCalendar() {
       const monthYearEl = document.getElementById('calendar-month-year');
       const daysContainer = document.getElementById('calendar-days');
       const selectedUser = document.getElementById('calendar-user-select').value;
-      
+
       if (!monthYearEl || !daysContainer) return;
-      
+
       const year = currentCalendarDate.getFullYear();
       const month = currentCalendarDate.getMonth();
-      
+
       monthYearEl.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
-      
+
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
-      
+
       let html = '';
-      
+
       // Blank days before month starts
       for (let i = 0; i < firstDay; i++) {
         const isWeekend = (i === 0 || i === 6);
         const weekendClass = isWeekend ? 'weekend' : '';
         html += `<div class="calendar-day-cell empty ${weekendClass}"></div>`;
       }
-      
+
       // Filter entries based on user selection
       const monthEntries = allRestaurants.filter(r => {
         const d = new Date(r.createdAtUTC || r.createdAtIST);
@@ -1274,7 +1796,7 @@
         }
         return true;
       });
-      
+
       // Group by day
       const entriesByDay = {};
       monthEntries.forEach(r => {
@@ -1282,24 +1804,24 @@
         if (!entriesByDay[d]) entriesByDay[d] = [];
         entriesByDay[d].push(r);
       });
-      
+
       const today = new Date();
-      
+
       for (let day = 1; day <= daysInMonth; day++) {
         const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
         const entries = entriesByDay[day] || [];
         const count = entries.length;
-        
+
         const countBadge = count > 0 ? `<div class="calendar-badge">${count}</div>` : '';
         const todayClass = isToday ? 'today' : '';
         const todayNumClass = isToday ? 'today-num' : '';
-        
+
         const currentDayOfWeek = new Date(year, month, day).getDay();
         const weekendClass = (currentDayOfWeek === 0 || currentDayOfWeek === 6) ? 'weekend' : '';
-        
+
         const clickHandler = count > 0 ? `onclick="openCalendarDayModal(${year}, ${month}, ${day})"` : '';
         const cursorStyle = count > 0 ? 'cursor: pointer;' : '';
-        
+
         html += `
           <div class="calendar-day-cell ${todayClass} ${weekendClass}" ${clickHandler} style="${cursorStyle}">
             <div class="calendar-day-num ${todayNumClass}">${day}</div>
@@ -1310,19 +1832,19 @@
           </div>
         `;
       }
-      
+
       const totalCells = firstDay + daysInMonth;
       const remainingCells = (7 - (totalCells % 7)) % 7;
-      
+
       for (let i = 0; i < remainingCells; i++) {
         const currentDayOfWeek = (totalCells + i) % 7;
         const weekendClass = (currentDayOfWeek === 0 || currentDayOfWeek === 6) ? 'weekend' : '';
         html += `<div class="calendar-day-cell empty ${weekendClass}"></div>`;
       }
-      
+
       daysContainer.innerHTML = html;
     }
-    
+
     function openCalendarDayModal(year, month, day) {
       const selectedUser = document.getElementById('calendar-user-select').value;
       const dayEntries = allRestaurants.filter(r => {
@@ -1379,7 +1901,8 @@
         </div>
         <div class="form-group">
           <label for="worker-phone">Phone Number</label>
-          <input type="tel" id="worker-phone" class="form-control" placeholder="e.g. 9876543210" required maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input type="tel" id="worker-phone" class="form-control" placeholder="e.g. 9876543210" required maxlength="10"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="form-group">
           <label for="worker-role">System Role</label>
@@ -1392,10 +1915,13 @@
           <label for="worker-password">Password</label>
           <div style="position: relative;">
             <input type="password" id="worker-password" class="form-control" placeholder="Min. 6 characters" required>
-            <button type="button" class="toggle-pass-btn" id="toggle-worker-password" title="Toggle Password Visibility">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+            <button type="button" class="toggle-pass-btn" id="toggle-worker-password"
+              title="Toggle Password Visibility">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="width: 18px; height: 18px;">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </button>
           </div>
@@ -1408,6 +1934,78 @@
           Register User
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal Overlay -->
+  <div class="modal-overlay" id="reset-password-modal-overlay">
+    <div class="modal-card" style="max-width: 420px; padding: 24px;">
+      <button class="modal-close-btn" id="close-reset-password-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Form Section -->
+      <div id="reset-password-form-section">
+        <h3 class="form-title">Reset User Password</h3>
+        <p class="form-subtitle" style="margin-top: 4px;">Set a new password for user: <strong id="reset-password-username" style="color: var(--primary-dark);">@username</strong></p>
+
+        <form id="reset-password-form" style="margin-top: 16px;">
+          <input type="hidden" id="reset-password-target-username">
+          <div class="form-group">
+            <label for="reset-password-val">New Password</label>
+            <div style="position: relative;">
+              <input type="password" id="reset-password-val" class="form-control" placeholder="Min. 6 characters" required>
+              <button type="button" class="toggle-pass-btn" id="toggle-reset-password-visibility"
+                title="Toggle Password Visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="width: 18px; height: 18px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top: 12px; width: 100%; background-color: var(--error); border-color: var(--error);">
+            Confirm Reset
+          </button>
+        </form>
+      </div>
+
+      <!-- Success Result Screen -->
+      <div id="reset-password-success-section" style="display: none; text-align: center; padding: 12px 0;">
+        <div style="width: 60px; height: 60px; background-color: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" style="width: 32px; height: 32px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="form-title" style="color: #065F46;">Password Reset Successful</h3>
+        <p class="form-subtitle" style="margin-top: 4px;">Share these new credentials with the user:</p>
+        
+        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: left;">
+          <div style="margin-bottom: 8px;">
+            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">Username</span>
+            <span id="display-reset-username" style="font-family: monospace; font-size: 14px; font-weight: 700; color: var(--text-main);">@username</span>
+          </div>
+          <div>
+            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">New Password</span>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+              <span id="display-reset-password" style="font-family: monospace; font-size: 16px; font-weight: 700; color: #EF4444; word-break: break-all;">password123</span>
+              <button id="copy-reset-password-btn" class="btn btn-secondary" style="width: auto; padding: 6px 10px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                </svg>
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button id="close-reset-success-btn" class="btn btn-primary" style="width: 100%;">Done</button>
+      </div>
     </div>
   </div>
 
@@ -1458,6 +2056,52 @@
     </div>
   </div>
 
+  <!-- Edit Outlet Modal Overlay -->
+  <div class="modal-overlay" id="edit-outlet-overlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="close-edit-outlet-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <h3 class="form-title">Edit Outlet</h3>
+
+      <form id="edit-outlet-form" style="margin-top: 16px;">
+        <div class="form-group">
+          <label>MSL Code (Read-Only)</label>
+          <input type="text" id="edit-outlet-mslcode" class="form-control" readonly
+            style="background-color: #F3F4F6; cursor: not-allowed; font-family: monospace; font-weight: 700; color: var(--primary-dark);">
+        </div>
+        <div class="form-group">
+          <label for="edit-outlet-name">MSLName</label>
+          <input type="text" id="edit-outlet-name" class="form-control" placeholder="e.g. Starbucks Coffee" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-outlet-owner">Owner Name</label>
+          <input type="text" id="edit-outlet-owner" class="form-control" placeholder="e.g. John Smith">
+        </div>
+        <div class="form-group">
+          <label for="edit-outlet-phone">Phone Number</label>
+          <input type="tel" id="edit-outlet-phone" class="form-control" placeholder="e.g. 9876543210" maxlength="10"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="form-group">
+          <label>City & Pincode (Read-Only)</label>
+          <input type="text" id="edit-outlet-location" class="form-control" readonly
+            style="background-color: #F3F4F6; cursor: not-allowed; color: var(--text-muted);">
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 12px; width: 100%;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 4px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Calendar Day Modal Overlay -->
   <div class="modal-overlay" id="calendar-day-modal-overlay">
     <div class="modal-card" style="max-width: 600px; padding: 28px;">
@@ -1469,9 +2113,11 @@
 
       <h3 class="form-title"><span id="calendar-day-modal-date"></span></h3>
 
-      <div class="table-responsive-wrapper" style="overflow-y: auto; max-height: 340px; border-radius: 12px; border: 1px solid var(--border-color);">
+      <div class="table-responsive-wrapper"
+        style="overflow-y: auto; max-height: 340px; border-radius: 12px; border: 1px solid var(--border-color);">
         <table class="admin-table">
-          <thead style="position: sticky; top: 0; background-color: #F9FAFB; z-index: 1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+          <thead
+            style="position: sticky; top: 0; background-color: #F9FAFB; z-index: 1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <tr>
               <th style="padding: 12px;">MSL Code</th>
               <th style="padding: 12px;">Name</th>
