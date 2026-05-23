@@ -35,26 +35,19 @@ const RestaurantSchema = new mongoose.Schema({
   state: String,
   country: String,
   pincode: String,
-  geoLocation: {
-    type: {
-      type: String,
-      enum: ['Point'],
-      default: 'Point',
-      required: true
-    },
-    coordinates: {
-      type: [Number], // [longitude, latitude]
-      required: true
-    }
-  },
   notes: {
     type: String,
     trim: true
   },
   addedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    name: {
+      type: String,
+      required: true
+    },
+    username: {
+      type: String,
+      required: true
+    }
   },
   createdAtUTC: {
     type: Date,
@@ -66,14 +59,8 @@ const RestaurantSchema = new mongoose.Schema({
   }
 });
 
-// Middleware to set GeoJSON and IST timestamp automatically
+// Middleware to set IST timestamp automatically
 RestaurantSchema.pre('validate', function(next) {
-  if (this.latitude !== undefined && this.longitude !== undefined) {
-    this.geoLocation = {
-      type: 'Point',
-      coordinates: [Number(this.longitude), Number(this.latitude)]
-    };
-  }
   if (!this.createdAtIST) {
     const utcDate = this.createdAtUTC || new Date();
     // Add 5 hours 30 mins to get IST representation
@@ -82,7 +69,5 @@ RestaurantSchema.pre('validate', function(next) {
   }
   next();
 });
-
-RestaurantSchema.index({ geoLocation: '2dsphere' });
 
 module.exports = mongoose.model('Restaurant', RestaurantSchema);

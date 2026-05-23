@@ -33,6 +33,8 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
 
     const image = isCloudinary ? req.file.path : `/uploads/${req.file.filename}`;
 
+    const userObj = await User.findById(req.user._id);
+
     const newRestaurant = new Restaurant({
       restaurantName,
       ownerName,
@@ -47,11 +49,13 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       country,
       pincode,
       notes,
-      addedBy: req.user._id
+      addedBy: {
+        name: userObj.name,
+        username: userObj.username
+      }
     });
 
     const savedRestaurant = await newRestaurant.save();
-    await savedRestaurant.populate('addedBy', 'name role');
 
     res.status(201).json(savedRestaurant);
   } catch (error) {
@@ -94,14 +98,14 @@ router.get('/', auth, async (req, res) => {
       query.createdAtUTC = { $gte: dateLimit };
     }
 
+    const userObj = await User.findById(req.user._id);
     if (req.user.role === 'worker') {
-      query.addedBy = req.user._id;
+      query['addedBy.username'] = userObj.username;
     } else if (addedByMe === 'true') {
-      query.addedBy = req.user._id;
+      query['addedBy.username'] = userObj.username;
     }
 
     const restaurants = await Restaurant.find(query)
-      .populate('addedBy', 'name role')
       .sort({ createdAtUTC: -1 });
 
     res.json(restaurants);
@@ -114,14 +118,14 @@ router.get('/', auth, async (req, res) => {
 // Get single restaurant detail
 router.get('/detail/:id', auth, async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id)
-      .populate('addedBy', 'name role');
+    const restaurant = await Restaurant.findById(req.params.id);
     
     if (!restaurant) {
       return res.status(404).json({ message: 'Restaurant details not found' });
     }
 
-    if (req.user.role === 'worker' && restaurant.addedBy && restaurant.addedBy._id.toString() !== req.user._id.toString()) {
+    const userObj = await User.findById(req.user._id);
+    if (req.user.role === 'worker' && restaurant.addedBy && restaurant.addedBy.username !== userObj.username) {
       return res.status(403).json({ message: 'Access denied. You can only view your own outlets.' });
     }
     
@@ -135,14 +139,15 @@ router.get('/detail/:id', auth, async (req, res) => {
 // Get worker dashboard statistics
 router.get('/stats/worker', auth, async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userObj = await User.findById(req.user._id);
+    const username = userObj.username;
 
-    const totalAdded = await Restaurant.countDocuments({ addedBy: userId });
+    const totalAdded = await Restaurant.countDocuments({ 'addedBy.username': username });
 
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const addedToday = await Restaurant.countDocuments({ 
-      addedBy: userId, 
+      'addedBy.username': username, 
       createdAtUTC: { $gte: todayStart } 
     });
 
@@ -154,13 +159,12 @@ router.get('/stats/worker', auth, async (req, res) => {
     weekStart.setHours(0, 0, 0, 0);
 
     const addedThisWeek = await Restaurant.countDocuments({ 
-      addedBy: userId, 
+      'addedBy.username': username, 
       createdAtUTC: { $gte: weekStart } 
     });
 
     // Recent 5 entries added by this worker
-    const recentAdditions = await Restaurant.find({ addedBy: userId })
-      .populate('addedBy', 'name role')
+    const recentAdditions = await Restaurant.find({ 'addedBy.username': username })
       .sort({ createdAtUTC: -1 })
       .limit(5);
 
@@ -197,12 +201,11 @@ router.get('/stats/admin', auth, async (req, res) => {
     const addedThisWeek = await Restaurant.countDocuments({ createdAtUTC: { $gte: weekStart } });
 
     // Active workers: Count of users who have added at least 1 restaurant
-    const activeWorkers = await Restaurant.distinct('addedBy');
+    const activeWorkers = await Restaurant.distinct('addedBy.username');
     const activeWorkersCount = activeWorkers.length;
 
     // Recent 10 entries globally
     const recentEntries = await Restaurant.find()
-      .populate('addedBy', 'name role')
       .sort({ createdAtUTC: -1 })
       .limit(10);
 
@@ -228,7 +231,7 @@ router.get('/stats/admin', auth, async (req, res) => {
     // Fetch user-wise statistics (both workers and admins)
     const workers = await User.find().select('name username role createdAt phoneNumber');
     const workersStats = await Promise.all(workers.map(async (w) => {
-      const count = await Restaurant.countDocuments({ addedBy: w._id });
+      const count = await Restaurant.countDocuments({ 'addedBy.username': w.username });
       return {
         _id: w._id,
         name: w.name,

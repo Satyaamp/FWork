@@ -92,10 +92,13 @@ const seed = async () => {
       console.log(`User seeded: username="${saved.username}", role="${saved.role}"`);
     }
 
-    const workerId = seededUsers.find(u => u.role === 'worker')._id;
+    const workerUser = seededUsers.find(u => u.role === 'worker');
 
     for (const r of restaurants) {
-      r.addedBy = workerId;
+      r.addedBy = {
+        name: workerUser.name,
+        username: workerUser.username
+      };
       const newResto = new Restaurant(r);
       await newResto.save();
       console.log(`Restaurant seeded: "${newResto.restaurantName}"`);
