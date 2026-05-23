@@ -176,6 +176,15 @@
           </svg>
           <span>Interactive Map</span>
         </button>
+        <button class="sidebar-link" data-tab="calendar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>Calendar</span>
+        </button>
         <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 12px 0;"></div>
       
       </nav>
@@ -268,12 +277,20 @@
         <!-- Tab 2: Outlets Directory -->
         <div class="tab-pane" id="pane-outlets">
           <div class="data-table-container">
-            <div class="table-header-bar">
-              <h3 style="font-weight: 700; color: var(--text-main); font-size: 16px;">Outlets Database</h3>
-
-              <!-- Search bar inside table bar -->
-              <input type="text" id="table-search" class="form-control table-search-input"
-                placeholder="Search by MSL code, name, city, pin..." style="padding: 8px 16px; font-size: 14px;">
+            <div class="table-header-bar outlets-header-bar">
+              <h3 style="font-weight: 700; color: var(--text-main); font-size: 16px; margin: 0; flex-shrink: 0;">Outlets Database</h3>
+              <div class="outlets-header-controls">
+                <div class="outlets-filters">
+                  <select id="filter-state" class="form-control" style="padding: 8px 12px; font-size: 13px;" title="Filter by State">
+                    <option value="all">All States</option>
+                  </select>
+                  <select id="filter-city" class="form-control" style="padding: 8px 12px; font-size: 13px;" title="Filter by City">
+                    <option value="all">All Cities</option>
+                  </select>
+                </div>
+                <input type="text" id="table-search" class="form-control table-search-input"
+                  placeholder="Search by MSL code, name, city, pin..." style="padding: 8px 16px; font-size: 14px;">
+              </div>
             </div>
 
             <div class="table-responsive-wrapper" style="overflow-x: auto;">
@@ -346,6 +363,43 @@
           </div>
         </div>
 
+        <!-- Tab 5: Calendar -->
+        <div class="tab-pane" id="pane-calendar">
+          <div class="data-table-container calendar-container">
+            <h3 class="calendar-title">Activity Calendar</h3>
+            <div class="form-group" style="margin-bottom: 24px; max-width: 400px;">
+              <select id="calendar-user-select" class="form-control">
+                <option value="all">All Members</option>
+                <!-- Populated via JS -->
+              </select>
+            </div>
+            
+            <div class="card calendar-card">
+              <!-- Calendar Header -->
+              <div class="calendar-header">
+                <button id="prev-month-btn" class="btn btn-secondary" style="width: auto; padding: 8px 12px;">&larr; Prev</button>
+                <h4 id="calendar-month-year" style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main);">Month Year</h4>
+                <button id="next-month-btn" class="btn btn-secondary" style="width: auto; padding: 8px 12px;">Next &rarr;</button>
+              </div>
+              
+              <!-- Calendar Grid -->
+              <div class="calendar-grid-header">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+              </div>
+              
+              <div id="calendar-days" class="calendar-grid-body">
+                <!-- Days injected via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -380,6 +434,15 @@
       </svg>
       <span>Map</span>
     </button>
+    <button class="mobile-nav-btn" data-tab="calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span>Calendar</span>
+    </button>
   </nav>
 
   <!-- Loading Overlay -->
@@ -405,6 +468,8 @@
     let outletsCurrentPage = 1;
     const outletsItemsPerPage = 5;
     let outletsSearchQuery = '';
+    let outletsFilterState = 'all';
+    let outletsFilterCity = 'all';
 
     window.copyMSL = function(event, code, btn) {
       if (event) event.preventDefault();
@@ -440,6 +505,25 @@
       if (searchBox) {
         searchBox.addEventListener('input', (e) => {
           renderOutletsTable(e.target.value.trim());
+        });
+      }
+
+      const stateFilter = document.getElementById('filter-state');
+      if (stateFilter) {
+        stateFilter.addEventListener('change', (e) => {
+          outletsFilterState = e.target.value;
+          updateCityFilterOptions();
+          outletsCurrentPage = 1;
+          renderOutletsTable();
+        });
+      }
+
+      const cityFilter = document.getElementById('filter-city');
+      if (cityFilter) {
+        cityFilter.addEventListener('change', (e) => {
+          outletsFilterCity = e.target.value;
+          outletsCurrentPage = 1;
+          renderOutletsTable();
         });
       }
 
@@ -558,6 +642,23 @@
           }
         });
       }
+
+      // Bind Calendar Day Modal Close Controls
+      const calDayOverlay = document.getElementById('calendar-day-modal-overlay');
+      const closeCalDayBtn = document.getElementById('close-calendar-day-modal-btn');
+
+      if (closeCalDayBtn && calDayOverlay) {
+        closeCalDayBtn.addEventListener('click', () => {
+          calDayOverlay.classList.remove('active');
+        });
+      }
+      if (calDayOverlay) {
+        calDayOverlay.addEventListener('click', (e) => {
+          if (e.target === calDayOverlay) {
+            calDayOverlay.classList.remove('active');
+          }
+        });
+      }
     });
 
     function initTabs() {
@@ -610,12 +711,51 @@
         } else if (tabId === 'map-view') {
           panelTitleEl.textContent = 'Interactive Maps';
           if (panelSubtitleEl) panelSubtitleEl.textContent = 'Geographical mapping view';
+        } else if (tabId === 'calendar') {
+          panelTitleEl.textContent = 'Activity Calendar';
+          if (panelSubtitleEl) panelSubtitleEl.textContent = 'View daily additions by worker';
         }
       }
 
       // If switching to map view tab, render/invalidate Leaflet map
       if (tabId === 'map-view') {
         setTimeout(setupLeafletMap, 150);
+      }
+    }
+
+    function populateFilters() {
+      const stateFilter = document.getElementById('filter-state');
+      const cityFilter = document.getElementById('filter-city');
+      if (!stateFilter || !cityFilter) return;
+
+      const states = [...new Set(allRestaurants.map(r => r.state).filter(Boolean))].sort();
+      let stateHtml = '<option value="all">All States</option>';
+      states.forEach(s => {
+        stateHtml += `<option value="${s}">${s}</option>`;
+      });
+      stateFilter.innerHTML = stateHtml;
+      updateCityFilterOptions();
+    }
+
+    function updateCityFilterOptions() {
+      const cityFilter = document.getElementById('filter-city');
+      if (!cityFilter) return;
+
+      let validCities = allRestaurants;
+      if (outletsFilterState !== 'all') {
+        validCities = validCities.filter(r => r.state === outletsFilterState);
+      }
+      const cities = [...new Set(validCities.map(r => r.city).filter(Boolean))].sort();
+      let cityHtml = '<option value="all">All Cities</option>';
+      cities.forEach(c => {
+        cityHtml += `<option value="${c}">${c}</option>`;
+      });
+      const previousCity = outletsFilterCity;
+      cityFilter.innerHTML = cityHtml;
+      if (cities.includes(previousCity)) {
+        cityFilter.value = previousCity;
+      } else {
+        outletsFilterCity = 'all';
       }
     }
 
@@ -644,11 +784,17 @@
 
         // Fetch ALL restaurants to populate Directory table and Map pins
         allRestaurants = await api.get('/restaurants');
+        
+        populateFilters();
 
         // Render Tables
         allWorkers = stats.workersStats || [];
         renderOutletsTable();
         renderWorkersTable(stats.workersStats);
+
+        // Initialize Calendar
+        populateCalendarUserSelect();
+        initCalendar();
 
       } catch (err) {
         console.error('Admin Stats Load Error:', err);
@@ -755,9 +901,18 @@
       const paginationContainer = document.getElementById('outlets-pagination');
 
       let filtered = allRestaurants;
+
+      if (outletsFilterState !== 'all') {
+        filtered = filtered.filter(item => item.state === outletsFilterState);
+      }
+
+      if (outletsFilterCity !== 'all') {
+        filtered = filtered.filter(item => item.city === outletsFilterCity);
+      }
+
       if (outletsSearchQuery) {
         const query = outletsSearchQuery.toLowerCase();
-        filtered = allRestaurants.filter(item =>
+        filtered = filtered.filter(item =>
           (item.mslCode && item.mslCode.toLowerCase().includes(query)) ||
           item.mslname.toLowerCase().includes(query) ||
           item.city.toLowerCase().includes(query) ||
@@ -1050,6 +1205,155 @@
       // Recalculate leaflet container sizing issues
       map.invalidateSize();
     }
+
+    // --- Calendar Logic ---
+    let currentCalendarDate = new Date();
+    
+    function populateCalendarUserSelect() {
+      const select = document.getElementById('calendar-user-select');
+      if (!select) return;
+      
+      let html = '<option value="all">All Members</option>';
+      allWorkers.forEach(w => {
+        const roleName = w.role === 'admin' ? 'Admin' : 'Field Executive';
+        html += `<option value="${w.username}">${w.name} [${w.username}] - ${roleName}</option>`;
+      });
+      select.innerHTML = html;
+      
+      select.addEventListener('change', renderCalendar);
+    }
+    
+    function initCalendar() {
+      const prevBtn = document.getElementById('prev-month-btn');
+      const nextBtn = document.getElementById('next-month-btn');
+      if (!prevBtn || !nextBtn) return;
+      
+      prevBtn.addEventListener('click', () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+        renderCalendar();
+      });
+      
+      nextBtn.addEventListener('click', () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+        renderCalendar();
+      });
+      
+      renderCalendar();
+    }
+    
+    function renderCalendar() {
+      const monthYearEl = document.getElementById('calendar-month-year');
+      const daysContainer = document.getElementById('calendar-days');
+      const selectedUser = document.getElementById('calendar-user-select').value;
+      
+      if (!monthYearEl || !daysContainer) return;
+      
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+      
+      monthYearEl.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+      
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      let html = '';
+      
+      // Blank days before month starts
+      for (let i = 0; i < firstDay; i++) {
+        const isWeekend = (i === 0 || i === 6);
+        const weekendClass = isWeekend ? 'weekend' : '';
+        html += `<div class="calendar-day-cell empty ${weekendClass}"></div>`;
+      }
+      
+      // Filter entries based on user selection
+      const monthEntries = allRestaurants.filter(r => {
+        const d = new Date(r.createdAtUTC || r.createdAtIST);
+        if (d.getFullYear() !== year || d.getMonth() !== month) return false;
+        if (selectedUser !== 'all') {
+          return r.addedBy && r.addedBy.username === selectedUser;
+        }
+        return true;
+      });
+      
+      // Group by day
+      const entriesByDay = {};
+      monthEntries.forEach(r => {
+        const d = new Date(r.createdAtUTC || r.createdAtIST).getDate();
+        if (!entriesByDay[d]) entriesByDay[d] = [];
+        entriesByDay[d].push(r);
+      });
+      
+      const today = new Date();
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+        const entries = entriesByDay[day] || [];
+        const count = entries.length;
+        
+        const countBadge = count > 0 ? `<div class="calendar-badge">${count}</div>` : '';
+        const todayClass = isToday ? 'today' : '';
+        const todayNumClass = isToday ? 'today-num' : '';
+        
+        const currentDayOfWeek = new Date(year, month, day).getDay();
+        const weekendClass = (currentDayOfWeek === 0 || currentDayOfWeek === 6) ? 'weekend' : '';
+        
+        const clickHandler = count > 0 ? `onclick="openCalendarDayModal(${year}, ${month}, ${day})"` : '';
+        const cursorStyle = count > 0 ? 'cursor: pointer;' : '';
+        
+        html += `
+          <div class="calendar-day-cell ${todayClass} ${weekendClass}" ${clickHandler} style="${cursorStyle}">
+            <div class="calendar-day-num ${todayNumClass}">${day}</div>
+            <div class="calendar-day-content">
+              ${countBadge}
+              ${count > 0 ? `<div class="calendar-day-label">entries</div>` : ''}
+            </div>
+          </div>
+        `;
+      }
+      
+      const totalCells = firstDay + daysInMonth;
+      const remainingCells = (7 - (totalCells % 7)) % 7;
+      
+      for (let i = 0; i < remainingCells; i++) {
+        const currentDayOfWeek = (totalCells + i) % 7;
+        const weekendClass = (currentDayOfWeek === 0 || currentDayOfWeek === 6) ? 'weekend' : '';
+        html += `<div class="calendar-day-cell empty ${weekendClass}"></div>`;
+      }
+      
+      daysContainer.innerHTML = html;
+    }
+    
+    function openCalendarDayModal(year, month, day) {
+      const selectedUser = document.getElementById('calendar-user-select').value;
+      const dayEntries = allRestaurants.filter(r => {
+        const d = new Date(r.createdAtUTC || r.createdAtIST);
+        if (d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) return false;
+        if (selectedUser !== 'all') {
+          return r.addedBy && r.addedBy.username === selectedUser;
+        }
+        return true;
+      });
+
+      const modalOverlay = document.getElementById('calendar-day-modal-overlay');
+      const tbody = document.getElementById('calendar-day-table-body');
+      const dateTitle = document.getElementById('calendar-day-modal-date');
+
+      dateTitle.textContent = new Date(year, month, day).toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+      if (dayEntries.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--text-light);">No entries found for this day.</td></tr>`;
+      } else {
+        tbody.innerHTML = dayEntries.map(item => `
+          <tr class="clickable-worker-row" onclick="window.location.href='/restaurant-detail?id=${item._id}'">
+            <td style="padding: 12px;"><code style="background-color: #F1F5F9; padding: 4px 8px; border-radius: 6px; font-size:12px; font-weight:700; color:var(--primary-dark);">${item.mslCode || 'N/A'}</code></td>
+            <td style="padding: 12px;"><strong>${item.mslname}</strong></td>
+            <td style="padding: 12px; color: var(--text-muted);">${item.city || 'N/A'}</td>
+          </tr>
+        `).join('');
+      }
+
+      modalOverlay.classList.add('active');
+    }
   </script>
 
   <!-- Worker Registration Modal Overlay -->
@@ -1150,6 +1454,34 @@
           <span class="detail-label">Status</span>
           <span class="detail-val" id="detail-status"><span class="badge">Active</span></span>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar Day Modal Overlay -->
+  <div class="modal-overlay" id="calendar-day-modal-overlay">
+    <div class="modal-card" style="max-width: 600px; padding: 28px;">
+      <button class="modal-close-btn" id="close-calendar-day-modal-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <h3 class="form-title"><span id="calendar-day-modal-date"></span></h3>
+
+      <div class="table-responsive-wrapper" style="overflow-y: auto; max-height: 340px; border-radius: 12px; border: 1px solid var(--border-color);">
+        <table class="admin-table">
+          <thead style="position: sticky; top: 0; background-color: #F9FAFB; z-index: 1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <tr>
+              <th style="padding: 12px;">MSL Code</th>
+              <th style="padding: 12px;">Name</th>
+              <th style="padding: 12px;">City</th>
+            </tr>
+          </thead>
+          <tbody id="calendar-day-table-body">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
