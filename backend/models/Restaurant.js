@@ -59,6 +59,41 @@ const RestaurantSchema = new mongoose.Schema({
     default: 'A',
     enum: ['A', 'N']
   },
+  businessType: {
+    type: String,
+    enum: ['Restaurant', 'Hospital', 'Salon', 'Cafe', 'Hotel', 'Clinic', 'Gym', 'Bakery', 'Retail Shop', 'Other'],
+    default: 'Restaurant'
+  },
+  description: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  popularProductsOrServices: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  website: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  socialLinks: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  presentationShown: {
+    type: String,
+    enum: ['Y', 'N'],
+    default: 'N'
+  },
+  demoShown: {
+    type: String,
+    enum: ['Y', 'N'],
+    default: 'N'
+  },
   createdAtUTC: {
     type: Date,
     default: Date.now

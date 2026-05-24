@@ -24,6 +24,8 @@
         </svg>
       </button>
       <img src="/assets/images/default-restaurant.svg" alt="MSL Image" class="detail-image" id="detail-img">
+      <!-- Business Type Badge for Mobile -->
+      <span class="business-type-badge badge-mobile" id="detail-business-type-mobile">-</span>
     </div>
 
     <!-- Content Panel -->
@@ -32,6 +34,8 @@
       <div class="detail-header">
         <div class="detail-title-container">
           <h2 class="detail-title" id="detail-name">-</h2>
+          <!-- Business Type Badge for Desktop -->
+          <span class="business-type-badge badge-desktop" id="detail-business-type-desktop">-</span>
           <a id="detail-google-maps-link" href="#" target="_blank" title="View on Google Maps" class="google-maps-link">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path fill-rule="evenodd"
@@ -40,9 +44,13 @@
             </svg>
           </a>
           <div style="display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 4px;">
-            <div style="font-family: monospace; font-weight: 700; color: var(--primary-dark); font-size: 14px;" id="detail-mslcode" class="copyable-text" title="Select to copy"></div>
-            <button id="copy-msl-btn" style="background: none; border: none; cursor: pointer; color: var(--primary); display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px;" title="Copy MSL Code">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+            <div style="font-family: monospace; font-weight: 700; color: var(--primary-dark); font-size: 14px;"
+              id="detail-mslcode" class="copyable-text" title="Select to copy"></div>
+            <button id="copy-msl-btn"
+              style="background: none; border: none; cursor: pointer; color: var(--primary); display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px;"
+              title="Copy MSL Code">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="width: 16px; height: 16px;">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
               </svg>
@@ -110,6 +118,26 @@
         </div>
       </div>
 
+      <!-- Presentations Section -->
+      <div class="presentations-section" style="margin-top: 32px; padding: 0 4px;">
+        <h4 class="detail-section-title" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="width: 18px; height: 18px; color: var(--primary);">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Demos & Presentations
+        </h4>
+        <div class="presentations-grid" id="presentations-list"
+          style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Dynamically loaded cards -->
+          <div style="text-align: center; padding: 24px; color: var(--text-light); font-size: 13px;">
+            Loading presentations for this outlet type...
+          </div>
+        </div>
+      </div>
+
       <!-- Metadata footer cards -->
       <div class="detail-footer-card"
         style="margin-top: 24px; padding: 12px; background-color: white; border-radius: 12px; border: 1px solid var(--border-color); font-size: 12px; color: var(--text-light); text-align: center;">
@@ -160,10 +188,26 @@
         };
         detailImg.src = item.image || '/assets/images/default-restaurant.svg';
 
+        // Business Type Badge
+        const businessType = item.businessType || 'Other';
+        const typeClass = `type-${businessType.toLowerCase()}`;
+
+        const mobileBadge = document.getElementById('detail-business-type-mobile');
+        if (mobileBadge) {
+          mobileBadge.textContent = businessType;
+          mobileBadge.className = `business-type-badge badge-mobile ${typeClass}`;
+        }
+
+        const desktopBadge = document.getElementById('detail-business-type-desktop');
+        if (desktopBadge) {
+          desktopBadge.textContent = businessType;
+          desktopBadge.className = `business-type-badge badge-desktop ${typeClass}`;
+        }
+
         // Text bindings
         document.getElementById('detail-name').textContent = item.mslname;
         document.getElementById('detail-mslcode').textContent = item.mslCode || 'N/A';
-        
+
         const copyBtn = document.getElementById('copy-msl-btn');
         if (copyBtn && item.mslCode) {
           copyBtn.addEventListener('click', () => {
@@ -185,6 +229,10 @@
         document.getElementById('detail-pin').textContent = item.pincode || 'N/A';
         document.getElementById('detail-coords').textContent = `${Number(item.latitude).toFixed(6)}, ${Number(item.longitude).toFixed(6)}`;
         document.getElementById('detail-notes').textContent = item.notes || 'No notes added for this location.';
+
+        // Save current restaurant data globally for the dynamic preview iframe template
+        window.currentRestaurantData = item;
+        window.getSelectedRestaurant = () => window.currentRestaurantData;
 
         // Metadata footer
         document.getElementById('detail-added-by').textContent = item.addedBy ? item.addedBy.username : 'Unknown';
@@ -227,6 +275,9 @@
           map.invalidateSize();
         }, 200);
 
+        // Fetch presentations mapped to the business type
+        await loadPresentations(item.businessType || 'Restaurant');
+
       } catch (error) {
         console.error('MSL Detail Fetch Error:', error);
         alert('Failed to load MSL details from server.');
@@ -235,7 +286,270 @@
         loader.style.display = 'none';
       }
     }
+
+    async function loadPresentations(businessType) {
+      const listContainer = document.getElementById('presentations-list');
+      if (!listContainer) return;
+
+      try {
+        const presentations = await api.get(`/presentations?businessType=${encodeURIComponent(businessType)}`);
+        if (!presentations || presentations.length === 0) {
+          listContainer.innerHTML = `
+            <div class="card" style="text-align: center; padding: 30px 10px; border: 1px dashed var(--border-color); background: white; border-radius: 16px; box-shadow: var(--shadow-sm);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="1.5" style="width: 40px; height: 40px; margin: 0 auto 10px auto; display: block;">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <p class="text-sm font-semibold" style="color: var(--text-muted); font-size: 13px;">No sales presentations found</p>
+              <p class="text-xs text-light" style="margin-top: 4px; font-size: 11px;">There are no active materials mapped to the "${businessType}" type.</p>
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = presentations.map(item => {
+          const defaultThumbClass = `type-${item.presentationType}`;
+          const thumbnail = item.thumbnail
+            ? `<img src="${item.thumbnail}" alt="Thumbnail" class="pres-card-thumb" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+            : '';
+          const defaultThumb = `
+            <div class="pres-card-thumb-fallback ${defaultThumbClass}" style="display: ${item.thumbnail ? 'none' : 'flex'}; font-size: 10px; font-weight: 700; border-radius: 8px; justify-content: center; align-items: center; width: 64px; height: 64px; background-color: #F1F5F9; color: var(--text-muted); border: 1px solid var(--border-color);">
+              <span>${item.presentationType.toUpperCase()}</span>
+            </div>
+          `;
+
+          let typeLabel = '';
+          if (item.presentationType === 'pdf') typeLabel = 'PDF Document';
+          else if (item.presentationType === 'video') typeLabel = 'Video Clip';
+          else typeLabel = 'Image / Slide';
+
+          return `
+            <div class="presentation-card" style="display: flex; gap: 16px; padding: 16px; background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); align-items: center;">
+              <div class="pres-card-left" style="width: 64px; height: 64px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                ${thumbnail}
+                ${defaultThumb}
+              </div>
+              <div class="pres-card-right" style="flex: 1; min-width: 0;">
+                <span class="pres-card-type" style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--primary-dark); display: block; margin-bottom: 2px;">${typeLabel}</span>
+                <h4 class="pres-card-title" style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</h4>
+                <p class="pres-card-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 32px; line-height: 1.4;">${item.description || ''}</p>
+                <button class="btn btn-primary pres-card-btn" onclick="openPresentationViewer('${item.title.replace(/'/g, "\\'")}', '${item.presentationType}', '${item.file}')" style="padding: 6px 14px; font-size: 11px; font-weight: 600; width: auto; height: auto;">
+                  View Material
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error('Failed to load presentations:', error);
+        listContainer.innerHTML = `<div style="color: var(--error); text-align: center; font-size: 13px; padding: 20px;">Failed to load sales presentations.</div>`;
+      }
+    }
+
+    window.openPresentationViewer = function (title, type, fileUrl) {
+      const modal = document.getElementById('presentation-viewer-modal');
+      const titleEl = document.getElementById('viewer-title');
+      const bodyEl = document.getElementById('viewer-body');
+
+      if (!modal || !bodyEl || !titleEl) return;
+
+      // Track presentation shown
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      if (id) {
+        api.post(`/restaurants/${id}/mark-shown`, { type: 'presentation' })
+          .catch(err => console.error('Tracking presentation shown failed:', err));
+      }
+
+      titleEl.textContent = title;
+      bodyEl.innerHTML = ''; // Clear previous content
+
+      // Lock body scroll
+      document.body.style.overflow = 'hidden';
+
+      if (type === 'pdf') {
+        bodyEl.innerHTML = `<iframe src="${fileUrl}" style="width: 100%; height: 100%; border: none;"></iframe>`;
+      } else if (type === 'video') {
+        bodyEl.innerHTML = `
+          <video controls autoplay playsinline style="max-width: 100%; max-height: 100%; outline: none; border-radius: 8px;">
+            <source src="${fileUrl}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        `;
+      } else {
+        // image
+        bodyEl.innerHTML = `
+          <div class="viewer-img-container" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:auto;">
+            <img src="${fileUrl}" alt="${title}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-lg);">
+          </div>
+        `;
+      }
+
+      modal.style.display = 'flex';
+    };
+
+    window.closePresentationViewer = function () {
+      const modal = document.getElementById('presentation-viewer-modal');
+      const bodyEl = document.getElementById('viewer-body');
+      if (modal) {
+        modal.style.display = 'none';
+        if (bodyEl) bodyEl.innerHTML = ''; // Stop video playback/iframe loads
+        document.body.style.overflow = ''; // Restore body scroll
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const closeBtn = document.getElementById('close-viewer-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closePresentationViewer);
+      }
+      const modal = document.getElementById('presentation-viewer-modal');
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closePresentationViewer();
+        });
+      }
+    });
+
+    // Live Demo Preview Actions
+    window.openLiveDemoViewer = function () {
+      const item = window.currentRestaurantData;
+      if (!item) return;
+
+      const modal = document.getElementById('live-demo-viewer-modal');
+      const titleEl = document.getElementById('demo-viewer-title');
+      const frameEl = document.getElementById('demo-frame');
+
+      if (!modal || !frameEl || !titleEl) return;
+
+      // Track demo shown
+      if (item._id) {
+        api.post(`/restaurants/${item._id}/mark-shown`, { type: 'demo' })
+          .catch(err => console.error('Tracking demo shown failed:', err));
+      }
+
+      titleEl.textContent = `${item.mslname} - Live Demo`;
+
+      const type = (item.businessType || 'Other').toLowerCase();
+      let templateName = 'other';
+      if (['restaurant', 'cafe', 'hospital', 'clinic', 'salon', 'gym', 'bakery', 'hotel'].includes(type)) {
+        templateName = type;
+      } else if (type === 'retail shop') {
+        templateName = 'retail';
+      }
+
+      document.body.style.overflow = 'hidden';
+      frameEl.src = `/templates/${templateName}/index.html`;
+      modal.style.display = 'flex';
+    };
+
+    window.closeLiveDemoViewer = function () {
+      const modal = document.getElementById('live-demo-viewer-modal');
+      const frameEl = document.getElementById('demo-frame');
+      if (modal) {
+        modal.style.display = 'none';
+        if (frameEl) frameEl.src = '';
+        document.body.style.overflow = '';
+      }
+    };
+
+    window.shareLiveDemo = function () {
+      const item = window.currentRestaurantData;
+      if (!item) return;
+
+      const type = (item.businessType || 'Other').toLowerCase();
+      let templateName = 'other';
+      if (['restaurant', 'cafe', 'hospital', 'clinic', 'salon', 'gym', 'bakery', 'hotel'].includes(type)) {
+        templateName = type;
+      } else if (type === 'retail shop') {
+        templateName = 'retail';
+      }
+
+      const previewUrl = `${window.location.origin}/templates/${templateName}/index.html?demoId=${item._id}`;
+
+      if (navigator.share) {
+        navigator.share({
+          title: `Live Preview for ${item.mslname}`,
+          text: `Check out this dynamic preview website generated for ${item.mslname}!`,
+          url: previewUrl
+        }).catch(err => console.log('Share error:', err));
+      } else {
+        navigator.clipboard.writeText(previewUrl).then(() => {
+          alert('Live demo link copied to clipboard! Share it with the owner.');
+        });
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const openDemoBtn = document.getElementById('open-demo-btn');
+      if (openDemoBtn) {
+        openDemoBtn.addEventListener('click', openLiveDemoViewer);
+      }
+      const closeDemoBtn = document.getElementById('close-demo-viewer-btn');
+      if (closeDemoBtn) {
+        closeDemoBtn.addEventListener('click', closeLiveDemoViewer);
+      }
+      const shareDemoBtn = document.getElementById('share-demo-btn');
+      if (shareDemoBtn) {
+        shareDemoBtn.addEventListener('click', shareLiveDemo);
+      }
+      const demoModal = document.getElementById('live-demo-viewer-modal');
+      if (demoModal) {
+        demoModal.addEventListener('click', (e) => {
+          if (e.target === demoModal) closeLiveDemoViewer();
+        });
+      }
+    });
   </script>
+  <!-- Fullscreen Presentation Viewer Overlay -->
+  <div class="presentation-viewer-modal" id="presentation-viewer-modal" style="display: none;">
+    <div class="viewer-header">
+      <h3 class="viewer-title" id="viewer-title">Presentation Viewer</h3>
+      <button class="viewer-close-btn" id="close-viewer-btn" title="Close Viewer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="viewer-body" id="viewer-body">
+      <!-- Media content injected dynamically -->
+    </div>
+  </div>
+
+  <!-- Fullscreen Live Demo Viewer Overlay -->
+  <div class="live-demo-viewer-modal" id="live-demo-viewer-modal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; flex-direction: column; background-color: #0F172A;">
+    <div class="viewer-header"
+      style="height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background-color: #1E293B; border-bottom: 1px solid #334155; color: white;">
+      <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+        <button class="viewer-close-btn" id="close-demo-viewer-btn" title="Close Preview"
+          style="background: none; border: none; color: #94A3B8; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <h3 id="demo-viewer-title"
+          style="font-size: 14px; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">
+          Demo Website</h3>
+      </div>
+      <button id="share-demo-btn" class="btn btn-secondary"
+        style="padding: 6px 12px; font-size: 11px; font-weight: 600; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; width: auto; height: auto;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          style="width: 14px; height: 14px;">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186l5.57 3.285m-5.57-3.285a2.25 2.25 0 115.57-3.285m0 3.285a2.25 2.25 0 110 2.186m0 0l-5.57-3.285" />
+        </svg>
+        <span>Share</span>
+      </button>
+    </div>
+    <div class="viewer-body" id="demo-viewer-body"
+      style="flex: 1; position: relative; overflow: hidden; background-color: #F8FAFC;">
+      <iframe id="demo-frame" src="" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+    </div>
+  </div>
 </body>
 
 </html>

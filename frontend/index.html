@@ -202,6 +202,7 @@
       try {
         const stats = await api.get('/restaurants/stats/worker');
         if (!stats) return;
+        window.allLoadedRestaurants = stats.recentAdditions;
 
         // Animate counts
         animateCount(totalEl, stats.totalAdded);
@@ -240,9 +241,16 @@
                 
                 <!-- Details Grid -->
                 <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-                  <!-- Row 1: Added By & DateTime -->
+                  <!-- Row 1: Action Button & DateTime -->
                   <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--primary-dark); background-color: var(--primary-light); padding: 4px 8px; border-radius: 6px;">by ${item.addedBy ? item.addedBy.username : 'You'}</span>
+                    <span onclick="event.stopPropagation(); event.preventDefault(); window.launchLivePreview('${item._id}')" class="btn btn-primary" style="padding: 4px 10px; font-size: 10px; height: auto; width: auto; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: none; text-transform: uppercase; color: white; background-color: var(--primary);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 12px; height: 12px; stroke: currentColor;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25(2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+                        <!-- Wait, let's use the clean SVG path from restaurants.html to be identical: -->
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+                      </svg>
+                      Live Preview
+                    </span>
                     <span style="font-size: 11px; color: var(--text-light); font-weight: 600;">${dateStr}, ${timeStr}</span>
                   </div>
                   
@@ -304,7 +312,126 @@
         }
       }, stepTime);
     }
+
+    // Live Demo Preview Actions
+    window.openLiveDemoViewer = function(item) {
+      if (!item) return;
+
+      const modal = document.getElementById('live-demo-viewer-modal');
+      const titleEl = document.getElementById('demo-viewer-title');
+      const frameEl = document.getElementById('demo-frame');
+
+      if (!modal || !frameEl || !titleEl) return;
+
+      // Track demo shown
+      if (item._id) {
+        api.post(`/restaurants/${item._id}/mark-shown`, { type: 'demo' })
+          .catch(err => console.error('Tracking demo shown failed:', err));
+      }
+
+      titleEl.textContent = `${item.mslname} - Live Demo`;
+      
+      // Save global getter for the iframe
+      window.currentRestaurantData = item;
+      window.getSelectedRestaurant = () => window.currentRestaurantData;
+
+      const type = (item.businessType || 'Other').toLowerCase();
+      let templateName = 'other';
+      if (['restaurant', 'cafe', 'hospital', 'clinic', 'salon', 'gym', 'bakery', 'hotel'].includes(type)) {
+        templateName = type;
+      } else if (type === 'retail shop') {
+        templateName = 'retail';
+      }
+
+      document.body.style.overflow = 'hidden';
+      frameEl.src = `/templates/${templateName}/index.html`;
+      modal.style.display = 'flex';
+    };
+
+    window.closeLiveDemoViewer = function() {
+      const modal = document.getElementById('live-demo-viewer-modal');
+      const frameEl = document.getElementById('demo-frame');
+      if (modal) {
+        modal.style.display = 'none';
+        if (frameEl) frameEl.src = '';
+        document.body.style.overflow = '';
+      }
+    };
+
+    window.shareLiveDemo = function() {
+      const item = window.currentRestaurantData;
+      if (!item) return;
+
+      const type = (item.businessType || 'Other').toLowerCase();
+      let templateName = 'other';
+      if (['restaurant', 'cafe', 'hospital', 'clinic', 'salon', 'gym', 'bakery', 'hotel'].includes(type)) {
+        templateName = type;
+      } else if (type === 'retail shop') {
+        templateName = 'retail';
+      }
+
+      const previewUrl = `${window.location.origin}/templates/${templateName}/index.html?demoId=${item._id}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: `Live Preview for ${item.mslname}`,
+          text: `Check out this dynamic preview website generated for ${item.mslname}!`,
+          url: previewUrl
+        }).catch(err => console.log('Share error:', err));
+      } else {
+        navigator.clipboard.writeText(previewUrl).then(() => {
+          alert('Live demo link copied to clipboard! Share it with the owner.');
+        });
+      }
+    };
+
+    window.launchLivePreview = function(id) {
+      if (!window.allLoadedRestaurants) return;
+      const item = window.allLoadedRestaurants.find(r => r._id === id);
+      if (item) {
+        window.openLiveDemoViewer(item);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const closeDemoBtn = document.getElementById('close-demo-viewer-btn');
+      if (closeDemoBtn) {
+        closeDemoBtn.addEventListener('click', closeLiveDemoViewer);
+      }
+      const shareDemoBtn = document.getElementById('share-demo-btn');
+      if (shareDemoBtn) {
+        shareDemoBtn.addEventListener('click', shareLiveDemo);
+      }
+      const demoModal = document.getElementById('live-demo-viewer-modal');
+      if (demoModal) {
+        demoModal.addEventListener('click', (e) => {
+          if (e.target === demoModal) closeLiveDemoViewer();
+        });
+      }
+    });
   </script>
+  <!-- Fullscreen Live Demo Viewer Overlay -->
+  <div class="live-demo-viewer-modal" id="live-demo-viewer-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; flex-direction: column; background-color: #0F172A;">
+    <div class="viewer-header" style="height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background-color: #1E293B; border-bottom: 1px solid #334155; color: white;">
+      <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+        <button class="viewer-close-btn" id="close-demo-viewer-btn" title="Close Preview" style="background: none; border: none; color: #94A3B8; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <h3 id="demo-viewer-title" style="font-size: 14px; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">Demo Website</h3>
+      </div>
+      <button id="share-demo-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; font-weight: 600; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; width: auto; height: auto;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186l5.57 3.285m-5.57-3.285a2.25 2.25 0 115.57-3.285m0 3.285a2.25 2.25 0 110 2.186m0 0l-5.57-3.285" />
+        </svg>
+        <span>Share</span>
+      </button>
+    </div>
+    <div class="viewer-body" id="demo-viewer-body" style="flex: 1; position: relative; overflow: hidden; background-color: #F8FAFC;">
+      <iframe id="demo-frame" src="" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+    </div>
+  </div>
 </body>
 
 </html>

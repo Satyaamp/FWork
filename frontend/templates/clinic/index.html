@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinic Showcase Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0D9488; /* Teal */
+      --primary-dark: #115E59;
+      --accent: #0F766E;
+      --bg-light: #F0FDFA;
+      --text-dark: #0F172A;
+      --text-muted: #475569;
+      --border: #CCFBF1;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+    .text-center { text-align: center; }
+    .section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary-dark); }
+    .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .hero { position: relative; height: 320px; background-color: var(--primary-dark); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(13,148,136,0.4), rgba(13,148,136,0.85)); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-content h1 { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
+    .hero-content p { font-size: 14px; color: #E2E8F0; margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+    .btn-teal { background-color: white; color: var(--primary-dark); }
+    
+    .services-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .service-card { display: flex; gap: 14px; background: white; border: 1px solid var(--border); padding: 16px; border-radius: var(--radius); align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01); }
+    .service-icon { font-size: 24px; width: 48px; height: 48px; background: var(--bg-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--primary); }
+    .service-info h4 { font-weight: 700; font-size: 15px; color: var(--primary-dark); }
+    .service-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    
+    .timing-card { background: white; border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); text-align: center; }
+    .timing-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #F0FDFA; }
+    .timing-row:last-child { border: none; }
+    
+    .booking-card { background: var(--primary-dark); color: white; padding: 24px; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .booking-form { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .input-field { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--primary); background: rgba(255,255,255,0.08); color: white; font-size: 13px; outline: none; }
+    .input-field::placeholder { color: #A5F3FC; }
+    
+    footer { background: #0F172A; color: #94A3B8; padding: 32px 0 16px 0; font-size: 12px; }
+    footer h3 { color: white; margin-bottom: 8px; }
+    .footer-bottom { text-align: center; margin-top: 24px; color: #475569; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <header class="hero" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="clinic-name">Apex Specialty Clinic</h1>
+        <p id="clinic-tagline">Quality clinical treatments, health advice, and specialist consultations.</p>
+        <a href="#appointment" class="btn btn-teal">Book Consultation</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="section-title">Specialist Consultations</h2>
+        <p style="font-size: 14px; max-width: 480px; margin: 0 auto; color: var(--text-muted);" id="clinic-desc">
+          We pride ourselves on offering professional family physician consultations, custom treatment procedures, and health advice.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Specialist Services</h2>
+        <p class="section-subtitle text-center">Modern diagnostic tests and clinical care checkups</p>
+        <div class="services-grid" id="services-list">
+          <!-- Dynamically Injected Services -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title text-center">Clinic Timings</h2>
+        <div class="timing-card">
+          <div class="timing-row"><span>Monday - Saturday</span><span>9:00 AM - 1:00 PM | 5:00 PM - 9:00 PM</span></div>
+          <div class="timing-row"><span>Sunday</span><span>9:00 AM - 1:00 PM Only</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="appointment">
+      <div class="container">
+        <div class="booking-card">
+          <h2 class="section-title" style="color: white;">Request callback</h2>
+          <p class="section-subtitle" style="color: #A5F3FC;">Enter details below to consult a family doctor.</p>
+          <form class="booking-form" onsubmit="event.preventDefault(); alert('Consultation request sent!');">
+            <input type="text" placeholder="Patient Name" required class="input-field">
+            <input type="tel" placeholder="Mobile Number" required class="input-field">
+            <input type="date" required class="input-field">
+            <button type="submit" class="btn" style="width:100%; background:white; color:var(--primary-dark); font-weight:700;">Confirm Callback</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <h3>Contact Location</h3>
+        <p id="clinic-address">202 Apex Towers, High Street, Bangalore</p>
+        <p style="margin-top: 8px;"><strong>Phone Helpline:</strong> <span id="clinic-phone">+91 98765 43210</span></p>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let business = null;
+      if (window.parent && typeof window.parent.getSelectedRestaurant === 'function') {
+        business = window.parent.getSelectedRestaurant();
+        if (business) renderTemplate(business);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const demoId = params.get('demoId');
+        if (demoId) {
+          const token = localStorage.getItem('token');
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          fetch(`/api/restaurants/detail/${demoId}`, { headers })
+            .then(res => res.json())
+            .then(data => { if (data && !data.message) renderTemplate(data); });
+        }
+      }
+    });
+
+    function renderTemplate(business) {
+      document.getElementById('clinic-name').textContent = business.mslname;
+      if (business.description) {
+        document.getElementById('clinic-desc').textContent = business.description;
+      }
+      document.getElementById('clinic-phone').textContent = business.phoneNumber || 'N/A';
+      document.getElementById('clinic-address').textContent = business.fullAddress || 'N/A';
+
+      const heroBg = document.getElementById('hero-bg');
+      if (heroBg && business.image) {
+        heroBg.style.backgroundImage = `url('${business.image}')`;
+      }
+
+      const servicesList = document.getElementById('services-list');
+      if (servicesList) {
+        const servsStr = business.popularProductsOrServices || 'General Physician Consultation, Vaccination Clinic, Dental Checkups';
+        const services = servsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const icons = ['🩺', '🦷', '💉', '🩹', '🧪', '💊'];
+        
+        servicesList.innerHTML = services.map((serv, i) => {
+          const icon = icons[i % icons.length];
+          return `
+            <div class="service-card">
+              <div class="service-icon">${icon}</div>
+              <div class="service-info">
+                <h4>${serv}</h4>
+                <p>Complete treatment procedure using sterilized clinical gear.</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

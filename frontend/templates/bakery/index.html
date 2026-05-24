@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bakery Showcase Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #854D0E; /* Sweet Cocoa Brown */
+      --accent: #F43F5E; /* Soft Rose */
+      --bg-light: #FFF1F2; /* Soft Rose tint */
+      --text-dark: #4C0519;
+      --text-muted: #881337;
+      --border: #FFE4E6;
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+    .text-center { text-align: center; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
+    .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .hero { position: relative; height: 360px; background-color: var(--primary); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(76,5,25,0.4), rgba(76,5,25,0.85)); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-content h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+    .hero-content p { font-size: 14px; color: #FFE4E6; margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+    .btn-rose { background-color: var(--accent); color: white; }
+    
+    .specials-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .special-card { display: flex; gap: 12px; background: white; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .special-icon { font-size: 26px; width: 48px; height: 48px; background: var(--bg-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); }
+    .special-info { flex: 1; }
+    .special-name { font-weight: 700; font-size: 14px; color: var(--text-dark); }
+    .special-desc { font-size: 11px; color: var(--text-muted); }
+    
+    .booking-card { background: white; border: 1px solid var(--border); padding: 24px; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .booking-form { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .input-field { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); font-size: 13px; outline: none; }
+    
+    footer { background: #4C0519; color: #FCE7F3; padding: 32px 0 16px 0; font-size: 12px; }
+    footer h3 { color: white; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+    .footer-bottom { text-align: center; margin-top: 24px; color: #9D174D; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <header class="hero" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="bakery-name">Sweet Bakes & Pastries</h1>
+        <p id="bakery-tagline">Oven-fresh breads, custom designer cakes, and daily baked sweet treats.</p>
+        <a href="#order" class="btn btn-rose">Order Cake</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="section-title">Baked With Love</h2>
+        <p style="font-size: 14px; max-width: 480px; margin: 0 auto; color: var(--text-muted);" id="bakery-desc">
+          Crafting delightful memories. We bake daily using artisanal methods and fresh gourmet flour, chocolate, and cream.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Oven-Fresh Specials</h2>
+        <p class="section-subtitle text-center">Baked specials available fresh out of the ovens</p>
+        <div class="specials-grid" id="specials-list">
+          <!-- Dynamically Injected Specials -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="order">
+      <div class="container">
+        <div class="booking-card">
+          <h2 class="section-title">Pre-Order Treats</h2>
+          <p class="section-subtitle">Reserve your celebration custom cakes online.</p>
+          <form class="booking-form" onsubmit="event.preventDefault(); alert('Pre-order demo request received!');">
+            <input type="text" placeholder="Your Name" required class="input-field">
+            <input type="tel" placeholder="Mobile Number" required class="input-field">
+            <select class="input-field" required>
+              <option value="" disabled selected>Select Treat Type</option>
+              <option value="birthday">Birthday Cake</option>
+              <option value="bread">Artisanal Bread Loaf</option>
+              <option value="assorted">Assorted Muffins Box</option>
+            </select>
+            <input type="date" required class="input-field">
+            <button type="submit" class="btn btn-rose" style="width:100%;">Submit Pre-Order</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <h3 id="footer-logo">Sweet Bakes</h3>
+        <p><strong>Phone:</strong> <span id="bakery-phone">+91 98765 43210</span></p>
+        <p><strong>Address:</strong> <span id="bakery-address">56 Pastry Lane, Sector 2, Delhi</span></p>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let business = null;
+      if (window.parent && typeof window.parent.getSelectedRestaurant === 'function') {
+        business = window.parent.getSelectedRestaurant();
+        if (business) renderTemplate(business);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const demoId = params.get('demoId');
+        if (demoId) {
+          const token = localStorage.getItem('token');
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          fetch(`/api/restaurants/detail/${demoId}`, { headers })
+            .then(res => res.json())
+            .then(data => { if (data && !data.message) renderTemplate(data); });
+        }
+      }
+    });
+
+    function renderTemplate(business) {
+      document.getElementById('bakery-name').textContent = business.mslname;
+      document.getElementById('footer-logo').textContent = business.mslname;
+      if (business.description) {
+        document.getElementById('bakery-desc').textContent = business.description;
+      }
+      document.getElementById('bakery-phone').textContent = business.phoneNumber || 'N/A';
+      document.getElementById('bakery-address').textContent = business.fullAddress || 'N/A';
+
+      const heroBg = document.getElementById('hero-bg');
+      if (heroBg && business.image) {
+        heroBg.style.backgroundImage = `url('${business.image}')`;
+      }
+
+      const specialsList = document.getElementById('specials-list');
+      if (specialsList) {
+        const specStr = business.popularProductsOrServices || 'Red Velvet Cake, Belgian Chocolate Muffin, Sourdough Bread';
+        const specials = specStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const icons = ['🍰', '🧁', '🍞', '🍩', '🍪', '🥨'];
+        
+        specialsList.innerHTML = specials.map((spec, i) => {
+          const icon = icons[i % icons.length];
+          return `
+            <div class="special-card">
+              <div class="special-icon">${icon}</div>
+              <div class="special-info">
+                <h4 class="special-name">${spec}</h4>
+                <p class="special-desc">Artisanal baked treat handmade with organic flour and premium cocoa blends.</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

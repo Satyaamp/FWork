@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salon Showcase Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6B21A8; /* Purple */
+      --primary-dark: #581C87;
+      --accent: #DB2777; /* Hot Pink */
+      --bg-light: #FDF4FF;
+      --text-dark: #1E1B4B;
+      --text-muted: #6B7280;
+      --border: #F3E8FF;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+    .text-center { text-align: center; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--primary-dark); }
+    .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .hero { position: relative; height: 360px; background-color: var(--primary-dark); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(88,28,135,0.3), rgba(88,28,135,0.85)); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-content h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+    .hero-content p { font-size: 14px; color: #F3F4F6; margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+    .btn-pink { background-color: var(--accent); color: white; }
+    
+    .services-list { display: flex; flex-direction: column; gap: 12px; }
+    .service-card { display: flex; justify-content: space-between; background: white; border: 1px solid var(--border); padding: 16px; border-radius: var(--radius); align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
+    .service-name { font-weight: 700; font-size: 14px; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+    .service-price { font-weight: 700; font-size: 14px; color: var(--accent); }
+    
+    .booking-card { background: white; border: 1px solid var(--border); padding: 24px; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .booking-form { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .input-field { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); font-size: 13px; outline: none; }
+    
+    footer { background: var(--primary-dark); color: #E9D5FF; padding: 32px 0 16px 0; font-size: 12px; }
+    footer h3 { color: white; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+    .footer-bottom { text-align: center; margin-top: 24px; color: #A855F7; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <header class="hero" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="salon-name">Glow & Style Lounge</h1>
+        <p id="salon-tagline">Indulge in professional hair design, beauty treatments, and therapeutic massage.</p>
+        <a href="#booking" class="btn btn-pink">Book Treatment</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="section-title">Pamper Yourself</h2>
+        <p style="font-size: 14px; max-width: 480px; margin: 0 auto; color: var(--text-muted);" id="salon-desc">
+          Step into our premium lounge. We offer visual-heavy customized skincare treatments, haircutting styles, and makeup makeovers.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Salon Service Menu</h2>
+        <p class="section-subtitle text-center">Indulge in styling rates customized by certified experts</p>
+        <div class="services-list" id="services-grid">
+          <!-- Dynamically Injected Services -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="booking">
+      <div class="container">
+        <div class="booking-card">
+          <h2 class="section-title">Schedule An Appointment</h2>
+          <p class="section-subtitle">Book your beauty slot online.</p>
+          <form class="booking-form" onsubmit="event.preventDefault(); alert('Appointment request sent!');">
+            <input type="text" placeholder="Your Name" required class="input-field">
+            <input type="tel" placeholder="Mobile Number" required class="input-field">
+            <select class="input-field" required>
+              <option value="" disabled selected>Select Stylist</option>
+              <option value="priya">Sarah (Senior Stylist)</option>
+              <option value="neha">Monica (Skincare Pro)</option>
+            </select>
+            <input type="date" required class="input-field">
+            <button type="submit" class="btn btn-pink" style="width:100%;">Reserve Slot</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <h3 id="footer-logo">Glow Salon</h3>
+        <p><strong>Phone:</strong> <span id="salon-phone">+91 98765 43210</span></p>
+        <p><strong>Address:</strong> <span id="salon-address">12 Fashion Blvd, Pune</span></p>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let business = null;
+      if (window.parent && typeof window.parent.getSelectedRestaurant === 'function') {
+        business = window.parent.getSelectedRestaurant();
+        if (business) renderTemplate(business);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const demoId = params.get('demoId');
+        if (demoId) {
+          const token = localStorage.getItem('token');
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          fetch(`/api/restaurants/detail/${demoId}`, { headers })
+            .then(res => res.json())
+            .then(data => { if (data && !data.message) renderTemplate(data); });
+        }
+      }
+    });
+
+    function renderTemplate(business) {
+      document.getElementById('salon-name').textContent = business.mslname;
+      document.getElementById('footer-logo').textContent = business.mslname;
+      if (business.description) {
+        document.getElementById('salon-desc').textContent = business.description;
+      }
+      document.getElementById('salon-phone').textContent = business.phoneNumber || 'N/A';
+      document.getElementById('salon-address').textContent = business.fullAddress || 'N/A';
+
+      const heroBg = document.getElementById('hero-bg');
+      if (heroBg && business.image) {
+        heroBg.style.backgroundImage = `url('${business.image}')`;
+      }
+
+      const servicesGrid = document.getElementById('services-grid');
+      if (servicesGrid) {
+        const servsStr = business.popularProductsOrServices || 'Haircut & Styling, Skin Facial, Bridal Makeup';
+        const services = servsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const emojis = ['✂️', '💆‍♀️', '💄', '💅', '🧼'];
+        const prices = ['₹599', '₹1,200', '₹3,500', '₹499', '₹800'];
+        
+        servicesGrid.innerHTML = services.map((serv, i) => {
+          const emoji = emojis[i % emojis.length];
+          const price = prices[i % prices.length];
+          return `
+            <div class="service-card">
+              <span class="service-name"><span>${emoji}</span> ${serv}</span>
+              <span class="service-price">${price}</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

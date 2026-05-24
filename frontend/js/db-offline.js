@@ -101,6 +101,7 @@ const offlineDb = {
         const formData = new FormData();
         formData.append('mslCode', item.mslCode || '');
         formData.append('mslname', item.mslname);
+        formData.append('businessType', item.businessType || 'Restaurant');
         formData.append('ownerName', item.ownerName || '');
         formData.append('phoneNumber', item.phoneNumber || '');
         formData.append('latitude', item.latitude);
@@ -112,6 +113,10 @@ const offlineDb = {
         formData.append('country', item.country || '');
         formData.append('pincode', item.pincode || '');
         formData.append('notes', item.notes || '');
+        formData.append('description', item.description || '');
+        formData.append('popularProductsOrServices', item.popularProductsOrServices || '');
+        formData.append('website', item.website || '');
+        formData.append('socialLinks', item.socialLinks || '');
 
         if (item.imageBlob) {
           const file = new File([item.imageBlob], 'captured_image.png', { type: item.imageType || 'image/png' });

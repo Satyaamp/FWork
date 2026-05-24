@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Shop Showcase Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #059669; /* Emerald */
+      --primary-dark: #064E3B;
+      --accent: #4F46E5; /* Indigo */
+      --bg-light: #ECFDF5;
+      --text-dark: #065F46;
+      --text-muted: #6B7280;
+      --border: #A7F3D0;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; color: #1E293B; background-color: var(--bg-light); line-height: 1.6; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+    .text-center { text-align: center; }
+    .section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary-dark); }
+    .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .hero { position: relative; height: 320px; background-color: var(--primary-dark); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(6,78,59,0.4), rgba(6,78,59,0.85)); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-content h1 { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
+    .hero-content p { font-size: 14px; color: #E2E8F0; margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+    .btn-emerald { background-color: var(--primary); color: white; }
+    
+    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .product-card { background: white; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01); display: flex; flex-direction: column; justify-content: space-between; }
+    .product-icon { font-size: 32px; margin-bottom: 8px; }
+    .product-name { font-weight: 700; font-size: 14px; color: var(--primary-dark); margin-bottom: 4px; }
+    .product-desc { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.3; }
+    .product-price { font-weight: 700; font-size: 14px; color: var(--accent); margin-top: auto; }
+    
+    .booking-card { background: white; border: 1px solid var(--border); padding: 24px; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .booking-form { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .input-field { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); font-size: 13px; outline: none; }
+    
+    footer { background: #0F172A; color: #94A3B8; padding: 32px 0 16px 0; font-size: 12px; }
+    footer h3 { color: white; margin-bottom: 8px; }
+    .footer-bottom { text-align: center; margin-top: 24px; color: #475569; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <header class="hero" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="shop-name">The Retail Spot</h1>
+        <p id="shop-tagline">Quality goods, wholesale rates, and exceptional customer service.</p>
+        <a href="#products" class="btn btn-emerald">Shop Products</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="section-title">Shop Our Store</h2>
+        <p style="font-size: 14px; max-width: 480px; margin: 0 auto; color: var(--text-muted);" id="shop-desc">
+          Browse our wide selection of items. We focus on providing high-quality inventory at the best competitive pricing in town.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="products" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Featured Products</h2>
+        <p class="section-subtitle text-center">Top selling catalog items in stock today</p>
+        <div class="products-grid" id="products-list">
+          <!-- Dynamically Injected Products -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="booking-card">
+          <h2 class="section-title">Product Inquiry</h2>
+          <p class="section-subtitle">Check product stock levels or request bulk quotes.</p>
+          <form class="booking-form" onsubmit="event.preventDefault(); alert('Product inquiry request sent!');">
+            <input type="text" placeholder="Your Name" required class="input-field">
+            <input type="tel" placeholder="Mobile Number" required class="input-field">
+            <input type="text" placeholder="Product Name / Description" required class="input-field">
+            <button type="submit" class="btn btn-emerald" style="width:100%;">Inquire Stock</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <h3>Contact Location</h3>
+        <p id="shop-address">23 Retail Plaza, Market Road, Pune</p>
+        <p style="margin-top: 8px;"><strong>Phone Helpdesk:</strong> <span id="shop-phone">+91 98765 43210</span></p>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let business = null;
+      if (window.parent && typeof window.parent.getSelectedRestaurant === 'function') {
+        business = window.parent.getSelectedRestaurant();
+        if (business) renderTemplate(business);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const demoId = params.get('demoId');
+        if (demoId) {
+          const token = localStorage.getItem('token');
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          fetch(`/api/restaurants/detail/${demoId}`, { headers })
+            .then(res => res.json())
+            .then(data => { if (data && !data.message) renderTemplate(data); });
+        }
+      }
+    });
+
+    function renderTemplate(business) {
+      document.getElementById('shop-name').textContent = business.mslname;
+      if (business.description) {
+        document.getElementById('shop-desc').textContent = business.description;
+      }
+      document.getElementById('shop-phone').textContent = business.phoneNumber || 'N/A';
+      document.getElementById('shop-address').textContent = business.fullAddress || 'N/A';
+
+      const heroBg = document.getElementById('hero-bg');
+      if (heroBg && business.image) {
+        heroBg.style.backgroundImage = `url('${business.image}')`;
+      }
+
+      const productsList = document.getElementById('products-list');
+      if (productsList) {
+        const prodStr = business.popularProductsOrServices || 'Luxury Handbag, Designer Watches, Leather Shoes';
+        const products = prodStr.split(',').map(p => p.trim()).filter(p => p.length > 0);
+        const icons = ['👜', '⌚', '👞', '🕶️', '👕', '📱'];
+        const prices = ['₹1,499', '₹4,999', '₹2,499', '₹999', '₹799', '₹12,999'];
+        
+        productsList.innerHTML = products.map((prod, i) => {
+          const icon = icons[i % icons.length];
+          const price = prices[i % prices.length];
+          return `
+            <div class="product-card">
+              <div>
+                <div class="product-icon">${icon}</div>
+                <h4 class="product-name">${prod}</h4>
+                <p class="product-desc">High quality craftsmanship, durable finish, and premium materials.</p>
+              </div>
+              <div class="product-price">${price}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

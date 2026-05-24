@@ -167,6 +167,42 @@
       </div>
 
       <div class="form-group">
+        <label for="business-type">Business Type</label>
+        <select id="business-type" class="form-control">
+          <option value="Restaurant" selected>Restaurant</option>
+          <option value="Hospital">Hospital</option>
+          <option value="Salon">Salon</option>
+          <option value="Cafe">Cafe</option>
+          <option value="Hotel">Hotel</option>
+          <option value="Clinic">Clinic</option>
+          <option value="Gym">Gym</option>
+          <option value="Bakery">Bakery</option>
+          <option value="Retail Shop">Retail Shop</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="resto-description">Business Description</label>
+        <textarea id="resto-description" class="form-control" rows="2" placeholder="Catchy one-line business description for their website..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="resto-popular-products" id="resto-popular-products-label">Popular Dishes (comma separated)</label>
+        <input type="text" id="resto-popular-products" class="form-control" placeholder="e.g. Butter Chicken, Pizza, Pasta">
+      </div>
+
+      <div class="form-group">
+        <label for="resto-website">Business Website (Optional)</label>
+        <input type="url" id="resto-website" class="form-control" placeholder="e.g. https://myresto.com">
+      </div>
+
+      <div class="form-group">
+        <label for="resto-social">Instagram/Facebook Handle (Optional)</label>
+        <input type="text" id="resto-social" class="form-control" placeholder="e.g. @myresto">
+      </div>
+
+      <div class="form-group">
         <label for="resto-owner">Owner Name</label>
         <input type="text" id="resto-owner" class="form-control" placeholder="e.g. Rajesh Kumar">
       </div>
@@ -200,6 +236,10 @@
             <span class="review-value" id="rev-name">Hotel Palace (Draft)</span>
           </div>
           <div class="review-row">
+            <span class="review-label">Business Type</span>
+            <span class="review-value" id="rev-businesstype">Restaurant</span>
+          </div>
+          <div class="review-row">
             <span class="review-label">Owner</span>
             <span class="review-value" id="rev-owner">Rajesh Kumar</span>
           </div>
@@ -214,6 +254,22 @@
           <div class="review-row">
             <span class="review-label">GPS Coords</span>
             <span class="review-value" id="rev-coords">19.0760, 72.8777</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Description</span>
+            <span class="review-value" id="rev-description">N/A</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label" id="rev-popular-label">Popular Dishes</span>
+            <span class="review-value" id="rev-popular-value">N/A</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Website</span>
+            <span class="review-value" id="rev-website">N/A</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Social Handle</span>
+            <span class="review-value" id="rev-social">N/A</span>
           </div>
           <div class="review-row">
             <span class="review-label">Notes</span>
@@ -287,6 +343,40 @@
 
       // Native File input change
       document.getElementById('native-file-picker').addEventListener('change', handleFilePicker);
+
+      // Dynamic products/services label mapper based on business type selection
+      const businessTypeEl = document.getElementById('business-type');
+      const popularProductsLabel = document.getElementById('resto-popular-products-label');
+      const popularProductsInput = document.getElementById('resto-popular-products');
+
+      const productLabelMap = {
+        'Restaurant': { label: 'Popular Dishes (comma separated)', placeholder: 'e.g. Butter Chicken, Pizza, Pasta' },
+        'Cafe': { label: 'Coffee Specials & Menu (comma separated)', placeholder: 'e.g. Espresso, Croissant, Cappuccino' },
+        'Hospital': { label: 'Key Departments (comma separated)', placeholder: 'e.g. Cardiology, Pediatrics, Emergency' },
+        'Clinic': { label: 'Specialized Services (comma separated)', placeholder: 'e.g. Dental cleaning, Skin treatment' },
+        'Salon': { label: 'Salon Services (comma separated)', placeholder: 'e.g. Haircut, Facial, Manicure' },
+        'Gym': { label: 'Training Programs (comma separated)', placeholder: 'e.g. Weightlifting, Cardio, Yoga' },
+        'Bakery': { label: 'Bakery Specials (comma separated)', placeholder: 'e.g. Chocolate Cake, Sourdough, Muffins' },
+        'Retail Shop': { label: 'Top Products / Categories (comma separated)', placeholder: 'e.g. Groceries, Toys, Clothing' },
+        'Hotel': { label: 'Room Types & Amenities (comma separated)', placeholder: 'e.g. Deluxe Room, Suite, Swimming Pool' },
+        'Other': { label: 'Popular Services / Products (comma separated)', placeholder: 'e.g. Consulting, Printing, Cleaning' }
+      };
+
+      function updatePopularProductsField() {
+        if (!businessTypeEl) return;
+        const selected = businessTypeEl.value || 'Restaurant';
+        const config = productLabelMap[selected] || productLabelMap['Other'];
+        if (popularProductsLabel) popularProductsLabel.textContent = config.label;
+        if (popularProductsInput) popularProductsInput.placeholder = config.placeholder;
+      }
+
+      if (businessTypeEl) {
+        businessTypeEl.addEventListener('change', updatePopularProductsField);
+        updatePopularProductsField(); // Initial run
+      }
+      
+      // Save mapping globally so populateReviewData can use it
+      window.productLabelMap = productLabelMap;
     });
 
     // Step routing
@@ -755,15 +845,30 @@
       // Metadata
       const mslCodeVal = document.getElementById('msl-code').value;
       const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Entry';
+      const businessTypeVal = document.getElementById('business-type').value;
       const ownerVal = document.getElementById('resto-owner').value.trim() || 'N/A';
       const phoneVal = document.getElementById('resto-phone').value.trim() || 'N/A';
       const notesVal = document.getElementById('resto-notes').value.trim() || 'N/A';
+      const descriptionVal = document.getElementById('resto-description').value.trim() || 'N/A';
+      const popularProductsVal = document.getElementById('resto-popular-products').value.trim() || 'N/A';
+      const websiteVal = document.getElementById('resto-website').value.trim() || 'N/A';
+      const socialVal = document.getElementById('resto-social').value.trim() || 'N/A';
 
       document.getElementById('rev-mslcode').textContent = mslCodeVal;
       document.getElementById('rev-name').textContent = nameVal;
+      document.getElementById('rev-businesstype').textContent = businessTypeVal;
       document.getElementById('rev-owner').textContent = ownerVal;
       document.getElementById('rev-phone').textContent = phoneVal;
       document.getElementById('rev-notes').textContent = notesVal;
+      document.getElementById('rev-description').textContent = descriptionVal;
+      
+      const config = (window.productLabelMap && window.productLabelMap[businessTypeVal]) 
+        || { label: 'Popular Products' };
+      document.getElementById('rev-popular-label').textContent = config.label.split(' (')[0];
+      document.getElementById('rev-popular-value').textContent = popularProductsVal;
+      
+      document.getElementById('rev-website').textContent = websiteVal;
+      document.getElementById('rev-social').textContent = socialVal;
 
       if (locationData) {
         document.getElementById('rev-address').textContent = document.getElementById('loc-address').value.trim();
@@ -778,9 +883,14 @@
 
       const mslCodeVal = document.getElementById('msl-code').value;
       const nameVal = document.getElementById('resto-name').value.trim() || 'Unnamed Entry';
+      const businessTypeVal = document.getElementById('business-type').value;
       const ownerVal = document.getElementById('resto-owner').value.trim();
       const phoneVal = document.getElementById('resto-phone').value.trim();
       const notesVal = document.getElementById('resto-notes').value.trim();
+      const descriptionVal = document.getElementById('resto-description').value.trim();
+      const popularProductsVal = document.getElementById('resto-popular-products').value.trim();
+      const websiteVal = document.getElementById('resto-website').value.trim();
+      const socialVal = document.getElementById('resto-social').value.trim();
 
       // Capture any manual user edits to the location fields
       const finalAddress = document.getElementById('loc-address').value.trim();
@@ -796,9 +906,14 @@
           const offlineData = {
             mslCode: mslCodeVal,
             mslname: nameVal,
+            businessType: businessTypeVal,
             ownerName: ownerVal,
             phoneNumber: phoneVal,
             notes: notesVal,
+            description: descriptionVal,
+            popularProductsOrServices: popularProductsVal,
+            website: websiteVal,
+            socialLinks: socialVal,
             latitude: locationData.latitude,
             longitude: locationData.longitude,
             fullAddress: finalAddress,
@@ -830,9 +945,14 @@
         const formData = new FormData();
         formData.append('mslCode', mslCodeVal);
         formData.append('mslname', nameVal);
+        formData.append('businessType', businessTypeVal);
         formData.append('ownerName', ownerVal);
         formData.append('phoneNumber', phoneVal);
         formData.append('notes', notesVal);
+        formData.append('description', descriptionVal);
+        formData.append('popularProductsOrServices', popularProductsVal);
+        formData.append('website', websiteVal);
+        formData.append('socialLinks', socialVal);
         formData.append('latitude', locationData.latitude);
         formData.append('longitude', locationData.longitude);
         formData.append('fullAddress', finalAddress);

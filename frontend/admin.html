@@ -120,16 +120,496 @@
       align-items: center;
       justify-content: center;
     }
+
+    /* Live Preview Pane Styling */
+    .live-preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 12px 0 40px;
+    }
+
+    /* Horizontal Categories Navbar */
+    .preview-navbar-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      padding: 4px 4px 12px 4px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: flex-start;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+    }
+
+    .preview-navbar-wrapper::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .preview-navbar-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    .preview-navbar {
+      display: flex;
+      gap: 10px;
+      background: rgba(241, 245, 249, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 6px;
+      border-radius: 30px;
+      border: 1px solid var(--border-color);
+      width: max-content;
+      margin: 0 auto;
+    }
+
+    .preview-nav-btn {
+      background: none;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition-fast) cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .preview-nav-btn:hover {
+      color: var(--text-main);
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .preview-nav-btn.active {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Premium Phone Mockup Frame */
+    .phone-mockup-wrapper {
+      position: relative;
+      width: 360px;
+      height: 740px;
+      background: #0f172a;
+      border: 12px solid #1e293b;
+      border-radius: 48px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 4px #334155,
+        inset 0 0 10px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .phone-mockup-wrapper:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 4px #334155,
+        inset 0 0 10px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Notch */
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 24px;
+      background: #1e293b;
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-notch::before {
+      content: '';
+      width: 45px;
+      height: 4px;
+      background: #475569;
+      border-radius: 2px;
+      margin-bottom: 2px;
+    }
+
+    /* Status Bar */
+    .phone-status-bar {
+      height: 38px;
+      background: #0f172a;
+      color: rgba(255, 255, 255, 0.85);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 24px 6px 24px;
+      font-size: 11px;
+      font-weight: 600;
+      user-select: none;
+      z-index: 99;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .phone-status-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .phone-battery {
+      width: 18px;
+      height: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 2px;
+      position: relative;
+      padding: 1px;
+    }
+
+    .phone-battery::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 2px;
+      width: 2px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 0 1px 1px 0;
+    }
+
+    .phone-battery-level {
+      height: 100%;
+      background: #10B981;
+      width: 80%;
+      border-radius: 1px;
+    }
+
+    /* Iframe */
+    #admin-preview-frame {
+      width: 100%;
+      flex: 1;
+      border: none;
+      background: white;
+    }
+
+    /* Bottom Home Indicator */
+    .phone-home-bar {
+      height: 20px;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 99;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .phone-home-indicator {
+      width: 110px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 2px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .phone-mockup-wrapper {
+        width: 100%;
+        height: 620px;
+        border-width: 8px;
+        border-radius: 36px;
+      }
+
+      .phone-notch {
+        width: 110px;
+        height: 20px;
+      }
+    }
+
+    /* Mobile Drawer Sidebar Styles */
+    @media (max-width: 768px) {
+
+      /* Hide the bottom mobile tab nav */
+      .admin-mobile-nav {
+        display: none !important;
+      }
+
+      /* Adjust main container to remove bottom padding previously needed for mobile nav */
+      .admin-dashboard-container {
+        padding-bottom: 0px !important;
+      }
+
+      /* Backdrop Overlay style */
+      .sidebar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 999;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* Hamburger menu button */
+      .mobile-hamburger-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--text-main);
+        cursor: pointer;
+        padding: 8px;
+        margin-left: -6px;
+        margin-right: 12px;
+        border-radius: 8px;
+        transition: background-color var(--transition-fast);
+      }
+
+      .mobile-hamburger-btn:hover {
+        background-color: #F1F5F9;
+      }
+
+      .mobile-hamburger-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: var(--text-main);
+        stroke-width: 2.5;
+        fill: none;
+      }
+
+      /* Sidebar Drawer from left */
+      .admin-sidebar {
+        display: flex !important;
+        position: fixed !important;
+        top: 0;
+        left: -280px;
+        /* Hidden offscreen to the left */
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
+        background-color: #0F172A !important;
+        /* Slate 900 background */
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 28px 20px;
+        flex-direction: column;
+        color: white;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* Show sidebar drawer when open class is active */
+      .admin-sidebar.open-mobile {
+        transform: translateX(280px);
+        /* Slides in from left to right */
+      }
+
+      /* Add close button inside the sidebar on mobile */
+      .mobile-sidebar-close-btn {
+        display: flex !important;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        z-index: 1010;
+      }
+
+      .mobile-sidebar-close-btn:hover {
+        color: white;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .mobile-sidebar-close-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 2.5;
+        fill: none;
+      }
+
+      /* Sidebar Inner components on Mobile drawer */
+      .sidebar-brand {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        margin-bottom: 32px !important;
+        padding: 0 8px !important;
+      }
+
+      .sidebar-brand svg {
+        width: 32px !important;
+        height: 32px !important;
+        stroke: var(--primary) !important;
+        fill: rgba(16, 185, 129, 0.1) !important;
+      }
+
+      .sidebar-brand span {
+        font-size: 19px !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.5px !important;
+        color: white !important;
+      }
+
+      .sidebar-user {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px !important;
+        padding: 12px !important;
+        margin-bottom: 28px !important;
+      }
+
+      .sidebar-avatar {
+        width: 40px !important;
+        height: 40px !important;
+        background-color: var(--primary-dark) !important;
+        color: white !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+      }
+
+      .sidebar-user-details {
+        display: flex !important;
+        flex-direction: column !important;
+        text-align: left !important;
+      }
+
+      .sidebar-user-details .user-name {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: white !important;
+      }
+
+      .sidebar-menu {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+      }
+
+      .sidebar-link {
+        background: none !important;
+        border: none !important;
+        color: #94A3B8 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 16px !important;
+        border-radius: 12px !important;
+        cursor: pointer !important;
+        font-family: var(--font-family) !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+        transition: var(--transition-fast) !important;
+        width: 100% !important;
+        box-shadow: none !important;
+      }
+
+      .sidebar-link svg {
+        width: 20px !important;
+        height: 20px !important;
+        stroke: #94A3B8 !important;
+        stroke-width: 2 !important;
+        fill: none !important;
+        transition: var(--transition-fast) !important;
+        margin: 0 !important;
+      }
+
+      .sidebar-link:hover {
+        color: white !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
+      }
+
+      .sidebar-link.active {
+        color: white !important;
+        background-color: var(--primary) !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+      }
+
+      .sidebar-link.active svg {
+        stroke: white !important;
+      }
+
+      .sidebar-logout-btn {
+        background: none !important;
+        border: none !important;
+        color: #F87171 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 16px !important;
+        border-radius: 12px !important;
+        cursor: pointer !important;
+        font-family: var(--font-family) !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        transition: var(--transition-fast) !important;
+        text-align: left !important;
+        margin-top: auto !important;
+        box-shadow: none !important;
+      }
+
+      .sidebar-logout-btn svg {
+        width: 20px !important;
+        height: 20px !important;
+        stroke: #F87171 !important;
+        stroke-width: 2 !important;
+        fill: none !important;
+      }
+
+      .sidebar-logout-btn:hover {
+        background-color: rgba(239, 68, 68, 0.08) !important;
+      }
+    }
+
+    /* Desktop fallback styles */
+    .mobile-hamburger-btn,
+    .mobile-sidebar-close-btn {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
   <!-- Sync Banner -->
   <div class="sync-banner" id="sync-banner"></div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
   <div class="admin-dashboard-container">
     <!-- Desktop Sidebar -->
     <aside class="admin-sidebar">
+      <button class="mobile-sidebar-close-btn" id="mobile-sidebar-close" title="Close Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
       <div class="sidebar-brand">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -160,21 +640,21 @@
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
           </svg>
-          <span>Outlets Directory</span>
+          <span>Master List</span>
         </button>
         <button class="sidebar-link" data-tab="workers">
           <svg viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
           </svg>
-          <span>Field Workers</span>
+          <span>Field Executive</span>
         </button>
         <button class="sidebar-link" data-tab="map-view">
           <svg viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M9 6.75V15m6-6.75V15m-10.5-3h15m-16.5-6.75a2.25 2.25 0 012.25-2.25h13.5a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25H6.25a2.25 2.25 0 01-2.25-2.25V5.25z" />
           </svg>
-          <span>Interactive Map</span>
+          <span>Map</span>
         </button>
         <button class="sidebar-link" data-tab="calendar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -184,6 +664,21 @@
             <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
           <span>Calendar</span>
+        </button>
+        <button class="sidebar-link" data-tab="presentations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span>Presentations</span>
+        </button>
+        <button class="sidebar-link" data-tab="live-preview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <path d="M12 18h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+          </svg>
+          <span>Live Preview</span>
         </button>
         <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 12px 0;"></div>
 
@@ -215,12 +710,24 @@
       </header>
 
       <!-- Mobile Header -->
-      <header class="app-header admin-mobile-header">
-        <h1>FieldForce Admin</h1>
-        <div style="display: flex; gap: 8px;">
+      <header class="app-header admin-mobile-header"
+        style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;">
+        <div style="display: flex; align-items: center;">
+          <button class="mobile-hamburger-btn" id="mobile-hamburger-trigger" title="Open Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="4" y1="6" x2="20" y2="6" stroke-linecap="round" stroke-linejoin="round"></line>
+              <line x1="4" y1="12" x2="20" y2="12" stroke-linecap="round" stroke-linejoin="round"></line>
+              <line x1="4" y1="18" x2="20" y2="18" stroke-linecap="round" stroke-linejoin="round"></line>
+            </svg>
+          </button>
+          <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--text-main);">FieldForce Admin</h1>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
           <button class="badge" onclick="window.location.href='/add-restaurant'"
-            style="border: none; cursor: pointer; background-color: var(--primary); color: white;">+ Add</button>
-          <button class="badge badge-admin logout-action" style="border: none; cursor: pointer;">Logout</button>
+            style="border: none; cursor: pointer; background-color: var(--primary); color: white; height: 32px; padding: 0 12px; font-weight: 700; border-radius: 8px;">+
+            Add</button>
+          <button class="badge badge-admin logout-action"
+            style="border: none; cursor: pointer; height: 32px; padding: 0 12px; font-weight: 700; border-radius: 8px;">Logout</button>
         </div>
       </header>
 
@@ -274,7 +781,7 @@
           </div>
         </div>
 
-        <!-- Tab 2: Outlets Directory -->
+        <!-- Tab 2: MSL LIST -->
         <div class="tab-pane" id="pane-outlets">
           <div class="data-table-container">
             <div class="outlets-toolbar">
@@ -457,6 +964,103 @@
           </div>
         </div>
 
+        <!-- Tab 6: Presentations -->
+        <div class="tab-pane" id="pane-presentations">
+          <div class="data-table-container">
+            <div class="table-header-bar">
+              <h3 style="font-weight: 700; color: var(--text-main); font-size: 16px;">Sales & Demo Presentations</h3>
+              <button class="btn btn-primary" id="open-presentation-modal-btn"
+                style="padding: 8px 16px; font-size: 13px; font-weight: 600; width: auto; display: flex; align-items: center; gap: 6px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  style="width: 16px; height: 16px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add Presentation
+              </button>
+            </div>
+
+            <div class="table-responsive-wrapper" style="overflow-x: auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Thumbnail</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Mapped Types</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="presentations-table-body">
+                  <tr>
+                    <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-light);">Loading
+                      presentations...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 7: Live Preview -->
+        <div class="tab-pane" id="pane-live-preview">
+          <div class="live-preview-container">
+            <!-- Category Sub-Navbar -->
+            <div class="preview-navbar-wrapper">
+              <div class="preview-navbar" id="preview-category-navbar">
+                <button class="preview-nav-btn active" data-type="Restaurant">🍴 Restaurant</button>
+                <button class="preview-nav-btn" data-type="Hospital">🏥 Hospital</button>
+                <button class="preview-nav-btn" data-type="Salon">💇 Salon</button>
+                <button class="preview-nav-btn" data-type="Cafe">☕ Cafe</button>
+                <button class="preview-nav-btn" data-type="Hotel">🏨 Hotel</button>
+                <button class="preview-nav-btn" data-type="Clinic">🩺 Clinic</button>
+                <button class="preview-nav-btn" data-type="Gym">💪 Gym</button>
+                <button class="preview-nav-btn" data-type="Bakery">🍰 Bakery</button>
+                <button class="preview-nav-btn" data-type="Retail Shop">🛍️ Retail Shop</button>
+                <button class="preview-nav-btn" data-type="Other">🏢 Other</button>
+              </div>
+            </div>
+
+            <!-- Phone Mockup Device Wrapper -->
+            <div class="phone-mockup-wrapper">
+              <!-- Notch -->
+              <div class="phone-notch"></div>
+
+              <!-- Status Bar -->
+              <div class="phone-status-bar">
+                <div class="phone-time" id="preview-phone-time">12:35</div>
+                <div class="phone-status-right">
+                  <!-- Wifi Icon -->
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    style="width: 13px; height: 13px; transform: translateY(-1px);">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M8.25 15.75A4.75 4.75 0 0 1 12 14.25a4.75 4.75 0 0 1 3.75 1.5M6 12.75a8.25 8.25 0 0 1 12 0M3.75 9.75a11.25 11.25 0 0 1 16.5 0M12 18.75h.008v.008H12v-.008Z" />
+                  </svg>
+                  <!-- Cellular Icon -->
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    style="width: 12px; height: 12px;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 19.5h18M18 19.5v-15M14.25 19.5V7.5M10.5 19.5v-8.25M6.75 19.5V15" />
+                  </svg>
+                  <!-- Battery -->
+                  <div class="phone-battery">
+                    <div class="phone-battery-level"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Content IFrame -->
+              <iframe id="admin-preview-frame" src="/templates/restaurant/index.html"></iframe>
+
+              <!-- Home Indicator Bar -->
+              <div class="phone-home-bar">
+                <div class="phone-home-indicator"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -490,6 +1094,21 @@
           d="M9 6.75V15m6-6.75V15m-10.5-3h15m-16.5-6.75a2.25 2.25 0 012.25-2.25h13.5a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25H6.25a2.25 2.25 0 01-2.25-2.25V5.25z" />
       </svg>
       <span>Map</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="presentations">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      <span>Presentations</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="live-preview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+        <path d="M12 18h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+      </svg>
+      <span>Preview</span>
     </button>
     <button class="mobile-nav-btn" data-tab="calendar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -541,9 +1160,45 @@
 
       document.getElementById('edit-outlet-mslcode').value = item.mslCode || 'N/A';
       document.getElementById('edit-outlet-name').value = item.mslname || '';
+      document.getElementById('edit-outlet-type').value = item.businessType || 'Restaurant';
       document.getElementById('edit-outlet-owner').value = item.ownerName || '';
       document.getElementById('edit-outlet-phone').value = item.phoneNumber && item.phoneNumber !== 'N/A' ? item.phoneNumber : '';
       document.getElementById('edit-outlet-location').value = `${item.city || 'N/A'} - ${item.pincode || 'N/A'}`;
+      document.getElementById('edit-outlet-description').value = item.description || '';
+      document.getElementById('edit-outlet-popular').value = item.popularProductsOrServices || '';
+      document.getElementById('edit-outlet-website').value = item.website || '';
+      document.getElementById('edit-outlet-social').value = item.socialLinks || '';
+
+      // Update label dynamically in edit modal
+      const editPopularLabel = document.getElementById('edit-outlet-popular-label');
+      const editPopularInput = document.getElementById('edit-outlet-popular');
+      const typeVal = item.businessType || 'Restaurant';
+      const productLabelMap = {
+        'Restaurant': { label: 'Popular Dishes (comma separated)', placeholder: 'e.g. Butter Chicken, Pizza, Pasta' },
+        'Cafe': { label: 'Coffee Specials & Menu (comma separated)', placeholder: 'e.g. Espresso, Croissant, Cappuccino' },
+        'Hospital': { label: 'Key Departments (comma separated)', placeholder: 'e.g. Cardiology, Pediatrics, Emergency' },
+        'Clinic': { label: 'Specialized Services (comma separated)', placeholder: 'e.g. Dental cleaning, Skin treatment' },
+        'Salon': { label: 'Salon Services (comma separated)', placeholder: 'e.g. Haircut, Facial, Manicure' },
+        'Gym': { label: 'Training Programs (comma separated)', placeholder: 'e.g. Weightlifting, Cardio, Yoga' },
+        'Bakery': { label: 'Bakery Specials (comma separated)', placeholder: 'e.g. Chocolate Cake, Sourdough, Muffins' },
+        'Retail Shop': { label: 'Top Products / Categories (comma separated)', placeholder: 'e.g. Groceries, Toys, Clothing' },
+        'Hotel': { label: 'Room Types & Amenities (comma separated)', placeholder: 'e.g. Deluxe Room, Suite, Swimming Pool' },
+        'Other': { label: 'Popular Services / Products (comma separated)', placeholder: 'e.g. Consulting, Printing, Cleaning' }
+      };
+      const config = productLabelMap[typeVal] || productLabelMap['Other'];
+      if (editPopularLabel) editPopularLabel.textContent = config.label;
+      if (editPopularInput) editPopularInput.placeholder = config.placeholder;
+
+      const editTypeSelect = document.getElementById('edit-outlet-type');
+      if (editTypeSelect && !editTypeSelect.dataset.listenerAdded) {
+        editTypeSelect.addEventListener('change', () => {
+          const newTypeVal = editTypeSelect.value || 'Restaurant';
+          const newConfig = productLabelMap[newTypeVal] || productLabelMap['Other'];
+          if (editPopularLabel) editPopularLabel.textContent = newConfig.label;
+          if (editPopularInput) editPopularInput.placeholder = newConfig.placeholder;
+        });
+        editTypeSelect.dataset.listenerAdded = 'true';
+      }
 
       document.getElementById('edit-outlet-overlay').classList.add('active');
     };
@@ -565,16 +1220,16 @@
       const resetInput = document.getElementById('reset-password-val');
       const resetFormSection = document.getElementById('reset-password-form-section');
       const resetSuccessSection = document.getElementById('reset-password-success-section');
-      
+
       if (targetUsernameInput && usernameText && resetInput) {
         targetUsernameInput.value = username;
         usernameText.textContent = `@${username}`;
         resetInput.value = '';
-        
+
         // Reset visibility to show form
         if (resetFormSection) resetFormSection.style.display = 'block';
         if (resetSuccessSection) resetSuccessSection.style.display = 'none';
-        
+
         const modal = document.getElementById('reset-password-modal-overlay');
         if (modal) modal.classList.add('active');
       }
@@ -590,7 +1245,7 @@
 
       if (u) {
         document.getElementById('avatar-initial').textContent = u.name.charAt(0).toUpperCase();
-        
+
         // Hide superadmin-only actions (like Delete Mode toggle) from regular admins
         if (u.role !== 'superadmin') {
           const deleteToggle = document.querySelector('.switch-toggle-wrapper');
@@ -1060,10 +1715,20 @@
           const nameInput = document.getElementById('edit-outlet-name');
           const ownerInput = document.getElementById('edit-outlet-owner');
           const phoneInput = document.getElementById('edit-outlet-phone');
+          const typeSelect = document.getElementById('edit-outlet-type');
+          const descriptionInput = document.getElementById('edit-outlet-description');
+          const popularInput = document.getElementById('edit-outlet-popular');
+          const websiteInput = document.getElementById('edit-outlet-website');
+          const socialInput = document.getElementById('edit-outlet-social');
 
           const mslname = nameInput.value.trim();
           const ownerName = ownerInput.value.trim();
           const phoneNumber = phoneInput.value.trim();
+          const businessType = typeSelect.value;
+          const description = descriptionInput ? descriptionInput.value.trim() : '';
+          const popularProductsOrServices = popularInput ? popularInput.value.trim() : '';
+          const website = websiteInput ? websiteInput.value.trim() : '';
+          const socialLinks = socialInput ? socialInput.value.trim() : '';
 
           if (!mslname) {
             alert('MSLname is required.');
@@ -1086,7 +1751,7 @@
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
               },
-              body: JSON.stringify({ mslname, ownerName, phoneNumber })
+              body: JSON.stringify({ mslname, ownerName, phoneNumber, businessType, description, popularProductsOrServices, website, socialLinks })
             });
 
             const data = await response.json();
@@ -1179,12 +1844,28 @@
         } else if (tabId === 'calendar') {
           panelTitleEl.textContent = 'Activity Calendar';
           if (panelSubtitleEl) panelSubtitleEl.textContent = 'View daily additions by worker';
+        } else if (tabId === 'presentations') {
+          panelTitleEl.textContent = 'Presentations Management';
+          if (panelSubtitleEl) panelSubtitleEl.textContent = 'Upload and map presentation or sales demo materials';
+        } else if (tabId === 'live-preview') {
+          panelTitleEl.textContent = 'Live Showcase Preview';
+          if (panelSubtitleEl) panelSubtitleEl.textContent = 'Interactive template sandboxes for all industries';
         }
       }
 
       // If switching to map view tab, render/invalidate Leaflet map
       if (tabId === 'map-view') {
         setTimeout(setupLeafletMap, 150);
+      }
+
+      // If switching to presentations tab, load items
+      if (tabId === 'presentations') {
+        loadPresentations();
+      }
+
+      // If switching to live-preview tab, load preview content
+      if (tabId === 'live-preview') {
+        initAdminLivePreview();
       }
     }
 
@@ -1318,12 +1999,31 @@
                 <div style="font-size: 15px; font-weight: 700; color: var(--text-main); line-height: 1.2;">${item.mslname}</div>
                 <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
                   <div style="font-family: monospace; color: var(--primary-dark); font-size: 12px; font-weight: 700;" class="copyable-text">[${item.mslCode}]</div>
-                  <button onclick="window.copyMSL(event, '${item.mslCode}', this)" style="background: none; border: none; cursor: pointer; color: var(--text-light); display: flex; align-items: center; padding: 2px;" title="Copy Code">
+                  <button onclick="window.copyMSL(event, '${item.mslCode}', this)" style="background: none; border: none; cursor: pointer; color: var(--text-light); display: flex; align-items: center; padding: 2px; margin-right: 2px;" title="Copy Code">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                       <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
                     </svg>
                   </button>
+                  <!-- Presentation Status -->
+                  <span class="status-icon" 
+                        title="${(item.presentationShown === 'Y' || item.presentationShown === true) ? 'Presentation shown to client by user' : 'Presentation NOT shown to client yet'}"
+                        style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background-color: ${(item.presentationShown === 'Y' || item.presentationShown === true) ? '#D1FAE5' : '#F1F5F9'}; color: ${(item.presentationShown === 'Y' || item.presentationShown === true) ? '#059669' : '#94A3B8'}; cursor: pointer;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 10px; height: 10px;">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </span>
+                  <!-- Demo Status -->
+                  <span class="status-icon" 
+                        title="${(item.demoShown === 'Y' || item.demoShown === true) ? 'Demo shown to client by user' : 'Demo NOT shown to client yet'}"
+                        style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background-color: ${(item.demoShown === 'Y' || item.demoShown === true) ? '#D1FAE5' : '#F1F5F9'}; color: ${(item.demoShown === 'Y' || item.demoShown === true) ? '#059669' : '#94A3B8'}; cursor: pointer;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 10px; height: 10px;">
+                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                      <path d="M12 18h.01"></path>
+                    </svg>
+                  </span>
                 </div>
               </div>
             </div>
@@ -1433,7 +2133,7 @@
             </td>
             <td>
               <strong style="color: var(--text-main); font-weight:600;">${item.mslname}</strong>
-              <span style="display: block; margin-top: 4px;">
+              <span style="display: inline-flex; align-items: center; gap: 8px; margin-top: 4px;">
                 <span class="msl-code-tag" style="display: inline-flex; align-items: center; gap: 6px; background-color: var(--primary-light); color: var(--primary-dark); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 11px; font-family: monospace; line-height: 1;">
                   <span class="copyable-text">${item.mslCode || 'N/A'}</span>
                   ${item.mslCode ? `<button onclick="window.copyMSL(event, '${item.mslCode}', this)" style="background: none; border: none; cursor: pointer; color: var(--primary-dark); display: flex; align-items: center; padding: 0;" title="Copy Code">
@@ -1442,6 +2142,25 @@
                       <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
                     </svg>
                   </button>` : ''}
+                </span>
+                <!-- Presentation Status -->
+                <span class="status-icon" 
+                      title="${(item.presentationShown === 'Y' || item.presentationShown === true) ? 'Presentation shown to client by user' : 'Presentation NOT shown to client yet'}"
+                      style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background-color: ${(item.presentationShown === 'Y' || item.presentationShown === true) ? '#D1FAE5' : '#F1F5F9'}; color: ${(item.presentationShown === 'Y' || item.presentationShown === true) ? '#059669' : '#94A3B8'}; cursor: pointer;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                </span>
+                <!-- Demo Status -->
+                <span class="status-icon" 
+                      title="${(item.demoShown === 'Y' || item.demoShown === true) ? 'Demo shown to client by user' : 'Demo NOT shown to client yet'}"
+                      style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background-color: ${(item.demoShown === 'Y' || item.demoShown === true) ? '#D1FAE5' : '#F1F5F9'}; color: ${(item.demoShown === 'Y' || item.demoShown === true) ? '#059669' : '#94A3B8'}; cursor: pointer;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <path d="M12 18h.01"></path>
+                  </svg>
                 </span>
               </span>
             </td>
@@ -1876,6 +2595,529 @@
 
       modalOverlay.classList.add('active');
     }
+
+    // --- Presentations Management Logic ---
+    let allPresentations = [];
+
+    async function loadPresentations() {
+      const loader = document.getElementById('loading-overlay');
+      if (loader) loader.style.display = 'flex';
+
+      try {
+        const response = await api.get('/presentations/admin');
+        if (response) {
+          allPresentations = response;
+          renderPresentationsTable(response);
+        }
+      } catch (err) {
+        console.error('Load Presentations Error:', err);
+        alert('Failed to load presentation materials.');
+      } finally {
+        if (loader) loader.style.display = 'none';
+      }
+    }
+
+    function renderPresentationsTable(list) {
+      const tbody = document.getElementById('presentations-table-body');
+      if (!tbody) return;
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-light);">No presentation materials created yet.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => {
+        let typeBadge = '';
+        if (item.presentationType === 'pdf') {
+          typeBadge = '<span class="badge" style="background-color: #FEF2F2; color: #EF4444; border: 1px solid rgba(239,68,68,0.2);">PDF</span>';
+        } else if (item.presentationType === 'video') {
+          typeBadge = '<span class="badge" style="background-color: #EEF2FF; color: #4F46E5; border: 1px solid rgba(79,70,229,0.2);">Video</span>';
+        } else {
+          typeBadge = '<span class="badge" style="background-color: #ECFDF5; color: #10B981; border: 1px solid rgba(16,185,129,0.2);">Image</span>';
+        }
+
+        const mappedBadges = item.businessTypes.map(t => {
+          return `<span class="badge badge-worker" style="margin-right: 4px; margin-bottom: 4px;">${t}</span>`;
+        }).join('');
+
+        const thumbnailImg = item.thumbnail
+          ? `<img src="${item.thumbnail}" alt="Thumb" class="table-img" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover;">`
+          : `<div class="pres-icon-fallback type-${item.presentationType}" style="width: 44px; height: 44px; border-radius: 8px; background-color: #F1F5F9; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">${item.presentationType}</div>`;
+
+        return `
+          <tr>
+            <td>${thumbnailImg}</td>
+            <td>
+              <strong style="color: var(--text-main); font-weight: 600;">${item.title}</strong>
+              <div style="font-size: 11px; color: var(--text-light); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.description || ''}</div>
+            </td>
+            <td>${typeBadge}</td>
+            <td><div style="display: flex; flex-wrap: wrap; max-width: 250px;">${mappedBadges}</div></td>
+            <td><strong style="color: var(--text-muted);">${item.sortOrder || 0}</strong></td>
+            <td>
+              <span class="badge" style="background-color: ${item.isActive ? '#D1FAE5' : '#F3F4F6'}; color: ${item.isActive ? '#065F46' : 'var(--text-light)'};">
+                ${item.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="window.openEditPresentationModal('${item._id}')" class="btn btn-secondary" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px;">Edit</button>
+                <button onclick="window.deletePresentation('${item._id}')" class="btn btn-secondary" style="padding: 6px 12px; font-size:12px; width:auto; border-radius: 8px; background-color: #FEF2F2; color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2);">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal bindings
+    document.addEventListener('DOMContentLoaded', () => {
+      const openBtn = document.getElementById('open-presentation-modal-btn');
+      const closeBtn = document.getElementById('close-presentation-modal-btn');
+      const overlay = document.getElementById('presentation-modal-overlay');
+      const form = document.getElementById('presentation-form');
+
+      if (openBtn && overlay) {
+        openBtn.addEventListener('click', () => {
+          form.reset();
+          document.getElementById('presentation-id').value = '';
+          document.getElementById('presentation-modal-title').textContent = 'Add Presentation';
+          document.getElementById('pres-file').required = true;
+          document.getElementById('pres-file-help').textContent = 'Required for new presentations. Max 50MB.';
+
+          // Uncheck all business types
+          document.querySelectorAll('#pres-business-types-checkboxes input').forEach(cb => cb.checked = false);
+
+          overlay.classList.add('active');
+        });
+      }
+
+      if (closeBtn && overlay) {
+        closeBtn.addEventListener('click', () => {
+          overlay.classList.remove('active');
+        });
+      }
+
+      if (overlay) {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) overlay.classList.remove('active');
+        });
+      }
+
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const id = document.getElementById('presentation-id').value;
+          const title = document.getElementById('pres-title').value.trim();
+          const description = document.getElementById('pres-desc').value.trim();
+          const presentationType = document.getElementById('pres-type').value;
+          const sortOrder = document.getElementById('pres-sort-order').value;
+          const isActive = document.getElementById('pres-is-active').checked;
+
+          const checkedTypes = [];
+          document.querySelectorAll('#pres-business-types-checkboxes input:checked').forEach(cb => {
+            checkedTypes.push(cb.value);
+          });
+
+          if (checkedTypes.length === 0) {
+            alert('Please select at least one mapped business type.');
+            return;
+          }
+
+          const fileInput = document.getElementById('pres-file');
+          const thumbInput = document.getElementById('pres-thumbnail');
+
+          const formData = new FormData();
+          formData.append('title', title);
+          formData.append('description', description);
+          formData.append('presentationType', presentationType);
+          formData.append('sortOrder', sortOrder);
+          formData.append('isActive', isActive);
+          formData.append('businessTypes', JSON.stringify(checkedTypes));
+
+          if (fileInput.files.length > 0) {
+            formData.append('file', fileInput.files[0]);
+          }
+
+          if (thumbInput.files.length > 0) {
+            formData.append('thumbnail', thumbInput.files[0]);
+          }
+
+          const loader = document.getElementById('loading-overlay');
+          if (loader) loader.style.display = 'flex';
+
+          try {
+            const token = api.getToken();
+            let response;
+            if (id) {
+              // Update
+              response = await fetch(`/api/presentations/${id}`, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+                body: formData
+              });
+            } else {
+              // Create
+              response = await fetch('/api/presentations', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+                body: formData
+              });
+            }
+
+            const data = await response.json();
+            if (!response.ok) {
+              throw new Error(data.message || 'Failed to save presentation.');
+            }
+
+            alert('Presentation saved successfully.');
+            overlay.classList.remove('active');
+            await loadPresentations();
+          } catch (err) {
+            console.error('Save Presentation Error:', err);
+            alert(err.message || 'Failed to save presentation.');
+          } finally {
+            if (loader) loader.style.display = 'none';
+          }
+        });
+      }
+    });
+
+    window.openEditPresentationModal = function (id) {
+      const item = allPresentations.find(p => p._id === id);
+      if (!item) return;
+
+      const overlay = document.getElementById('presentation-modal-overlay');
+      const form = document.getElementById('presentation-form');
+
+      if (!overlay || !form) return;
+
+      form.reset();
+      document.getElementById('presentation-modal-title').textContent = 'Edit Presentation';
+      document.getElementById('presentation-id').value = item._id;
+      document.getElementById('pres-title').value = item.title;
+      document.getElementById('pres-desc').value = item.description;
+      document.getElementById('pres-type').value = item.presentationType;
+      document.getElementById('pres-sort-order').value = item.sortOrder || 0;
+      document.getElementById('pres-is-active').checked = item.isActive;
+      document.getElementById('pres-file').required = false;
+      document.getElementById('pres-file-help').textContent = 'Leave empty to keep current file.';
+
+      // Map business types checkboxes
+      document.querySelectorAll('#pres-business-types-checkboxes input').forEach(cb => {
+        cb.checked = item.businessTypes.includes(cb.value);
+      });
+
+      overlay.classList.add('active');
+    };
+
+    window.deletePresentation = async function (id) {
+      if (!confirm('Are you absolutely sure you want to delete this presentation material? This action is permanent and will delete local files.')) {
+        return;
+      }
+
+      const loader = document.getElementById('loading-overlay');
+      if (loader) loader.style.display = 'flex';
+
+      try {
+        const token = api.getToken();
+        const response = await fetch(`/api/presentations/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to delete presentation.');
+        }
+
+        alert('Presentation deleted successfully.');
+        await loadPresentations();
+      } catch (err) {
+        console.error('Delete Presentation Error:', err);
+        alert(err.message || 'Failed to delete presentation.');
+      } finally {
+        if (loader) loader.style.display = 'none';
+      }
+    };
+
+    // --- Live Showcase Preview Logic ---
+    let selectedPreviewType = 'Restaurant';
+    let currentMockRestaurantData = null;
+
+    const typeFolderMap = {
+      'Restaurant': 'restaurant',
+      'Hospital': 'hospital',
+      'Salon': 'salon',
+      'Cafe': 'cafe',
+      'Hotel': 'hotel',
+      'Clinic': 'clinic',
+      'Gym': 'gym',
+      'Bakery': 'bakery',
+      'Retail Shop': 'retail',
+      'Other': 'other'
+    };
+
+    const mockDataMap = {
+      'Restaurant': {
+        mslname: 'The Gourmet Kitchen',
+        businessType: 'Restaurant',
+        description: 'Experience fine dining with our curated gourmet menu. Our award-winning master chefs use only the freshest locally sourced organic ingredients to craft exquisite seasonal flavors in an intimate, modern atmosphere.',
+        phoneNumber: '9876543210',
+        fullAddress: '123 Gourmet Boulevard, Bandra West, Mumbai',
+        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Truffle Mushroom Risotto, Hand-stretched Neapolitan Pizza, Slow-cooked Lamb Shank, Deconstructed Tiramisu',
+        website: 'https://gourmetkitchen.com',
+        socialLinks: '@gourmetkitchen'
+      },
+      'Hospital': {
+        mslname: 'City Care Super Specialty Hospital',
+        businessType: 'Hospital',
+        description: 'Providing advanced, compassionate healthcare services with state-of-the-art medical technology. Our team of world-class specialists is dedicated to patient recovery, round-the-clock emergency care, and clinical excellence.',
+        phoneNumber: '8765432109',
+        fullAddress: '456 Wellness Way, Sector 15, Navi Mumbai',
+        image: 'https://images.unsplash.com/photo-1586773860418-d3b3da96a68e?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: '24/7 ICU & Trauma Center, Advanced Cardiology Unit, Robotic Surgery Center, Comprehensive Diagnostics, Pediatric Emergency Care',
+        website: 'https://citycarehospital.com',
+        socialLinks: '@citycarehealth'
+      },
+      'Salon': {
+        mslname: 'Vogue & Style Luxury Salon',
+        businessType: 'Salon',
+        description: 'Indulge in premium hair, beauty, and grooming treatments. Our elite stylists and beauty therapists offer bespoke packages tailored to your lifestyle, using organic luxury hair-care and skincare brands.',
+        phoneNumber: '7654321098',
+        fullAddress: '789 Luxury Arcade, Juhu Tara Road, Mumbai',
+        image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Balayage & Hair Couture, Keratin Renewal Treatment, Organic Charcoal Facial, Hydra-Facial Therapy, Luxury Bridal Makeovers',
+        website: 'https://voguestyle.com',
+        socialLinks: '@voguesalon'
+      },
+      'Cafe': {
+        mslname: 'The Daily Grind Coffee Co.',
+        businessType: 'Cafe',
+        description: 'Your warm, neighborhood retreat. We roast premium micro-lot single-origin beans on-site weekly, serving rich espressos, homemade buttery croissants, and freshly baked vegan pastries in a cozy, plant-filled space.',
+        phoneNumber: '6543210987',
+        fullAddress: '101 Espresso Lane, Koregaon Park, Pune',
+        image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Flat White Coffee, Pour-over Cold Brew, Butter Almond Croissant, Matcha Latte, Avocado Sourdough Toast',
+        website: 'https://dailygrindcafe.com',
+        socialLinks: '@dailygrindco'
+      },
+      'Hotel': {
+        mslname: 'The Grand Royale Resort & Spa',
+        businessType: 'Hotel',
+        description: 'Discover unmatched luxury, sea-facing suites, and legendary hospitality. Enjoy our temperature-controlled infinity pool, restorative Ayurvedic spa treatments, and five fine-dining international cuisines under one roof.',
+        phoneNumber: '5432109876',
+        fullAddress: '555 Marine Drive Promenade, Colaba, Mumbai',
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Sea-View Deluxe Suites, Royal Penthouse with Jacuzzi, Infinity Pool Access, The Royal Spa, 24/7 Butler Service',
+        website: 'https://grandroyaleresort.com',
+        socialLinks: '@grandroyalehotel'
+      },
+      'Clinic': {
+        mslname: 'Dr. Smile Dental & Skin Clinic',
+        businessType: 'Clinic',
+        description: 'Expert specialized cosmetic dentistry and dermatological treatments. Our licensed professionals guarantee custom aesthetic treatments in a clinical, sterile, and premium patient-centric care environment.',
+        phoneNumber: '4321098765',
+        fullAddress: '202 Health Hub, Kothrud, Pune',
+        image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Laser Teeth Whitening, Inman Aligner Orthodontics, Anti-Aging Dermatological Peels, Laser Hair Removal, Advanced Scar Therapy',
+        website: 'https://drsmileclinic.com',
+        socialLinks: '@drsmiledermatology'
+      },
+      'Gym': {
+        mslname: 'Iron Forge Elite Fitness',
+        businessType: 'Gym',
+        description: 'Sculpt your ultimate physique at the region\'s largest premium gym. Features professional strength equipment, certified personal coaches, intense group classes, and customized nutritional guidance planning.',
+        phoneNumber: '3210987654',
+        fullAddress: '88 Muscle Boulevard, HSR Layout, Bangalore',
+        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Elite Personal Strength Coaching, Olympic Weightlifting Platform, HIIT Training Zone, Yoga & Pilates Studio, In-House Protein Cafe',
+        website: 'https://ironforgefitness.com',
+        socialLinks: '@ironforgegym'
+      },
+      'Bakery': {
+        mslname: 'La Petite Pâtisserie & Bakery',
+        businessType: 'Bakery',
+        description: 'Crafting artisanal French breads, custom celebration cakes, and delicious sweet pastries from scratch daily. Experience the magic of pure butter, authentic sourdough cultures, and organic flours in every bite.',
+        phoneNumber: '2109876543',
+        fullAddress: '14 Boulangerie Square, MG Road, Pune',
+        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Artisanal Sourdough Bread, Belgian Chocolate Eclairs, Custom Fondant Wedding Cakes, Salted Caramel Macarons, Blueberry Tart',
+        website: 'https://lapetitebakery.com',
+        socialLinks: '@lapetitebakery'
+      },
+      'Retail Shop': {
+        mslname: 'Vibe Emporium Lifestyle Store',
+        businessType: 'Retail Shop',
+        description: 'A curated selection of modern fashion, local artisanal home decor, organic apothecary cosmetics, and unique gifts. Designed for the conscious shopper seeking exceptional style and sustainable high-quality materials.',
+        phoneNumber: '1098765432',
+        fullAddress: '99 Boutique Boulevard, Indiranagar, Bangalore',
+        image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Eco-Friendly Handwoven Garments, Artisanal Ceramics & Vases, Organic Scented Apothecary Candles, Sustainable Leather Bags, Custom Gifts',
+        website: 'https://vibeemporium.com',
+        socialLinks: '@vibeemporium'
+      },
+      'Other': {
+        mslname: 'Stellar Tech Co-Working Spaces',
+        businessType: 'Other',
+        description: 'Productive, community-oriented workspaces with blazing fast internet, comfortable ergonomic chairs, private call pods, unlimited specialty coffee, and fully equipped modern boardrooms for growing startups and creators.',
+        phoneNumber: '9087654321',
+        fullAddress: '77 Silicon Way, Whitefield, Bangalore',
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
+        popularProductsOrServices: 'Hot Desk Membership, Dedicated Desk Space, High-Tech 8-Seater Boardrooms, Private Work Studios, High-Speed fiber Wifi',
+        website: 'https://stellarcoworking.com',
+        socialLinks: '@stellarcoworking'
+      }
+    };
+
+    window.getSelectedRestaurant = function () {
+      if (currentTab === 'live-preview') {
+        return mockDataMap[selectedPreviewType];
+      }
+      return null;
+    };
+
+    function initAdminLivePreview() {
+      currentMockRestaurantData = mockDataMap[selectedPreviewType];
+
+      const frame = document.getElementById('admin-preview-frame');
+      if (frame) {
+        const folder = typeFolderMap[selectedPreviewType] || 'restaurant';
+        frame.src = `/templates/${folder}/index.html`;
+      }
+
+      updatePreviewPhoneTime();
+    }
+
+    function updatePreviewPhoneTime() {
+      const timeEl = document.getElementById('preview-phone-time');
+      if (timeEl) {
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        timeEl.textContent = `${hrs}:${mins}`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const prevNavbar = document.getElementById('preview-category-navbar');
+      if (prevNavbar) {
+        const buttons = prevNavbar.querySelectorAll('.preview-nav-btn');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedPreviewType = btn.getAttribute('data-type');
+            initAdminLivePreview();
+          });
+        });
+      }
+
+      // Update phone time indicator regularly
+      setInterval(updatePreviewPhoneTime, 60000);
+
+      // --- Mobile Hamburger & Swipe Drawer Logic ---
+      const sidebar = document.querySelector('.admin-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const hamburgerTrigger = document.getElementById('mobile-hamburger-trigger');
+      const closeTrigger = document.getElementById('mobile-sidebar-close');
+      const menuLinks = sidebar.querySelectorAll('.sidebar-link, .sidebar-logout-btn');
+
+      function openMobileSidebar() {
+        sidebar.classList.add('open-mobile');
+        backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMobileSidebar() {
+        sidebar.classList.remove('open-mobile');
+        backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (hamburgerTrigger) {
+        hamburgerTrigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openMobileSidebar();
+        });
+      }
+
+      if (closeTrigger) {
+        closeTrigger.addEventListener('click', () => {
+          closeMobileSidebar();
+        });
+      }
+
+      if (backdrop) {
+        backdrop.addEventListener('click', () => {
+          closeMobileSidebar();
+        });
+      }
+
+      menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          closeMobileSidebar();
+        });
+      });
+
+      // Swipe from right to left inside sidebar to close
+      let startX = 0;
+      let startY = 0;
+      let isSwiping = false;
+
+      sidebar.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isSwiping = true;
+      }, { passive: true });
+
+      sidebar.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = startX - currentX; // Drag distance to the left
+        const diffY = Math.abs(startY - currentY);
+
+        if (diffX > 60 && diffY < 50) {
+          closeMobileSidebar();
+          isSwiping = false;
+        }
+      }, { passive: true });
+
+      sidebar.addEventListener('touchend', () => {
+        isSwiping = false;
+      });
+
+      // Swipe left on backdrop to close
+      if (backdrop) {
+        backdrop.addEventListener('touchstart', (e) => {
+          startX = e.touches[0].clientX;
+          isSwiping = true;
+        }, { passive: true });
+
+        backdrop.addEventListener('touchmove', (e) => {
+          if (!isSwiping) return;
+          const currentX = e.touches[0].clientX;
+          const diffX = startX - currentX;
+          if (diffX > 40) {
+            closeMobileSidebar();
+            isSwiping = false;
+          }
+        }, { passive: true });
+      }
+    });
   </script>
 
   <!-- Worker Registration Modal Overlay -->
@@ -1949,14 +3191,16 @@
       <!-- Form Section -->
       <div id="reset-password-form-section">
         <h3 class="form-title">Reset User Password</h3>
-        <p class="form-subtitle" style="margin-top: 4px;">Set a new password for user: <strong id="reset-password-username" style="color: var(--primary-dark);">@username</strong></p>
+        <p class="form-subtitle" style="margin-top: 4px;">Set a new password for user: <strong
+            id="reset-password-username" style="color: var(--primary-dark);">@username</strong></p>
 
         <form id="reset-password-form" style="margin-top: 16px;">
           <input type="hidden" id="reset-password-target-username">
           <div class="form-group">
             <label for="reset-password-val">New Password</label>
             <div style="position: relative;">
-              <input type="password" id="reset-password-val" class="form-control" placeholder="Min. 6 characters" required>
+              <input type="password" id="reset-password-val" class="form-control" placeholder="Min. 6 characters"
+                required>
               <button type="button" class="toggle-pass-btn" id="toggle-reset-password-visibility"
                 title="Toggle Password Visibility">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1968,7 +3212,8 @@
               </button>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary" style="margin-top: 12px; width: 100%; background-color: var(--error); border-color: var(--error);">
+          <button type="submit" class="btn btn-primary"
+            style="margin-top: 12px; width: 100%; background-color: var(--error); border-color: var(--error);">
             Confirm Reset
           </button>
         </form>
@@ -1976,25 +3221,34 @@
 
       <!-- Success Result Screen -->
       <div id="reset-password-success-section" style="display: none; text-align: center; padding: 12px 0;">
-        <div style="width: 60px; height: 60px; background-color: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <div
+          style="width: 60px; height: 60px; background-color: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" style="width: 32px; height: 32px;">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
           </svg>
         </div>
         <h3 class="form-title" style="color: #065F46;">Password Reset Successful</h3>
         <p class="form-subtitle" style="margin-top: 4px;">Share these new credentials with the user:</p>
-        
-        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: left;">
+
+        <div
+          style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: left;">
           <div style="margin-bottom: 8px;">
-            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">Username</span>
-            <span id="display-reset-username" style="font-family: monospace; font-size: 14px; font-weight: 700; color: var(--text-main);">@username</span>
+            <span
+              style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">Username</span>
+            <span id="display-reset-username"
+              style="font-family: monospace; font-size: 14px; font-weight: 700; color: var(--text-main);">@username</span>
           </div>
           <div>
-            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">New Password</span>
+            <span
+              style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">New
+              Password</span>
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <span id="display-reset-password" style="font-family: monospace; font-size: 16px; font-weight: 700; color: #EF4444; word-break: break-all;">password123</span>
-              <button id="copy-reset-password-btn" class="btn btn-secondary" style="width: auto; padding: 6px 10px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+              <span id="display-reset-password"
+                style="font-family: monospace; font-size: 16px; font-weight: 700; color: #EF4444; word-break: break-all;">password123</span>
+              <button id="copy-reset-password-btn" class="btn btn-secondary"
+                style="width: auto; padding: 6px 10px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="width: 14px; height: 14px;">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
                 </svg>
@@ -2078,6 +3332,38 @@
           <input type="text" id="edit-outlet-name" class="form-control" placeholder="e.g. Starbucks Coffee" required>
         </div>
         <div class="form-group">
+          <label for="edit-outlet-type">Business Type</label>
+          <select id="edit-outlet-type" class="form-control">
+            <option value="Restaurant">Restaurant</option>
+            <option value="Hospital">Hospital</option>
+            <option value="Salon">Salon</option>
+            <option value="Cafe">Cafe</option>
+            <option value="Hotel">Hotel</option>
+            <option value="Clinic">Clinic</option>
+            <option value="Gym">Gym</option>
+            <option value="Bakery">Bakery</option>
+            <option value="Retail Shop">Retail Shop</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-outlet-description">Business Description</label>
+          <textarea id="edit-outlet-description" class="form-control" rows="2"
+            placeholder="Catchy business description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="edit-outlet-popular" id="edit-outlet-popular-label">Popular Dishes</label>
+          <input type="text" id="edit-outlet-popular" class="form-control" placeholder="comma separated specialties">
+        </div>
+        <div class="form-group">
+          <label for="edit-outlet-website">Business Website</label>
+          <input type="url" id="edit-outlet-website" class="form-control" placeholder="https://example.com">
+        </div>
+        <div class="form-group">
+          <label for="edit-outlet-social">Social Links / Handles</label>
+          <input type="text" id="edit-outlet-social" class="form-control" placeholder="e.g. @instagram">
+        </div>
+        <div class="form-group">
           <label for="edit-outlet-owner">Owner Name</label>
           <input type="text" id="edit-outlet-owner" class="form-control" placeholder="e.g. John Smith">
         </div>
@@ -2129,6 +3415,108 @@
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+  <!-- Add/Edit Presentation Modal Overlay -->
+  <div class="modal-overlay" id="presentation-modal-overlay">
+    <div class="modal-card" style="max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 28px;">
+      <button class="modal-close-btn" id="close-presentation-modal-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <h3 class="form-title" id="presentation-modal-title">Add Presentation</h3>
+      <p class="form-subtitle" id="presentation-modal-subtitle">Upload presentation files and map them to business
+        types.</p>
+
+      <form id="presentation-form" style="margin-top: 16px;">
+        <input type="hidden" id="presentation-id">
+
+        <div class="form-group">
+          <label for="pres-title">Title</label>
+          <input type="text" id="pres-title" class="form-control" placeholder="e.g. QR Menu Demo" required>
+        </div>
+
+        <div class="form-group">
+          <label for="pres-desc">Short Description</label>
+          <textarea id="pres-desc" class="form-control" rows="2"
+            placeholder="e.g. Show how customers can scan and order" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label style="font-weight: 600; font-size: 13px;">Mapped Business Types (Select Multiple)</label>
+          <div id="pres-business-types-checkboxes"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background-color: #f9fafb;">
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;"><input
+                type="checkbox" value="Restaurant" style="width: 16px; height: 16px; accent-color: var(--primary);">
+              Restaurant</label>
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;"><input
+                type="checkbox" value="Hospital" style="width: 16px; height: 16px; accent-color: var(--primary);">
+              Hospital</label>
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;"><input
+                type="checkbox" value="Salon" style="width: 16px; height: 16px; accent-color: var(--primary);">
+              Salon</label>
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;"><input
+                type="checkbox" value="Cafe" style="width: 16px; height: 16px; accent-color: var(--primary);">
+              Cafe</label>
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;"><input
+                type="checkbox" value="Hotel" style="width: 16px; height: 16px; accent-color: var(--primary);">
+              Hotel</label>
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;"><input
+                type="checkbox" value="Clinic" style="width: 16px; height: 16px; accent-color: var(--primary);">
+              Clinic</label>
+            <label
+              style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;"><input
+                type="checkbox" value="Other" style="width: 16px; height: 16px; accent-color: var(--primary);">
+              Other</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="pres-type">Presentation Type</label>
+          <select id="pres-type" class="form-control" required>
+            <option value="pdf" selected>PDF Document</option>
+            <option value="image">Image / Slide</option>
+            <option value="video">Video Player</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pres-file" id="pres-file-label">Upload File (PDF, Image, or Video)</label>
+          <input type="file" id="pres-file" class="form-control" accept=".pdf,.png,.jpg,.jpeg,.webp,.mp4,.webm,.mov">
+          <small style="color: var(--text-light);" id="pres-file-help">Required for new presentations. Max 50MB.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="pres-thumbnail">Upload Custom Thumbnail (Optional)</label>
+          <input type="file" id="pres-thumbnail" class="form-control" accept="image/*">
+          <small style="color: var(--text-light);">Will use default icon based on type if left empty.</small>
+        </div>
+
+        <div class="form-group" style="display: flex; gap: 20px; align-items: center; margin-top: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="pres-sort-order" style="font-weight: 600; font-size: 13px;">Sort Order</label>
+            <input type="number" id="pres-sort-order" class="form-control" value="0"
+              style="width: 80px; height: 38px; text-align: center;">
+          </div>
+          <label
+            style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; cursor: pointer; user-select: none;">
+            <input type="checkbox" id="pres-is-active" checked
+              style="width: 16px; height: 16px; accent-color: var(--primary);"> Active
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">
+          Save Presentation
+        </button>
+      </form>
     </div>
   </div>
 </body>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Showcase Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4F46E5; /* Indigo */
+      --primary-dark: #3730A3;
+      --accent: #10B981; /* Emerald */
+      --bg-light: #F8FAFC;
+      --text-dark: #0F172A;
+      --text-muted: #475569;
+      --border: #E2E8F0;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+    .text-center { text-align: center; }
+    .section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary-dark); }
+    .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .hero { position: relative; height: 320px; background-color: var(--primary-dark); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(55,48,163,0.4), rgba(55,48,163,0.85)); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-content h1 { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
+    .hero-content p { font-size: 14px; color: #E2E8F0; margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+    .btn-indigo { background-color: white; color: var(--primary-dark); }
+    
+    .features-list { display: flex; flex-direction: column; gap: 12px; }
+    .feature-card { display: flex; gap: 14px; background: white; border: 1px solid var(--border); padding: 16px; border-radius: var(--radius); align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01); }
+    .feature-icon { font-size: 24px; width: 48px; height: 48px; background: #EEF2FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--primary); }
+    .feature-info h4 { font-weight: 700; font-size: 15px; color: var(--primary-dark); }
+    .feature-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    
+    .booking-card { background: white; border: 1px solid var(--border); padding: 24px; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .booking-form { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .input-field { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); font-size: 13px; outline: none; }
+    
+    footer { background: #0F172A; color: #94A3B8; padding: 32px 0 16px 0; font-size: 12px; }
+    footer h3 { color: white; margin-bottom: 8px; }
+    .footer-bottom { text-align: center; margin-top: 24px; color: #475569; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <header class="hero" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="business-name">Corporate Services</h1>
+        <p id="business-tagline">Professional solutions, reliable workflow, and expert consultants.</p>
+        <a href="#contact" class="btn btn-indigo">Get In Touch</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="section-title">Trusted Partner</h2>
+        <p style="font-size: 14px; max-width: 480px; margin: 0 auto; color: var(--text-muted);" id="business-desc">
+          We focus on providing custom optimized workflows, consulting services, and structural layouts tailored for our global clients.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Our Specialties</h2>
+        <p class="section-subtitle text-center">A comprehensive checklist of our key service offerings</p>
+        <div class="features-list" id="features-list">
+          <!-- Dynamically Injected Features -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="booking-card">
+          <h2 class="section-title">Inquire Online</h2>
+          <p class="section-subtitle">Reach out for collaborations or service queries.</p>
+          <form class="booking-form" onsubmit="event.preventDefault(); alert('Inquiry sent!');">
+            <input type="text" placeholder="Your Name" required class="input-field">
+            <input type="tel" placeholder="Mobile Number" required class="input-field">
+            <input type="email" placeholder="Email Address" required class="input-field">
+            <textarea placeholder="Message / Service Requirements" required class="input-field" rows="3"></textarea>
+            <button type="submit" class="btn" style="width:100%; background:var(--primary); color:white;">Submit Inquiry</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <h3>Contact Location</h3>
+        <p id="business-address">12 Business Hub, Main Road, Pune</p>
+        <p style="margin-top: 8px;"><strong>Phone Helpdesk:</strong> <span id="business-phone">+91 98765 43210</span></p>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let business = null;
+      if (window.parent && typeof window.parent.getSelectedRestaurant === 'function') {
+        business = window.parent.getSelectedRestaurant();
+        if (business) renderTemplate(business);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const demoId = params.get('demoId');
+        if (demoId) {
+          const token = localStorage.getItem('token');
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          fetch(`/api/restaurants/detail/${demoId}`, { headers })
+            .then(res => res.json())
+            .then(data => { if (data && !data.message) renderTemplate(data); });
+        }
+      }
+    });
+
+    function renderTemplate(business) {
+      document.getElementById('business-name').textContent = business.mslname;
+      if (business.description) {
+        document.getElementById('business-desc').textContent = business.description;
+      }
+      document.getElementById('business-phone').textContent = business.phoneNumber || 'N/A';
+      document.getElementById('business-address').textContent = business.fullAddress || 'N/A';
+
+      const heroBg = document.getElementById('hero-bg');
+      if (heroBg && business.image) {
+        heroBg.style.backgroundImage = `url('${business.image}')`;
+      }
+
+      const featuresList = document.getElementById('features-list');
+      if (featuresList) {
+        const featStr = business.popularProductsOrServices || 'Consulting Services, General Administration, Operations Audit';
+        const features = featStr.split(',').map(f => f.trim()).filter(f => f.length > 0);
+        const icons = ['📊', '⚙️', '🔍', '💡', '🛡️', '🤝'];
+        
+        featuresList.innerHTML = features.map((feat, i) => {
+          const icon = icons[i % icons.length];
+          return `
+            <div class="feature-card">
+              <div class="feature-icon">${icon}</div>
+              <div class="feature-info">
+                <h4>${feat}</h4>
+                <p>Tailored operations checklist optimized for professional client delivery.</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

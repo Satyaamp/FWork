@@ -20,6 +20,7 @@ app.use(express.json());
 // API Routers
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/restaurants', require('./routes/restaurants'));
+app.use('/api/presentations', require('./routes/presentations'));
 
 // Serve local upload files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -54,4 +55,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server booting in Node environment on port ${PORT}`);
+  console.log(`http://localhost:${PORT}`)
 });

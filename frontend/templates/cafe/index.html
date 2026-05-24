@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafe Website Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #78350F; /* Warm Coffee Brown */
+      --primary-light: #FDE68A;
+      --accent: #D97706; /* Amber */
+      --bg-dark: #451A03;
+      --bg-light: #FDF8F5; /* Cozy Cream */
+      --text-dark: #292524;
+      --text-muted: #78716C;
+      --border: #E7E5E4;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+    .text-center { text-align: center; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--bg-dark); }
+    .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .hero { position: relative; height: 360px; background-color: var(--bg-dark); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(69,26,3,0.3), rgba(69,26,3,0.85)); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-content h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+    .hero-content p { font-size: 14px; color: #F5F5F4; margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: transform 0.2s ease; }
+    .btn-primary { background-color: var(--accent); color: white; }
+    .btn-outline { background-color: transparent; color: white; border: 2px solid white; margin-left: 8px; }
+    .specials-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .special-card { display: flex; gap: 12px; background: white; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .special-icon { font-size: 24px; width: 44px; height: 44px; background: #FFF7ED; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); }
+    .special-info { flex: 1; }
+    .special-name { font-weight: 700; font-size: 14px; color: var(--primary); }
+    .special-desc { font-size: 11px; color: var(--text-muted); }
+    .hours-card { background: var(--primary); color: white; padding: 24px; border-radius: var(--radius); margin-top: 20px; text-align: center; }
+    .hours-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.2); }
+    .hours-row:last-child { border: none; }
+    .insta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 16px; }
+    .insta-img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+    footer { background: var(--bg-dark); color: #E7E5E4; padding: 32px 0 16px 0; font-size: 12px; }
+    .footer-bottom { text-align: center; margin-top: 20px; color: #78716C; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <header class="hero" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="cafe-name">Aroma Coffee House</h1>
+        <p id="cafe-tagline">Fresh brews, cozy corners, and handmade pastries.</p>
+        <div>
+          <a href="#specials" class="btn btn-primary">Our Menu</a>
+          <a href="#hours" class="btn btn-outline">Find Us</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="section-title">Cozy Vibe Store</h2>
+        <p style="font-size: 14px; max-width: 460px; margin: 0 auto; color: var(--text-muted);" id="cafe-desc">
+          Your neighborhood corner cafe. We source specialty micro-lot beans roasted weekly. Come for the coffee, stay for the warmth.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="specials" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Coffee & Specials</h2>
+        <p class="section-subtitle text-center">Handcrafted beverages brewed to perfection</p>
+        <div class="specials-grid" id="specials-list">
+          <!-- Dynamically Injected Specials -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="hours">
+      <div class="container">
+        <h2 class="section-title text-center">Opening Hours</h2>
+        <div class="hours-card">
+          <div class="hours-row"><span>Monday - Friday</span><span>7:00 AM - 8:00 PM</span></div>
+          <div class="hours-row"><span>Saturday</span><span>8:00 AM - 9:00 PM</span></div>
+          <div class="hours-row"><span>Sunday</span><span>9:00 AM - 6:00 PM</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Instagram Gallery</h2>
+        <p class="section-subtitle text-center">Tag us @aromacafeco to get featured</p>
+        <div class="insta-grid">
+          <div style="background: #F5F5F4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; height: 80px;">☕</div>
+          <div style="background: #F5F5F4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; height: 80px;">🥐</div>
+          <div style="background: #F5F5F4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; height: 80px;">📚</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <p style="margin-bottom: 6px; font-weight: 700; color: white;">Contact Us</p>
+        <p><strong>Phone:</strong> <span id="cafe-phone">+91 98765 43210</span></p>
+        <p><strong>Address:</strong> <span id="cafe-address">456 Bean Avenue, Pune</span></p>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let business = null;
+      if (window.parent && typeof window.parent.getSelectedRestaurant === 'function') {
+        business = window.parent.getSelectedRestaurant();
+        if (business) renderTemplate(business);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const demoId = params.get('demoId');
+        if (demoId) {
+          const token = localStorage.getItem('token');
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          fetch(`/api/restaurants/detail/${demoId}`, { headers })
+            .then(res => res.json())
+            .then(data => { if (data && !data.message) renderTemplate(data); });
+        }
+      }
+    });
+
+    function renderTemplate(business) {
+      document.getElementById('cafe-name').textContent = business.mslname;
+      if (business.description) {
+        document.getElementById('cafe-desc').textContent = business.description;
+      }
+      document.getElementById('cafe-phone').textContent = business.phoneNumber || 'N/A';
+      document.getElementById('cafe-address').textContent = business.fullAddress || 'N/A';
+
+      const heroBg = document.getElementById('hero-bg');
+      if (heroBg && business.image) {
+        heroBg.style.backgroundImage = `url('${business.image}')`;
+      }
+
+      const specialsList = document.getElementById('specials-list');
+      if (specialsList) {
+        const specialsStr = business.popularProductsOrServices || 'Flat White Coffee, Hazelnut Latte, Butter Croissant';
+        const specials = specialsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const emojis = ['☕', '🍵', '🍪', '🍰', '🥯', '🧁'];
+        
+        specialsList.innerHTML = specials.map((spec, i) => {
+          const emoji = emojis[i % emojis.length];
+          return `
+            <div class="special-card">
+              <div class="special-icon">${emoji}</div>
+              <div class="special-info">
+                <h4 class="special-name">${spec}</h4>
+                <p class="special-desc">Brewed or baked fresh using premium hand-selected ingredients.</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

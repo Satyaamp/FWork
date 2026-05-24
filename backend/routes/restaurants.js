@@ -12,6 +12,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     const {
       mslCode,
       mslname,
+      businessType,
       ownerName,
       phoneNumber,
       latitude,
@@ -22,7 +23,11 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       state,
       country,
       pincode,
-      notes
+      notes,
+      description,
+      popularProductsOrServices,
+      website,
+      socialLinks
     } = req.body;
 
     if (!mslCode || !mslname || !latitude || !longitude || !fullAddress) {
@@ -54,6 +59,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     const newRestaurant = new Restaurant({
       mslCode: finalMslCode,
       mslname,
+      businessType: businessType || 'Restaurant',
       ownerName,
       phoneNumber,
       image,
@@ -66,6 +72,10 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       country,
       pincode,
       notes,
+      description: description || '',
+      popularProductsOrServices: popularProductsOrServices || '',
+      website: website || '',
+      socialLinks: socialLinks || '',
       addedBy: {
         name: userObj.name,
         username: userObj.username
@@ -394,7 +404,7 @@ router.put('/:id', auth, async (req, res) => {
     if (req.user.role !== 'superadmin') {
       return res.status(403).json({ message: 'Superadmin access required to edit entries.' });
     }
-    const { mslname, ownerName, phoneNumber } = req.body;
+    const { mslname, ownerName, phoneNumber, businessType, description, popularProductsOrServices, website, socialLinks } = req.body;
 
     if (!mslname || !mslname.trim()) {
       return res.status(400).json({ message: 'Shop name is required.' });
@@ -408,6 +418,13 @@ router.put('/:id', auth, async (req, res) => {
     restaurant.mslname = mslname.trim();
     restaurant.ownerName = ownerName ? ownerName.trim() : '';
     restaurant.phoneNumber = phoneNumber ? phoneNumber.trim() : '';
+    if (businessType) {
+      restaurant.businessType = businessType;
+    }
+    restaurant.description = description !== undefined ? description.trim() : (restaurant.description || '');
+    restaurant.popularProductsOrServices = popularProductsOrServices !== undefined ? popularProductsOrServices.trim() : (restaurant.popularProductsOrServices || '');
+    restaurant.website = website !== undefined ? website.trim() : (restaurant.website || '');
+    restaurant.socialLinks = socialLinks !== undefined ? socialLinks.trim() : (restaurant.socialLinks || '');
 
     const updatedRestaurant = await restaurant.save();
     res.json(updatedRestaurant);
@@ -571,6 +588,33 @@ router.post('/restore/:id', auth, async (req, res) => {
   } catch (error) {
     console.error('Restore Restaurant Error:', error);
     res.status(500).json({ message: 'Failed to restore restaurant.' });
+  }
+});
+
+// Mark presentation or demo as shown (Authenticated users)
+router.post('/:id/mark-shown', auth, async (req, res) => {
+  try {
+    const { type } = req.body; // 'presentation' or 'demo'
+    if (!['presentation', 'demo'].includes(type)) {
+      return res.status(400).json({ message: 'Invalid track type. Must be presentation or demo.' });
+    }
+
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant) {
+      return res.status(404).json({ message: 'Restaurant not found.' });
+    }
+
+    if (type === 'presentation') {
+      restaurant.presentationShown = 'Y';
+    } else if (type === 'demo') {
+      restaurant.demoShown = 'Y';
+    }
+
+    const updated = await restaurant.save();
+    res.json(updated);
+  } catch (error) {
+    console.error('Mark Shown Error:', error);
+    res.status(500).json({ message: 'Failed to mark as shown. Server error.' });
   }
 });
 

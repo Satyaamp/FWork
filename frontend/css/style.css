@@ -1442,3 +1442,155 @@ body {
     text-align: center;
   }
 }
+
+/* ==========================================================================
+   PRESENTATIONS MODULE STYLES
+   ========================================================================== */
+
+/* Fallback icons for list tables & cards */
+.pres-icon-fallback.type-pdf,
+.pres-card-thumb-fallback.type-pdf {
+  background-color: #FEF2F2 !important;
+  color: #EF4444 !important;
+  border-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.pres-icon-fallback.type-video,
+.pres-card-thumb-fallback.type-video {
+  background-color: #EEF2FF !important;
+  color: #4F46E5 !important;
+  border-color: rgba(79, 70, 229, 0.15) !important;
+}
+
+.pres-icon-fallback.type-image,
+.pres-card-thumb-fallback.type-image {
+  background-color: #ECFDF5 !important;
+  color: #10B981 !important;
+  border-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Fullscreen Presentation Viewer Overlay */
+.presentation-viewer-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  animation: fadeInViewer 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInViewer {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.viewer-header {
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(30, 41, 59, 0.4);
+}
+
+.viewer-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #F8FAFC;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%;
+}
+
+.viewer-close-btn {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #E2E8F0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.viewer-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.viewer-close-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.viewer-body {
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 75px);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #0F172A;
+}
+
+/* Scrollable image containers inside viewer */
+.viewer-img-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* PDF iframe sizing fixes */
+.viewer-body iframe {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background-color: white;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Video tag styling inside viewer */
+.viewer-body video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Worker Side Presentation Cards */
+.presentation-card {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.presentation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+.pres-card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}

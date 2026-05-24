@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Showcase Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0F172A; /* Slate/Navy */
+      --accent: #D4AF37; /* Luxury Gold */
+      --bg-light: #FAF9F6;
+      --text-dark: #1E293B;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+    .text-center { text-align: center; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .hero { position: relative; height: 360px; background-color: var(--primary); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(15,23,42,0.3), rgba(15,23,42,0.85)); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-content h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+    .hero-content p { font-size: 14px; color: #E2E8F0; margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+    .btn-gold { background-color: var(--accent); color: #0F172A; }
+    
+    .amenities-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .amenity-card { display: flex; gap: 12px; background: white; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .amenity-icon { font-size: 24px; width: 44px; height: 44px; background: #F8FAFC; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); }
+    .amenity-info { flex: 1; }
+    .amenity-name { font-weight: 700; font-size: 14px; color: var(--primary); }
+    .amenity-desc { font-size: 11px; color: var(--text-muted); }
+    
+    .booking-card { background: white; border: 1px solid var(--border); padding: 24px; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .booking-form { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .form-row { display: flex; gap: 12px; }
+    .input-field { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); font-size: 13px; outline: none; }
+    
+    footer { background: var(--primary); color: #94A3B8; padding: 32px 0 16px 0; font-size: 12px; }
+    footer h3 { color: white; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+    .footer-bottom { text-align: center; margin-top: 24px; color: #475569; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <header class="hero" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="hotel-name">Grand Luxury Resort</h1>
+        <p id="hotel-tagline">Experience ultimate comfort, premium room service, and scenic views.</p>
+        <a href="#booking" class="btn btn-gold">Book Stay</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="section-title">Escape to Paradise</h2>
+        <p style="font-size: 14px; max-width: 480px; margin: 0 auto; color: var(--text-muted);" id="hotel-desc">
+          Enjoy unmatched premium leisure, private room designs, and chef-curated dining specials. Book directly with us for exclusive club lounge access.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="background: white;">
+      <div class="container">
+        <h2 class="section-title text-center">Rooms & Amenities</h2>
+        <p class="section-subtitle text-center">Curated stays and resort-level hospitality specialties</p>
+        <div class="amenities-grid" id="amenities-list">
+          <!-- Dynamically Injected Amenities -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="booking">
+      <div class="container">
+        <div class="booking-card">
+          <h2 class="section-title">Check Availability</h2>
+          <p class="section-subtitle">Book your luxury getaway online.</p>
+          <form class="booking-form" onsubmit="event.preventDefault(); alert('Availability search request received!');">
+            <div class="form-row">
+              <div>
+                <label style="font-size: 11px; font-weight:700; color:var(--text-muted);">Check-In</label>
+                <input type="date" required class="input-field" style="margin-top:4px;">
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight:700; color:var(--text-muted);">Check-Out</label>
+                <input type="date" required class="input-field" style="margin-top:4px;">
+              </div>
+            </div>
+            <select class="input-field" required>
+              <option value="" disabled selected>Select Room Class</option>
+              <option value="deluxe">Deluxe Room</option>
+              <option value="suite">Premium Suite</option>
+            </select>
+            <button type="submit" class="btn btn-gold" style="width:100%;">Check Stay Rates</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <h3 id="footer-logo">Grand Resort</h3>
+        <p><strong>Phone:</strong> <span id="hotel-phone">+91 98765 43210</span></p>
+        <p><strong>Address:</strong> <span id="hotel-address">789 Beachfront Highway, Goa</span></p>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let business = null;
+      if (window.parent && typeof window.parent.getSelectedRestaurant === 'function') {
+        business = window.parent.getSelectedRestaurant();
+        if (business) renderTemplate(business);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const demoId = params.get('demoId');
+        if (demoId) {
+          const token = localStorage.getItem('token');
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          fetch(`/api/restaurants/detail/${demoId}`, { headers })
+            .then(res => res.json())
+            .then(data => { if (data && !data.message) renderTemplate(data); });
+        }
+      }
+    });
+
+    function renderTemplate(business) {
+      document.getElementById('hotel-name').textContent = business.mslname;
+      document.getElementById('footer-logo').textContent = business.mslname;
+      if (business.description) {
+        document.getElementById('hotel-desc').textContent = business.description;
+      }
+      document.getElementById('hotel-phone').textContent = business.phoneNumber || 'N/A';
+      document.getElementById('hotel-address').textContent = business.fullAddress || 'N/A';
+
+      const heroBg = document.getElementById('hero-bg');
+      if (heroBg && business.image) {
+        heroBg.style.backgroundImage = `url('${business.image}')`;
+      }
+
+      const amenitiesList = document.getElementById('amenities-list');
+      if (amenitiesList) {
+        const amenStr = business.popularProductsOrServices || 'Executive Suites, Infinity Pool, Rooftop Dining';
+        const amenities = amenStr.split(',').map(a => a.trim()).filter(a => a.length > 0);
+        const icons = ['🛌', '🏊', '🍷', '💆', '🏋️', '📶'];
+        
+        amenitiesList.innerHTML = amenities.map((amen, i) => {
+          const icon = icons[i % icons.length];
+          return `
+            <div class="amenity-card">
+              <div class="amenity-icon">${icon}</div>
+              <div class="amenity-info">
+                <h4 class="amenity-name">${amen}</h4>
+                <p class="amenity-desc">Premium five-star facility managed by our dedicated customer hospitality team.</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

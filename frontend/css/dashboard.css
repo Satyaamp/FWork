@@ -1013,4 +1013,112 @@
     display: none !important;
   }
 }
+
+/* Business Type Badge Styles */
+.business-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+/* Badge Color Themes based on businessType */
+.business-type-badge.type-restaurant {
+  background-color: #FEF2F2;
+  color: #EF4444;
+  border-color: #FCA5A5;
+}
+.business-type-badge.type-hospital {
+  background-color: #F0FDF4;
+  color: #10B981;
+  border-color: #86EFAC;
+}
+.business-type-badge.type-salon {
+  background-color: #FAF5FF;
+  color: #8B5CF6;
+  border-color: #D8B4FE;
+}
+.business-type-badge.type-cafe {
+  background-color: #FFFBEB;
+  color: #D97706;
+  border-color: #FCD34D;
+}
+.business-type-badge.type-hotel {
+  background-color: #EFF6FF;
+  color: #3B82F6;
+  border-color: #93C5FD;
+}
+.business-type-badge.type-clinic {
+  background-color: #ECFDF5;
+  color: #059669;
+  border-color: #6EE7B7;
+}
+.business-type-badge.type-other {
+  background-color: #F8FAFC;
+  color: #64748B;
+  border-color: #CBD5E1;
+}
+
+/* Mobile Badge overlay */
+.badge-mobile {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+}
+
+/* Desktop Badge next to title */
+.badge-desktop {
+  display: none; /* Hidden on mobile */
+}
+
+/* Responsiveness overrides */
+@media (min-width: 769px) {
+  .badge-mobile {
+    display: none !important; /* Hide overlay badge on desktop */
+  }
+  .badge-desktop {
+    display: inline-flex !important; /* Show inline badge next to title on desktop */
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+}
+
+/* Live Demo Card Hover styles */
+.live-demo-card {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast) !important;
+}
+.live-demo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 10px 25px -5px rgba(16, 185, 129, 0.2) !important;
+}
+#open-demo-btn {
+  transition: all var(--transition-fast);
+}
+#open-demo-btn:hover {
+  background-color: var(--primary-dark) !important;
+  transform: scale(1.02);
+}
+#open-demo-btn:active {
+  transform: scale(0.98);
+}
+#share-demo-btn {
+  transition: all var(--transition-fast);
+}
+#share-demo-btn:hover {
+  background-color: #475569 !important;
+}
+#share-demo-btn:active {
+  transform: scale(0.95);
+}
+
+
   

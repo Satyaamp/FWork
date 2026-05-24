@@ -52,5 +52,6 @@ const upload = multer({
 
 module.exports = {
   upload,
-  isCloudinary: !!isCloudinaryConfigured
+  isCloudinary: !!isCloudinaryConfigured,
+  cloudinary
 };

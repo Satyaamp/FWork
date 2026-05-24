@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Restaurant Website Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="site-container">
+    <!-- Hero Banner -->
+    <header class="hero-section" id="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Gourmet Experience</span>
+        <h1 id="restaurant-name">The Culinary Arts</h1>
+        <p id="restaurant-tagline">Exquisite dishes prepared by top-rated master chefs.</p>
+        <div class="hero-actions">
+          <a href="#booking" class="btn btn-accent">Reserve Table</a>
+          <a href="#menu" class="btn btn-outline">Explore Menu</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="section about-section">
+      <div class="container">
+        <h2 class="section-title text-center">Our Story</h2>
+        <p class="about-text" id="restaurant-description">Welcome to our restaurant. We serve delicious meals prepared with fresh, locally sourced ingredients. Experience top-tier hospitality in a cozy atmosphere.</p>
+      </div>
+    </section>
+
+    <!-- Popular Dishes Section -->
+    <section class="section menu-section" id="menu">
+      <div class="container">
+        <h2 class="section-title text-center">Signature Dishes</h2>
+        <p class="section-subtitle text-center">Chef's curated specialties made fresh daily</p>
+        <div class="menu-grid" id="dishes-list">
+          <!-- Dynamically injected dishes -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu Categories -->
+    <section class="section categories-section">
+      <div class="container">
+        <h2 class="section-title text-center">Menu Categories</h2>
+        <div class="categories-grid">
+          <div class="category-card">
+            <div class="category-icon">🍲</div>
+            <h3>Appetizers</h3>
+            <p>Flavorful starters to begin your feast.</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">🥩</div>
+            <h3>Main Courses</h3>
+            <p>Hearty and exquisite recipes cooked to perfection.</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">🍰</div>
+            <h3>Desserts</h3>
+            <p>Delectable sweet treats to end your meal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="section reviews-section">
+      <div class="container">
+        <h2 class="section-title text-center">Guest Testimonials</h2>
+        <div class="reviews-slider">
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <p class="review-quote">"The ambiance was amazing, but the food was the real star. Best experience I've had in years!"</p>
+            <span class="review-author">- Priya R.</span>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <p class="review-quote">"Unbelievable tastes. Every dish felt crafted with passion. Highly recommend!"</p>
+            <span class="review-author">- Vikram S.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table Booking Form -->
+    <section class="section booking-section" id="booking">
+      <div class="container">
+        <div class="booking-card">
+          <h2 class="section-title">Reserve a Table</h2>
+          <p class="section-subtitle">Book online instantly to secure your seating.</p>
+          <form class="booking-form" onsubmit="event.preventDefault(); alert('Reservation demo request received!');">
+            <div class="form-row">
+              <input type="text" placeholder="Your Name" required class="input-field">
+              <input type="tel" placeholder="Phone Number" required class="input-field">
+            </div>
+            <div class="form-row">
+              <input type="date" required class="input-field">
+              <input type="time" required class="input-field">
+            </div>
+            <button type="submit" class="btn btn-accent full-width">Confirm Reservation</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact & Details -->
+    <footer class="footer-section">
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <h3 class="footer-logo" id="footer-restaurant-name">Restaurant</h3>
+            <p id="footer-restaurant-desc">A premium culinary destination.</p>
+            <div class="social-links" id="social-container">
+              <!-- Dynamically loaded social icon buttons -->
+            </div>
+          </div>
+          <div>
+            <h3>Operational Info</h3>
+            <p><strong>Open Hours:</strong> 11:00 AM - 11:00 PM</p>
+            <p><strong>Phone:</strong> <span id="restaurant-phone">+91 98765 43210</span></p>
+            <p><strong>Address:</strong> <span id="restaurant-address">123 Food Street, Mumbai</span></p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026. All rights reserved. Powered by FieldForce Preview System.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
